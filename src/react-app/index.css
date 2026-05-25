@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #555;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: #333;
+  }
+  
+  p {
+    color: #555;
+  }
+}
+
+@layer components {
+  .gradient-hero {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+  }
+  
+  .glow-brand {
+    box-shadow: 0 0 40px rgba(31, 156, 76, 0.2), 0 0 80px rgba(31, 156, 76, 0.08);
+  }
+  
+  .card-glass {
+    @apply bg-white border border-navy-200 rounded-2xl shadow-sm;
+  }
+  
+  .card-glass-dark {
+    @apply bg-navy-50 border border-navy-200 rounded-2xl;
+  }
+  
+  /* Text color utilities for headers and paragraphs */
+  .text-heading {
+    color: #333;
+  }
+  
+  .text-body {
+    color: #555;
+  }
+  
+  /* Hide scrollbar but keep scroll functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Word break for long URLs */
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  
+  /* Entrance animations for summary header */
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-slide-up {
+    animation: fadeSlideUp 0.4s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-delay-100 { animation-delay: 100ms; }
+  .animate-delay-200 { animation-delay: 200ms; }
+  .animate-delay-300 { animation-delay: 300ms; }
+  .animate-delay-400 { animation-delay: 400ms; }
+  .animate-delay-500 { animation-delay: 500ms; }
+  .animate-delay-600 { animation-delay: 600ms; }
+  
+  /* X-Ray Audit animations - GPU accelerated */
+  @keyframes xrayReveal {
+    0% {
+      clip-path: inset(0 0 0 100%);
+    }
+    40% {
+      clip-path: inset(0 0 0 0);
+    }
+    60% {
+      clip-path: inset(0 0 0 0);
+    }
+    100% {
+      clip-path: inset(0 0 0 100%);
+    }
+  }
+  
+  @keyframes xrayBeam {
+    0% {
+      left: 0%;
+      opacity: 1;
+    }
+    40% {
+      left: 100%;
+      opacity: 1;
+    }
+    41% {
+      opacity: 0;
+    }
+    99% {
+      opacity: 0;
+      left: 0%;
+    }
+    100% {
+      opacity: 1;
+      left: 0%;
+    }
+  }
+  
+  .xray-reveal {
+    animation: xrayReveal 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  
+  .xray-beam {
+    left: 0;
+    animation: xrayBeam 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  
+  /* Hero button glisten effect - subtle edge glow */
+  @keyframes edgeGlow {
+    0%, 100% {
+      box-shadow: 
+        0 10px 15px -3px rgba(31, 156, 76, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    50% {
+      box-shadow: 
+        0 10px 15px -3px rgba(31, 156, 76, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.4),
+        0 0 20px 4px rgba(180, 255, 200, 0.35);
+    }
+  }
+  
+  .btn-glisten {
+    animation: edgeGlow 4s ease-in-out infinite;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* PDF Export Styles */
+@layer components {
+  /* Show PDF header/footer only during PDF export */
+  .pdf-exporting .pdf-header,
+  .pdf-exporting .pdf-footer {
+    display: block !important;
+  }
+
+  /* Hide interactive elements during PDF export */
+  .pdf-exporting .pdf-hide {
+    display: none !important;
+  }
+
+  /* Expand collapsed sections during PDF export */
+  .pdf-exporting [data-collapsed="true"] {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Ensure proper page breaks */
+  .pdf-exporting .pdf-no-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .pdf-exporting .pdf-page-break-before {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  /* Clean up visual noise for PDF */
+  .pdf-exporting {
+    background: white !important;
+  }
+
+  .pdf-exporting button:not(.pdf-keep) {
+    opacity: 0.7;
+  }
+
+  /* Ensure text is readable in PDF */
+  .pdf-exporting * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* Print media query for actual printing */
+@media print {
+  .pdf-header,
+  .pdf-footer {
+    display: block !important;
+  }
+
+  .pdf-hide {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+}

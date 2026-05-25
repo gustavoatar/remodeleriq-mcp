@@ -1,0 +1,166 @@
+# RemodelerIQ
+
+> AI-Powered Contractor Bid Analysis for Homeowners
+
+RemodelerIQ is a free tool that helps homeowners analyze contractor estimates and bids before signing. Upload a PDF, image, or paste text from any contractor proposal to get instant analysis including price comparison, scope review, contractor verification, and negotiation guidance.
+
+## What RemodelerIQ Does
+
+RemodelerIQ reads contractor bids and estimates, then provides:
+
+- **Price Analysis**: Compares bid pricing to regional market data from Zonda Cost vs Value 2025, Houzz 2024, and BLS OEWS wage data
+- **Scope Review**: Identifies missing items, vague language, and potential gaps in the proposal
+- **Contractor Verification**: Checks business reputation via Google Reviews, BBB, and state licensing databases
+- **Negotiation Guidance**: Provides data-backed talking points for discussing pricing with contractors
+- **Risk Flags**: Highlights concerning payment terms, missing insurance, unlicensed work, and red flags
+
+## Data Sources
+
+RemodelerIQ analysis is powered by:
+
+- [Zonda Cost vs Value 2025](https://www.remodeling.hw.net/cost-vs-value): National remodeling cost benchmarks for 30+ project types across all US regions
+- [BLS Occupational Employment & Wage Statistics (OEWS)](https://www.bls.gov/oes/): Real hourly wage data for construction trades by metro area
+- [Houzz 2024 Cost Guides](https://www.houzz.com/): Project cost ranges and labor percentages
+- [Google Places API](https://developers.google.com/maps/documentation/places/): Business ratings and reviews
+- State contractor licensing databases
+
+## Sitemaps
+
+- [XML Sitemap](https://remodeleriq.com/sitemap.xml): Contains all public URLs for this website
+
+## Pages
+
+- [Home / Bid Analyzer](https://remodeleriq.com/): Upload or paste a contractor bid for instant AI analysis
+- [Labor Rates Tool](https://remodeleriq.com/labor-rates): Look up BLS wage data for construction trades by ZIP code
+- [Premium Features](https://remodeleriq.com/premium): Unlimited analysis, contractor research, and advanced features
+- [Terms of Service](https://remodeleriq.com/terms): Legal terms and data source methodology
+- [Privacy Policy](https://remodeleriq.com/privacy): How we handle user data
+
+## Blog & Intelligence
+
+- [RemodelerIQ Intelligence Blog](https://intelligence.remodeleriq.com/blog/): In-depth guides on remodeling costs, market trends, and project planning
+
+## Project Types Supported
+
+RemodelerIQ can analyze bids for:
+
+### Kitchen & Bath
+- Kitchen remodel (minor, major midrange, major upscale)
+- Bathroom remodel and bathroom additions
+- Cabinet refinishing, refacing, and replacement
+- Countertop installation (granite, quartz, laminate)
+
+### Exterior
+- Roofing (asphalt, metal, standing seam)
+- Roof repair and insurance claims
+- Siding (vinyl, fiber-cement, wood)
+- Windows and doors (entry, patio, French, garage)
+- Deck construction and repair (wood, composite)
+- Paver patios
+
+### Interior
+- Flooring (hardwood, laminate, carpet, tile)
+- Painting (interior, exterior, cabinet refinishing)
+- Basement finishing and refinishing
+- Electrical and plumbing work
+
+### Additions & Major Projects
+- Home additions and ADUs
+- Primary suite additions
+- HVAC systems and generators
+- Solar panel installation
+
+## Homeowner Queries This Tool Answers
+
+RemodelerIQ helps homeowners answer questions like:
+
+### Is this bid fair?
+- "Is $50,000 a good price for a kitchen remodel?"
+- "How much should a bathroom remodel cost in Atlanta?"
+- "Is this contractor charging too much for roofing?"
+- "What's a fair price for window replacement?"
+
+### Is this contractor trustworthy?
+- "How do I verify a contractor's license?"
+- "What should I check before hiring a contractor?"
+- "Is this contractor BBB accredited?"
+- "Does this contractor have good reviews?"
+
+### What's missing from this bid?
+- "What should be included in a kitchen remodel estimate?"
+- "Is this bid too vague?"
+- "What questions should I ask my contractor?"
+- "What are red flags in a contractor estimate?"
+
+### How do I negotiate?
+- "How to negotiate with a contractor"
+- "Is this deposit too high?"
+- "What payment schedule is normal for remodeling?"
+- "How to get a better price from a contractor"
+
+### Regional pricing
+- "How much does remodeling cost in [city]?"
+- "Remodeling costs in California vs Texas"
+- "New York kitchen remodel cost"
+- "Atlanta bathroom remodel average price"
+
+## Common Search Queries
+
+- contractor bid analysis
+- is this contractor bid fair
+- remodeling cost calculator
+- kitchen remodel price check
+- bathroom renovation cost estimator
+- how to read a contractor estimate
+- contractor estimate red flags
+- compare contractor bids
+- remodeling market rates
+- construction labor costs by zip code
+- is my contractor overcharging
+- home renovation bid review
+- contractor price comparison tool
+- free bid analysis tool
+- AI contractor estimate analyzer
+
+## Topics & Categories
+
+- Home Remodeling
+- Contractor Estimates
+- Construction Costs
+- Kitchen Remodeling
+- Bathroom Renovation
+- Roofing Costs
+- Window Replacement
+- Flooring Installation
+- Home Addition Costs
+- Deck Building
+- Contractor Verification
+- Home Improvement Pricing
+- Regional Construction Costs
+- Bid Negotiation
+- Homeowner Protection
+
+## Geographic Coverage
+
+RemodelerIQ provides regional cost adjustments for all 50 US states and major metropolitan areas including:
+
+- **High-cost markets**: New York City, San Francisco, Boston, Los Angeles, Seattle, Washington DC
+- **Mid-cost markets**: Atlanta, Dallas, Denver, Chicago, Phoenix, Miami
+- **Lower-cost markets**: Birmingham, Memphis, Oklahoma City, Indianapolis
+
+## How to Use
+
+1. **Upload or paste** your contractor bid (PDF, image, or text)
+2. **Enter project details** (square footage, ZIP code)
+3. **Get instant analysis** with price comparison, risk flags, and scope review
+4. **Use insights** to negotiate or validate your contractor's pricing
+
+## Contact
+
+- Website: https://remodeleriq.com
+- Blog: https://intelligence.remodeleriq.com
+- Support: Available through the website
+
+---
+
+*RemodelerIQ is a free tool for homeowners. Data sourced from Zonda Cost vs Value 2025, BLS OEWS, Houzz, and public business records.*

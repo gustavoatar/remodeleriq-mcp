@@ -1,0 +1,23 @@
+# RemodelerIQ Robots.txt
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://remodeleriq.com/sitemap.xml
+
+# Block API and authentication routes
+Disallow: /api/
+Disallow: /auth/
+
+# Block user-specific pages (not useful for search)
+Disallow: /settings
+Disallow: /premium
+
+# Block internal/test pages
+Disallow: /graveyard
+Disallow: /test-payment
+Disallow: /webhook-status
+
+# Crawl delay (optional, for polite crawling)
+Crawl-delay: 1
