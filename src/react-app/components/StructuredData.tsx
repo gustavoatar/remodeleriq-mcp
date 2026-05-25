@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
 const BASE_URL = 'https://remodeleriq.com';
-const LOGO_URL = 'https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/image.png_4808.png';
+const LOGO_URL = '/mocha-assets/image.png_4808.png';
 
 // Metro areas with coordinates - pulled from Zonda/CITY_SAVINGS data
 const SERVICE_AREAS: Array<{ city: string; state: string; lat: number; lng: number }> = [

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/lib/auth';
 import { Loader2, RefreshCw } from 'lucide-react';
 
 export default function AuthCallbackPage() {
@@ -44,7 +44,7 @@ export default function AuthCallbackPage() {
       <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
         <div className="card-glass p-8 max-w-md w-full text-center">
           <img 
-            src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/remodeler-iq-svg-logo.svg" 
+            src="/mocha-assets/remodeler-iq-svg-logo.svg" 
             alt="RemodelerIQ" 
             className="h-10 mx-auto mb-6"
           />

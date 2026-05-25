@@ -1,5 +1,5 @@
 import { Lock, UserPlus, Sparkles } from 'lucide-react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/lib/auth';
 import { PREMIUM_MODE_ENABLED, FREE_DAILY_LIMIT } from '@/shared/featureFlags';
 
 interface BlurredSectionProps {

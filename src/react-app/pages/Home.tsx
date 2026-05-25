@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/lib/auth';
 import Header from '@/react-app/components/Header';
 import Hero from '@/react-app/components/Hero';
 import PageSEO from '@/react-app/components/PageSEO';
@@ -781,17 +781,17 @@ export default function HomePage() {
                 {/* Overlapping Circle Images */}
                 <div className="flex items-center -space-x-4">
                   <img 
-                    src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/image.png_3744.png" 
+                    src="/mocha-assets/image.png_3744.png" 
                     alt="Homeowner" 
                     className="w-20 h-20 rounded-full border-4 border-white object-cover"
                   />
                   <img 
-                    src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/image.png_7332.png" 
+                    src="/mocha-assets/image.png_7332.png" 
                     alt="Kitchen remodel" 
                     className="w-20 h-20 rounded-full border-4 border-white object-cover"
                   />
                   <img 
-                    src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/image.png_8264.png" 
+                    src="/mocha-assets/image.png_8264.png" 
                     alt="Relaxing home" 
                     className="w-20 h-20 rounded-full border-4 border-white object-cover"
                   />
@@ -846,7 +846,7 @@ export default function HomePage() {
                   {/* Hide logo on mobile to make room for metrics */}
                   <div className="hidden sm:flex p-3 bg-white rounded-xl flex-shrink-0 border-2" style={{ borderColor: '#1F9C4C' }}>
                     <img 
-                      src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/remodeler-iq-2x-logo-icon2.png" 
+                      src="/mocha-assets/remodeler-iq-2x-logo-icon2.png" 
                       alt="RemodelerIQ" 
                       className="w-10 h-10"
                     />

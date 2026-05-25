@@ -1313,7 +1313,7 @@ export default function StudioPage() {
                 {/* Logo Icon - positioned bottom right to avoid overlap */}
                 <div className="absolute bottom-4 right-4 opacity-30">
                   <img 
-                    src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/remodeler-iq-2x-logo-icon21.png" 
+                    src="/mocha-assets/remodeler-iq-2x-logo-icon21.png" 
                     alt="RemodelerIQ" 
                     className="w-16 h-16 object-contain"
                   />

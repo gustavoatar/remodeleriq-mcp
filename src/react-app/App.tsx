@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router";
-import { AuthProvider } from "@getmocha/users-service/react";
+import { AuthProvider } from "@/react-app/lib/auth";
 import { CombinedAuthProvider } from "@/react-app/hooks/useCombinedAuth";
 import { MessageSquareHeart } from "lucide-react";
 import HomePage from "@/react-app/pages/Home";

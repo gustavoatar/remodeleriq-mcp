@@ -11,7 +11,7 @@ interface PageSEOProps {
 }
 
 const BASE_URL = 'https://remodeleriq.com';
-const DEFAULT_OG_IMAGE = 'https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/image.png_4808.png';
+const DEFAULT_OG_IMAGE = '/mocha-assets/image.png_4808.png';
 
 export default function PageSEO({
   title,

@@ -84,7 +84,7 @@ export default function Header({ onHomeClick, onAnalyzeClick, onNavigateAway }: 
             className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
           >
             <img 
-              src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/remodeler-iq-2x-logo-reverse.svg" 
+              src="/mocha-assets/remodeler-iq-2x-logo-reverse.svg" 
               alt="RemodelerIQ" 
               className="h-14"
             />

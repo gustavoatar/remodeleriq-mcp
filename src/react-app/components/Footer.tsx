@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
-            <img src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/remodeler-iq-2x-logo-reverse.svg" alt="RemodelerIQ" className="h-12" />
+            <img src="/mocha-assets/remodeler-iq-2x-logo-reverse.svg" alt="RemodelerIQ" className="h-12" />
           </div>
           
           <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 text-sm">

@@ -34,7 +34,7 @@ function useLocationSavings() {
   
   return data;
 }
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/lib/auth';
 import XRayAudit from './XRayAudit';
 import DataPartners from '@/react-app/components/DataPartners';
 import SamplePreviewSlider from './SamplePreviewSlider';
@@ -164,22 +164,22 @@ export default function Hero({ onGetStarted, onSeeDemo }: HeroProps) {
               <div className="flex flex-col xs:flex-row items-center gap-1.5 xs:gap-3">
                 <div className="flex -space-x-2">
                   <img 
-                    src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/457745902_8353490021339301_2498062123852469522_n.jpg" 
+                    src="/mocha-assets/457745902_8353490021339301_2498062123852469522_n.jpg" 
                     alt="Satisfied homeowner who used RemodelerIQ" 
                     className="w-8 h-8 rounded-full border-2 border-emerald-400 object-cover"
                   />
                   <img 
-                    src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/462553277_8279697295412769_4594977589251391290_n.jpg" 
+                    src="/mocha-assets/462553277_8279697295412769_4594977589251391290_n.jpg" 
                     alt="Homeowner testimonial" 
                     className="w-8 h-8 rounded-full border-2 border-purple-400 object-cover"
                   />
                   <img 
-                    src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/495841161_18507081907024710_6660864889380307053_n.jpg" 
+                    src="/mocha-assets/495841161_18507081907024710_6660864889380307053_n.jpg" 
                     alt="Homeowner testimonial" 
                     className="w-8 h-8 rounded-full border-2 border-gray-300 object-cover"
                   />
                   <img 
-                    src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/10483460_1575954135984211_445044868_a.jpg" 
+                    src="/mocha-assets/10483460_1575954135984211_445044868_a.jpg" 
                     alt="Homeowner testimonial" 
                     className="w-8 h-8 rounded-full border-2 border-gray-300 object-cover"
                   />

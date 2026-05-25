@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/lib/auth';
 
 // Magic link user type
 interface MagicLinkUser {
@@ -69,7 +69,7 @@ export function CombinedAuthProvider({ children }: { children: ReactNode }) {
     if (googleAuth.user) {
       const profile = (googleAuth.user as any)?.profile;
       return {
-        id: googleAuth.user.id,
+        id: String(googleAuth.user.id),
         email: googleAuth.user.email,
         name: googleAuth.user.google_user_data?.name,
         picture: googleAuth.user.google_user_data?.picture,

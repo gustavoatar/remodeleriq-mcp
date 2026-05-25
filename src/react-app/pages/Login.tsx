@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/lib/auth';
 import PageSEO from '@/react-app/components/PageSEO';
 import { BreadcrumbSchema, BREADCRUMBS } from '@/react-app/components/StructuredData';
 import { Loader2, Send, CheckCircle2, AlertCircle } from 'lucide-react';

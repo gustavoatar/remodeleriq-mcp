@@ -186,7 +186,7 @@ export default function HowWeScorePage() {
             </div>
             <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
               <img 
-                src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/image.png_4506.png" 
+                src="/mocha-assets/image.png_4506.png" 
                 alt="Score breakdown showing unified confidence score"
                 className="w-full rounded-xl shadow-lg"
               />
@@ -353,7 +353,7 @@ export default function HowWeScorePage() {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center h-20 mb-3">
                 <img 
-                  src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/Houzz-Emblem1.png" 
+                  src="/mocha-assets/Houzz-Emblem1.png" 
                   alt="Houzz" 
                   className="h-12 md:h-14 w-auto object-contain"
                 />
@@ -368,7 +368,7 @@ export default function HowWeScorePage() {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center h-20 mb-3">
                 <img 
-                  src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/bls-logo.png" 
+                  src="/mocha-assets/bls-logo.png" 
                   alt="Bureau of Labor Statistics" 
                   className="h-12 md:h-14 w-auto object-contain"
                 />
@@ -383,7 +383,7 @@ export default function HowWeScorePage() {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center h-20 mb-3">
                 <img 
-                  src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/FRED_Logo_Header.svg" 
+                  src="/mocha-assets/FRED_Logo_Header.svg" 
                   alt="FRED - Federal Reserve Economic Data" 
                   className="h-10 md:h-12 w-auto object-contain"
                 />
@@ -398,7 +398,7 @@ export default function HowWeScorePage() {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center h-20 mb-3">
                 <img 
-                  src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/Primary_Logo_TM_Large4zonda.png" 
+                  src="/mocha-assets/Primary_Logo_TM_Large4zonda.png" 
                   alt="Zonda" 
                   className="h-8 md:h-10 w-auto object-contain"
                 />
@@ -413,7 +413,7 @@ export default function HowWeScorePage() {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center h-20 mb-3">
                 <img 
-                  src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/google.svg" 
+                  src="/mocha-assets/google.svg" 
                   alt="Google" 
                   className="h-10 md:h-12 w-auto object-contain"
                 />
@@ -428,7 +428,7 @@ export default function HowWeScorePage() {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center h-20 mb-3">
                 <img 
-                  src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/Better_Business_Bureau.svg" 
+                  src="/mocha-assets/Better_Business_Bureau.svg" 
                   alt="Better Business Bureau" 
                   className="h-12 md:h-14 w-auto object-contain"
                 />
@@ -443,7 +443,7 @@ export default function HowWeScorePage() {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center h-20 mb-3">
                 <img 
-                  src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/AngiRectangle3.webp" 
+                  src="/mocha-assets/AngiRectangle3.webp" 
                   alt="Angi" 
                   className="h-12 md:h-14 w-auto object-contain"
                 />
@@ -473,7 +473,7 @@ export default function HowWeScorePage() {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center h-20 mb-3">
                 <img 
-                  src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/Reddit-Logo.wine.svg" 
+                  src="/mocha-assets/Reddit-Logo.wine.svg" 
                   alt="Reddit" 
                   className="h-10 md:h-12 w-auto object-contain"
                 />
@@ -492,7 +492,7 @@ export default function HowWeScorePage() {
         <div className="max-w-3xl mx-auto text-center">
           <div className="flex items-center justify-center mb-6 mx-auto">
             <img 
-              src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/Reddit-Logo.wine.svg" 
+              src="/mocha-assets/Reddit-Logo.wine.svg" 
               alt="Reddit" 
               className="h-16 w-auto object-contain"
             />
@@ -557,7 +557,7 @@ export default function HowWeScorePage() {
             </div>
             <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
               <img 
-                src="https://019c214f-ccaa-7d34-af84-d64251e64a7c.mochausercontent.com/image.png_0844.png" 
+                src="/mocha-assets/image.png_0844.png" 
                 alt="Contractor Pulse verification card"
                 className="w-full rounded-xl shadow-lg"
               />

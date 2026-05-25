@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { setCookie, getCookie } from "hono/cookie";
 import { type AppEnv, getAppOrigin } from "../types";
 
+import { sendEmail } from "../lib/email";
 // Constants
 const TOKEN_EXPIRY_MINUTES = 30;
 const SESSION_EXPIRY_DAYS = 60;
@@ -92,7 +93,7 @@ app.post("/auth/magic-link/request", async (c) => {
   try {
     console.log(`Attempting to send magic link to ${normalizedEmail}`);
     
-    const result = await c.env.EMAILS.send({
+    const result = await sendEmail(c.env, {
       to: normalizedEmail,
       subject: "Sign in to RemodelerIQ",
       html_body: emailTemplate(`
@@ -312,7 +313,7 @@ app.get("/auth/test-email", async (c) => {
   try {
     console.log(`[TEST] Sending test email to: ${email}`);
     
-    const result = await c.env.EMAILS.send({
+    const result = await sendEmail(c.env, {
       to: email,
       subject: "RemodelerIQ Email Test",
       html_body: emailTemplate(`

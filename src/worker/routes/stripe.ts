@@ -4,6 +4,7 @@ import { authMiddleware } from "../middleware/auth";
 import { type AppEnv, getAppOrigin } from "../types";
 import { generateToken } from "./magicLink";
 
+import { sendEmail } from "../lib/email";
 const TOKEN_EXPIRY_MINUTES = 60; // Magic link expires in 1 hour for welcome emails
 
 // Subscription tier types
@@ -93,7 +94,7 @@ async function sendSubscriptionWelcomeEmail(
   
   const magicLink = `${origin}/auth/verify?token=${token}&welcome=true`;
 
-  const result = await env.EMAILS.send({
+  const result = await sendEmail(env, {
     to: email,
     subject: `Welcome to RemodelerIQ ${planName}! 🔑`,
     html_body: emailTemplate(`
@@ -170,7 +171,7 @@ async function sendLifetimeWelcomeEmail(
   
   const magicLink = `${origin}/auth/verify?token=${token}&welcome=true`;
 
-  const result = await env.EMAILS.send({
+  const result = await sendEmail(env, {
     to: email,
     subject: `Welcome to RemodelerIQ Lifetime Pass! 🎉`,
     html_body: emailTemplate(`

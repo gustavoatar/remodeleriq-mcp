@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/lib/auth';
 import Header from '@/react-app/components/Header';
 import PageSEO from '@/react-app/components/PageSEO';
 import FAQSchema, { JOIN_FAQS } from '@/react-app/components/FAQSchema';
