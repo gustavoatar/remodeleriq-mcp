@@ -208,7 +208,7 @@ app.get("/auth/magic-link/verify", async (c) => {
   // Track login for usage analytics
   try {
     await db.prepare(
-      `INSERT INTO usage_tracking (user_id, action, ip_address, user_agent, created_at, updated_at) 
+      `INSERT INTO usage_tracking (user_id, action_type, ip_address, user_agent, created_at, updated_at)
        VALUES (?, 'login', ?, ?, datetime('now'), datetime('now'))`
     ).bind(
       userProfile.id,
