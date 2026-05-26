@@ -102,7 +102,7 @@ else
     STRIPE_LIFETIME_PASS
   )
   for KEY in "${SECRETS[@]}"; do
-    VALUE=$(grep "^${KEY}=" "$ENV_FILE" | head -1 | cut -d= -f2-)
+    VALUE=$(grep "^${KEY}=" "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"')
     if [ -n "$VALUE" ]; then
       echo -n "$VALUE" | wrangler secret put "$KEY" && echo "  ✓ $KEY"
     else
