@@ -3,7 +3,9 @@
   "name": "remodeleriq",
   "main": "./src/worker/index.ts",
   "compatibility_date": "2025-06-17",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "observability": {
     "enabled": true
   },
@@ -15,12 +17,13 @@
     {
       "binding": "DB",
       "database_name": "remodeleriq",
-      "database_id": "REPLACE_AFTER_WRANGLER_D1_CREATE",
+      "database_id": "94dbf008-be26-470d-aa90-d89f3b94da48",
       "migrations_dir": "./migrations"
     }
   ],
-  "r2_buckets": [
+  "r2_buckets_pending_enable": [
     {
+      "_note": "R2 not yet enabled on CF account. Re-add as r2_buckets once enabled in dash.cloudflare.com",
       "binding": "R2_BUCKET",
       "bucket_name": "remodeleriq-assets"
     }
