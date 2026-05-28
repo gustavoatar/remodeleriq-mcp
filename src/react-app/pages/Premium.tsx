@@ -164,8 +164,9 @@ export default function PremiumPage() {
           </div>
 
           {/* Plan Cards */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {/* Anonymous Plan */}
+          <div className={`grid gap-6 mb-12 ${user ? 'md:grid-cols-2 max-w-2xl mx-auto' : 'md:grid-cols-3'}`}>
+            {/* Anonymous Plan — only shown to guests */}
+            {!user && (
             <div className="card-glass p-6 border-2 border-navy-200">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-10 h-10 bg-navy-100 rounded-lg flex items-center justify-center">
@@ -176,17 +177,17 @@ export default function PremiumPage() {
                   <p className="text-xs text-navy-500">No account needed</p>
                 </div>
               </div>
-              
+
               <div className="mb-4">
                 <span className="text-3xl font-bold text-navy-900">Free</span>
               </div>
-              
+
               <ul className="space-y-2 mb-6 text-sm">
                 <PlanFeature included>3 free analyses total</PlanFeature>
                 <PlanFeature included>Risk analysis & flags</PlanFeature>
                 <PlanFeature included>AI insights</PlanFeature>
               </ul>
-              
+
               <button
                 onClick={() => navigate('/')}
                 className="w-full py-3 rounded-xl font-semibold border-2 border-navy-200 text-navy-700 hover:bg-navy-50 transition-colors"
@@ -194,32 +195,38 @@ export default function PremiumPage() {
                 Try It Free
               </button>
             </div>
+            )}
 
             {/* Free Account Plan */}
-            <div className="card-glass p-6 border-2 border-teal-200 bg-teal-50/30">
+            <div className="card-glass p-6 border-2 border-teal-200 bg-teal-50/30 relative overflow-visible">
+              {user && !isPremium && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-teal-600 text-white text-xs font-semibold rounded-full shadow-lg z-10 whitespace-nowrap">
+                  YOUR CURRENT PLAN
+                </div>
+              )}
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
                   <Zap className="w-5 h-5 text-teal-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-navy-900">Free Account</h3>
-                  <p className="text-xs text-navy-500">Sign up for more</p>
+                  <p className="text-xs text-navy-500">{user && !isPremium ? 'Your plan' : 'Sign up for more'}</p>
                 </div>
               </div>
-              
+
               <div className="mb-4">
                 <span className="text-3xl font-bold text-navy-900">Free</span>
               </div>
-              
+
               <ul className="space-y-2 mb-6 text-sm">
                 <PlanFeature included>1 analysis per day</PlanFeature>
                 <PlanFeature included>All Guest features</PlanFeature>
                 <PlanFeature included>Labor rate audit</PlanFeature>
                 <PlanFeature included>Cost trends</PlanFeature>
               </ul>
-              
+
               <button
-                onClick={user ? () => navigate('/?view=upload') : redirectToLogin}
+                onClick={user ? () => navigate('/') : redirectToLogin}
                 className="w-full py-3 rounded-xl font-semibold bg-teal-600 hover:bg-teal-700 text-white transition-colors"
               >
                 {user ? 'Analyze a Bid' : 'Create Account'}
