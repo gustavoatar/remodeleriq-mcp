@@ -226,7 +226,7 @@ export default function PremiumPage() {
               </ul>
 
               <button
-                onClick={user ? () => navigate('/') : redirectToLogin}
+                onClick={user ? () => navigate('/?view=upload') : redirectToLogin}
                 className="w-full py-3 rounded-xl font-semibold bg-teal-600 hover:bg-teal-700 text-white transition-colors"
               >
                 {user ? 'Analyze a Bid' : 'Create Account'}

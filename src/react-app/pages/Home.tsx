@@ -390,6 +390,7 @@ export default function HomePage() {
   const { user, isPending } = useAuth();
   const [currentView, setCurrentView] = useState<AppView>('landing');
   const [activeTab, setActiveTab] = useState<AnalysisTab>('analysis');
+  const [showLimitBanner, setShowLimitBanner] = useState(false);
   
   // Handle ?view=upload from URL to go directly to upload page
   useEffect(() => {
@@ -640,12 +641,15 @@ export default function HomePage() {
     
     if (!uploadLimits.canUpload) {
       if (isLoggedIn) {
-        navigate('/premium');
+        // Show inline upgrade banner — no redirect loop
+        setShowLimitBanner(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         navigate('/join');
       }
       return;
     }
+    setShowLimitBanner(false);
     
     setCurrentView('upload');
   }, [navigate, isLoggedIn, uploadLimits]);
@@ -771,6 +775,32 @@ export default function HomePage() {
       
       {currentView === 'landing' && (
         <>
+          {/* Inline upgrade banner — shown when free user hits daily limit */}
+          {showLimitBanner && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={() => setShowLimitBanner(false)}>
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center" onClick={e => e.stopPropagation()}>
+                <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Lock className="w-7 h-7 text-emerald-600" />
+                </div>
+                <h2 className="text-xl font-bold text-navy-900 mb-2">Daily limit reached</h2>
+                <p className="text-navy-600 mb-6 text-sm leading-relaxed">
+                  You've used your free analysis for today. Upgrade to <strong>Premium</strong> for unlimited analyses, negotiation scripts, and full market data.
+                </p>
+                <button
+                  onClick={() => { setShowLimitBanner(false); navigate('/premium'); }}
+                  className="w-full py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors mb-3"
+                >
+                  Upgrade to Premium — $19.99/mo
+                </button>
+                <button
+                  onClick={() => setShowLimitBanner(false)}
+                  className="text-sm text-navy-500 hover:text-navy-700"
+                >
+                  Maybe later
+                </button>
+              </div>
+            </div>
+          )}
           <Hero onGetStarted={handleGetStarted} onSeeDemo={handleSeeDemo} />
           
           {/* CTA Section */}
