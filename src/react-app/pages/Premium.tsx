@@ -66,8 +66,8 @@ export default function PremiumPage() {
     setError(null);
 
     try {
-      // Use auth checkout if logged in, guest checkout otherwise
-      const endpoint = user ? '/api/premium/checkout' : '/api/premium/guest-checkout';
+      // Use subscription endpoint (project-pass = $19.99/mo monthly plan)
+      const endpoint = user ? '/api/subscription/project-pass' : '/api/premium/guest-checkout';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
