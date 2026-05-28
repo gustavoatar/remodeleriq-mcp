@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import Header from '@/react-app/components/Header';
 import { Mail, ArrowLeft, Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useAuth } from '@/react-app/lib/auth';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
 
@@ -9,6 +10,7 @@ export default function MagicLinkLoginPage() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const { redirectToLogin } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,6 +88,9 @@ export default function MagicLinkLoginPage() {
                   <p className="text-sm text-navy-500">
                     Click the link in the email to sign in. The link expires in 30 minutes.
                   </p>
+                  <p className="text-xs text-navy-400 mt-3 bg-amber-50 border border-amber-200 rounded-lg py-2 px-3">
+                    💡 Don't see it? Check your <strong>Spam</strong> or <strong>Junk</strong> folder and mark it "Not Spam" to allow future emails.
+                  </p>
                   
                   <button
                     onClick={() => {
@@ -156,8 +161,8 @@ export default function MagicLinkLoginPage() {
           {/* Alternative: Google Sign In */}
           <div className="mt-6 text-center">
             <p className="text-navy-500 text-sm mb-3">Or sign in with</p>
-            <Link
-              to="/join"
+            <button
+              onClick={() => redirectToLogin()}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-navy-700 rounded-lg font-medium text-sm transition-all"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -179,7 +184,7 @@ export default function MagicLinkLoginPage() {
                 />
               </svg>
               Google
-            </Link>
+            </button>
           </div>
         </div>
       </main>
