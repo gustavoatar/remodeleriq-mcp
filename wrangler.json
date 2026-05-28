@@ -13,6 +13,10 @@
   "assets": {
     "not_found_handling": "single-page-application"
   },
+  "custom_domains": [
+    { "pattern": "remodeleriq.com", "zone_name": "remodeleriq.com" },
+    { "pattern": "www.remodeleriq.com", "zone_name": "remodeleriq.com" }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
@@ -21,9 +25,11 @@
       "migrations_dir": "./migrations"
     }
   ],
-  "r2_buckets_pending_enable": [
+  "vars": {
+    "R2_PUBLIC_URL": "https://pub-fa6ad94d47cf40afaa49a788bd9e5c01.r2.dev"
+  },
+  "r2_buckets": [
     {
-      "_note": "R2 not yet enabled on CF account. Re-add as r2_buckets once enabled in dash.cloudflare.com",
       "binding": "R2_BUCKET",
       "bucket_name": "remodeleriq-assets"
     }

@@ -1,12 +1,11 @@
 import { Hono } from "hono";
 import { setCookie, getCookie } from "hono/cookie";
-import { type AppEnv, getAppOrigin } from "../types";
+import { type AppEnv, getAppOrigin, SESSION_COOKIE_NAME } from "../types";
 
 import { sendEmail } from "../lib/email";
 // Constants
 const TOKEN_EXPIRY_MINUTES = 30;
 const SESSION_EXPIRY_DAYS = 60;
-const SESSION_COOKIE_NAME = "riq_session";
 
 // Generate secure random token
 function generateToken(): string {
@@ -219,9 +218,10 @@ app.get("/auth/magic-link/verify", async (c) => {
     console.error('Failed to track login:', e);
   }
 
-  // Return user info
-  return c.json({ 
-    success: true, 
+  // Return user info + session token (mobile clients use the token; browsers use the httpOnly cookie)
+  return c.json({
+    success: true,
+    sessionToken,
     user: {
       id: userProfile.id,
       email: userProfile.email,
@@ -352,4 +352,4 @@ app.get("/auth/test-email", async (c) => {
 });
 
 export default app;
-export { generateToken, emailTemplate, emailHeader, emailBody, emailFooter, SESSION_COOKIE_NAME };
+export { generateToken, emailTemplate, emailHeader, emailBody, emailFooter };

@@ -15,7 +15,7 @@ import { getUnitConfig, normalizeProjectType } from '@/shared/unitTypeEngine';
 // This handles Safari and mobile browser compatibility issues
 const initializePdfWorker = () => {
   // Use jsdelivr CDN which mirrors npm packages directly (always has matching versions)
-  const cdnWorkerUrl = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.4.624/build/pdf.worker.min.mjs';
+  const cdnWorkerUrl = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.worker.min.mjs';
   
   try {
     pdfjsLib.GlobalWorkerOptions.workerSrc = cdnWorkerUrl;
