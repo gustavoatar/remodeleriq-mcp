@@ -55,6 +55,65 @@ function getPlanDisplayName(tier: SubscriptionTier): string {
   }
 }
 
+// Get tier price for owner notification display
+function getTierPrice(tier: SubscriptionTier): string {
+  switch (tier) {
+    case 'project': return '$19.99/month';
+    case 'remodeler': return '$39.99/quarter';
+    case 'lifetime': return '$99.99 one-time';
+    default: return '';
+  }
+}
+
+// Send internal owner alert on any new premium conversion
+async function sendOwnerPremiumAlert(
+  env: AppEnv['Bindings'],
+  customerEmail: string,
+  customerName: string | null,
+  tier: SubscriptionTier,
+  isGuest: boolean,
+  origin: string
+) {
+  const planName = getPlanDisplayName(tier);
+  const price = getTierPrice(tier);
+  const displayName = customerName || customerEmail.split('@')[0];
+  const adminUrl = `${origin}/admin`;
+  const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' });
+
+  try {
+    await sendEmail(env, {
+      to: 'gustavo@remodeleriq.com',
+      subject: `🎉 New Premium: ${displayName} — ${planName} (${price})`,
+      html_body: emailTemplate(`
+        ${emailHeader('🎉 New Premium Signup')}
+        ${emailBody(`
+          <table style="width: 100%; border-collapse: collapse; font-size: 15px; color: #3f3f46;">
+            <tr><td style="padding: 8px 0; font-weight: 600; width: 140px;">Customer</td><td style="padding: 8px 0;">${displayName}</td></tr>
+            <tr><td style="padding: 8px 0; font-weight: 600;">Email</td><td style="padding: 8px 0;">${customerEmail}</td></tr>
+            <tr><td style="padding: 8px 0; font-weight: 600;">Plan</td><td style="padding: 8px 0;">${planName}</td></tr>
+            <tr><td style="padding: 8px 0; font-weight: 600;">Price</td><td style="padding: 8px 0;">${price}</td></tr>
+            <tr><td style="padding: 8px 0; font-weight: 600;">Account type</td><td style="padding: 8px 0;">${isGuest ? 'Guest checkout (no login)' : 'Registered user'}</td></tr>
+            <tr><td style="padding: 8px 0; font-weight: 600;">Time</td><td style="padding: 8px 0;">${now} ET</td></tr>
+          </table>
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${adminUrl}" style="display: inline-block; background-color: #1F9C4C; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+              View Admin Dashboard
+            </a>
+          </div>
+          <p style="font-size: 13px; color: #71717a; text-align: center; margin: 0;">
+            Reply to <a href="mailto:${customerEmail}" style="color: #10b981;">${customerEmail}</a> to send a personal thank-you.
+          </p>
+        `)}
+        ${emailFooter('RemodelerIQ — internal notification')}
+      `),
+      text_body: `New premium signup!\n\nCustomer: ${displayName}\nEmail: ${customerEmail}\nPlan: ${planName} (${price})\nAccount: ${isGuest ? 'Guest checkout' : 'Registered user'}\nTime: ${now} ET\n\nDashboard: ${adminUrl}`,
+    });
+  } catch (err) {
+    console.error('Owner premium alert failed:', err);
+    // Non-critical — don't let this block the webhook response
+  }
+}
+
 // Get billing period description
 function getBillingPeriod(tier: SubscriptionTier): string {
   switch (tier) {
@@ -565,8 +624,13 @@ app.post("/webhooks/stripe", async (c) => {
         // Fetch subscription details for period end
         const subscription = await stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription;
         const periodEnd = new Date((subscription as any).current_period_end * 1000);
-        
+
         await activateSubscription(customerEmail, customerName || null, subscriptionId, tier, periodEnd, isGuest);
+
+        // Notify owner of new premium conversion (fire-and-forget)
+        c.executionCtx.waitUntil(
+          sendOwnerPremiumAlert(c.env, customerEmail, customerName || null, tier, isGuest, origin)
+        );
       }
     } else if (session.mode === 'payment') {
       // One-time payment handling (Lifetime Pass or legacy)
@@ -606,7 +670,7 @@ app.post("/webhooks/stripe", async (c) => {
           console.log(`Created user ${customerEmail} with lifetime pass`);
         }
         
-        // Send lifetime welcome email
+        // Send lifetime welcome email + owner alert
         try {
           const firstName = (customerName?.split(' ')[0] || customerEmail.split('@')[0].split(/[._0-9]/)[0]);
           const capitalizedName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
@@ -617,6 +681,11 @@ app.post("/webhooks/stripe", async (c) => {
         } catch (emailErr) {
           console.error(`Failed to send lifetime welcome email:`, emailErr);
         }
+
+        // Notify owner of new lifetime conversion (fire-and-forget)
+        c.executionCtx.waitUntil(
+          sendOwnerPremiumAlert(c.env, customerEmail, customerName || null, 'lifetime', isGuestCheckout, origin)
+        );
       } else if (userId && userEmail) {
         const premiumEndsAt = new Date();
         premiumEndsAt.setFullYear(premiumEndsAt.getFullYear() + 1);

@@ -1850,7 +1850,7 @@ app.get("/api/admin/stats", async (c) => {
     ).first<{ count: number }>();
 
     const premiumUsers = await db.prepare(
-      'SELECT COUNT(*) as count FROM user_profiles WHERE is_premium = 1 OR subscription_tier IS NOT NULL'
+      "SELECT COUNT(*) as count FROM user_profiles WHERE is_premium = 1 AND subscription_status = 'active'"
     ).first<{ count: number }>();
 
     const totalUploads = await db.prepare(
