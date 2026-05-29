@@ -9,6 +9,13 @@
   "observability": {
     "enabled": true
   },
+  "triggers": {
+    "crons": [
+      "0 */6 * * *",
+      "0 11 * * *",
+      "0 */12 * * *"
+    ]
+  },
   "upload_source_maps": true,
   "assets": {
     "binding": "ASSETS",

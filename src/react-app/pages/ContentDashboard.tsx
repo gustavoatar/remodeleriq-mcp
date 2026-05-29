@@ -103,24 +103,37 @@ export default function ContentDashboard() {
 
   const requestNewCycle = useCallback(async () => {
     setRequestingCycle(true);
+    setCycleToast("Scout running… finding fresh questions");
     try {
-      const res = await fetch("/api/admin/content/request-cycle", {
+      // 1. Log the request for audit
+      fetch("/api/admin/content/request-cycle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
-      });
-      if (!res.ok) throw new Error("Failed to request cycle");
-      setCycleToast("New cycle requested — fresh drafts will land within ~2 hrs");
-      setTimeout(() => setCycleToast(null), 4500);
+      }).catch(() => {});
+
+      // 2. Scout — fetch fresh Reddit posts and queue them
+      const scoutRes = await fetch("/api/admin/content/scout", { method: "POST" });
+      const scoutData = scoutRes.ok ? await scoutRes.json() : { queued: 0 };
+
+      setCycleToast(`Found ${scoutData.queued || 0} new questions — drafting now…`);
+
+      // 3. Run the cycle — Gemini drafts replies for queued posts
+      const cycleRes = await fetch("/api/admin/content/run-cycle", { method: "POST" });
+      const cycleData = cycleRes.ok ? await cycleRes.json() : { drafted: 0 };
+
+      setCycleToast(`✓ ${cycleData.drafted || 0} fresh drafts in review`);
+      setTimeout(() => setCycleToast(null), 5000);
+      await fetchDrafts(false);
       await fetchLastCycleRequest();
     } catch (err) {
       console.error(err);
-      setCycleToast("Couldn't request cycle. Try again?");
+      setCycleToast("Cycle failed. Check console.");
       setTimeout(() => setCycleToast(null), 3000);
     } finally {
       setRequestingCycle(false);
     }
-  }, [fetchLastCycleRequest]);
+  }, [fetchDrafts, fetchLastCycleRequest]);
 
   useEffect(() => {
     fetchDrafts();

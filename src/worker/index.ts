@@ -13,6 +13,7 @@ import authRoutes from './routes/auth';
 import stripeRoutes from './routes/stripe';
 import magicLinkRoutes from './routes/magicLink';
 import contentDraftsRoutes from './routes/contentDrafts';
+import contentSwarmRoutes, { runScout, runCycle, trackEngagement, sendMorningDigest } from './routes/contentSwarm';
 import { authMiddleware } from './middleware/auth';
 import { type UserProfile as UserProfileType } from './types';
 import { getAllOewsData } from "@/shared/lazyData/oewsData";
@@ -350,6 +351,7 @@ app.route('/api', authRoutes);
 app.route('/api', stripeRoutes);
 app.route('/api', magicLinkRoutes);
 app.route('/api/admin/content', contentDraftsRoutes);
+app.route('/api/admin/content', contentSwarmRoutes);
 
 // ============================================
 // GEOLOCATION ENDPOINT
@@ -6427,29 +6429,66 @@ app.notFound(async (c) => {
 });
 
 async function scheduledHandler(
-  _event: ScheduledEvent,
+  event: ScheduledEvent,
   env: Env,
-  _ctx: ExecutionContext
+  ctx: ExecutionContext
 ): Promise<void> {
-  const apiKey = (env as unknown as Record<string, unknown>).BLS_API_KEY as string | undefined;
-  
-  if (!apiKey) {
-    console.log('Scheduled BLS refresh skipped: No API key configured');
-    return;
+  // Multiplex cron schedule by event.cron
+  // - "0 */6 * * *"  → Reddit Scout (every 6h)
+  // - "0 11 * * *"   → Morning digest at 7am ET (11 UTC)
+  // - "0 */12 * * *" → Engagement tracker (every 12h)
+  const cron = event.cron;
+  console.log(`Scheduled handler fired for cron: ${cron}`);
+
+  const envForRoutes = env as unknown as { DB: D1Database; RESEND_API_KEY?: string; GEMINI_API_KEY?: string };
+
+  if (cron === "0 */6 * * *") {
+    // Reddit Scout — fetch new posts, queue them, then run a cycle on what was queued
+    try {
+      const scoutRes = await runScout(envForRoutes as never);
+      const scoutJson = await scoutRes.json() as { queued?: number };
+      console.log(`Scout queued ${scoutJson.queued || 0} posts`);
+      // If anything was queued, immediately run a cycle to draft them
+      if ((scoutJson.queued || 0) > 0) {
+        ctx.waitUntil((async () => {
+          const cycleRes = await runCycle(envForRoutes as never, "cron");
+          const cycleJson = await cycleRes.json() as { drafted?: number };
+          console.log(`Cron cycle drafted ${cycleJson.drafted || 0}`);
+        })());
+      }
+    } catch (err) {
+      console.error("Scout cron failed:", err);
+    }
   }
 
-  console.log('Starting scheduled BLS PPI data refresh...');
-  
-  try {
-    const result = await refreshPPIData(env.DB, apiKey);
-    
-    if (result.success) {
-      console.log(`Scheduled refresh complete: ${result.insertedCount} data points updated`);
-    } else {
-      console.error(`Scheduled refresh failed: ${result.error}`);
+  if (cron === "0 11 * * *") {
+    // Morning digest 7am ET
+    try {
+      const result = await sendMorningDigest(envForRoutes as never);
+      console.log(`Digest sent: ${result.sent}`);
+    } catch (err) {
+      console.error("Digest cron failed:", err);
     }
-  } catch (error) {
-    console.error('Scheduled refresh error:', error);
+    // Also refresh BLS PPI data once a day
+    const blsKey = (env as unknown as Record<string, unknown>).BLS_API_KEY as string | undefined;
+    if (blsKey) {
+      try {
+        const result = await refreshPPIData(env.DB, blsKey);
+        console.log(`BLS refresh: ${result.success ? 'ok' : result.error}`);
+      } catch (err) {
+        console.error("BLS refresh failed:", err);
+      }
+    }
+  }
+
+  if (cron === "0 */12 * * *") {
+    // Engagement tracker — poll published Reddit URLs for upvotes/comments
+    try {
+      const result = await trackEngagement(envForRoutes as never);
+      console.log(`Engagement updated for ${result.updated} drafts`);
+    } catch (err) {
+      console.error("Engagement cron failed:", err);
+    }
   }
 }
 
