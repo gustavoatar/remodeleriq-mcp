@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import {
   Layout, Clipboard, Check, X, Edit3, ExternalLink,
-  MessageSquare, Home, Loader2, AlertCircle, Send, Hash
+  MessageSquare, Home, Loader2, AlertCircle, Send, Hash, RefreshCw, Sparkles
 } from "lucide-react";
 
 type Status = "queued" | "drafted" | "in_review" | "approved" | "killed" | "published";
@@ -44,14 +44,29 @@ const PILLAR_COLORS: Record<string, string> = {
   scope:         "bg-orange-100 text-orange-700",
 };
 
+function formatTimeAgo(d: Date): string {
+  const sec = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (sec < 5) return "just now";
+  if (sec < 60) return `${sec}s ago`;
+  if (sec < 3600) return `${Math.floor(sec / 60)}m ago`;
+  if (sec < 86400) return `${Math.floor(sec / 3600)}h ago`;
+  return d.toLocaleDateString();
+}
+
 export default function ContentDashboard() {
   const navigate = useNavigate();
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [openDraft, setOpenDraft] = useState<Draft | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [requestingCycle, setRequestingCycle] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [lastCycleRequest, setLastCycleRequest] = useState<string | null>(null);
+  const [cycleToast, setCycleToast] = useState<string | null>(null);
 
-  const fetchDrafts = useCallback(async () => {
+  const fetchDrafts = useCallback(async (showSpinner = false) => {
+    if (showSpinner) setRefreshing(true);
     try {
       const res = await fetch("/api/admin/content");
       if (res.status === 401 || res.status === 403) {
@@ -63,14 +78,60 @@ export default function ContentDashboard() {
       const data = await res.json();
       setDrafts(data.drafts || []);
       setLoading(false);
+      setLastRefreshed(new Date());
     } catch (err) {
       console.error(err);
       setError("Failed to load drafts");
       setLoading(false);
+    } finally {
+      setRefreshing(false);
     }
   }, []);
 
-  useEffect(() => { fetchDrafts(); }, [fetchDrafts]);
+  const fetchLastCycleRequest = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/content/cycle-requests/recent");
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.requests && data.requests.length > 0) {
+        setLastCycleRequest(data.requests[0].requested_at);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  const requestNewCycle = useCallback(async () => {
+    setRequestingCycle(true);
+    try {
+      const res = await fetch("/api/admin/content/request-cycle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      if (!res.ok) throw new Error("Failed to request cycle");
+      setCycleToast("New cycle requested — fresh drafts will land within ~2 hrs");
+      setTimeout(() => setCycleToast(null), 4500);
+      await fetchLastCycleRequest();
+    } catch (err) {
+      console.error(err);
+      setCycleToast("Couldn't request cycle. Try again?");
+      setTimeout(() => setCycleToast(null), 3000);
+    } finally {
+      setRequestingCycle(false);
+    }
+  }, [fetchLastCycleRequest]);
+
+  useEffect(() => {
+    fetchDrafts();
+    fetchLastCycleRequest();
+  }, [fetchDrafts, fetchLastCycleRequest]);
+
+  // Auto-refresh every 60 seconds so new drafts appear without manual reload
+  useEffect(() => {
+    const interval = setInterval(() => fetchDrafts(false), 60000);
+    return () => clearInterval(interval);
+  }, [fetchDrafts]);
 
   const transition = async (id: number, to_status: Status, note?: string) => {
     await fetch(`/api/admin/content/${id}/transition`, {
@@ -122,23 +183,63 @@ export default function ContentDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       {/* Header */}
-      <div className="max-w-[1600px] mx-auto mb-6 flex items-center justify-between">
+      <div className="max-w-[1600px] mx-auto mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex items-center gap-3">
           <Layout className="w-8 h-8 text-emerald-600" />
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Content Engine</h1>
             <p className="text-sm text-slate-600">
               {drafts.length} drafts · {counts.in_review} awaiting review · {counts.approved} approved
+              {lastRefreshed && (
+                <span className="text-xs text-slate-400 ml-2">
+                  · Updated {formatTimeAgo(lastRefreshed)}
+                </span>
+              )}
             </p>
           </div>
         </div>
-        <button
-          onClick={() => navigate("/admin")}
-          className="text-sm font-medium text-slate-600 hover:text-slate-900"
-        >
-          ← Back to Admin
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => fetchDrafts(true)}
+            disabled={refreshing}
+            className="text-sm font-medium px-3 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-2 disabled:opacity-50"
+            title="Refresh the list"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+          <button
+            onClick={requestNewCycle}
+            disabled={requestingCycle}
+            className="text-sm font-semibold px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 disabled:opacity-50 shadow-sm"
+            title="Signal the swarm to generate new drafts"
+          >
+            {requestingCycle ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            {requestingCycle ? "Requesting…" : "Request new drafts"}
+          </button>
+          <button
+            onClick={() => navigate("/admin")}
+            className="text-sm font-medium text-slate-600 hover:text-slate-900 ml-2"
+          >
+            ← Admin
+          </button>
+        </div>
       </div>
+
+      {/* Last cycle request indicator */}
+      {lastCycleRequest && (
+        <div className="max-w-[1600px] mx-auto mb-3 text-xs text-slate-500 px-1">
+          Last cycle requested: {new Date(lastCycleRequest).toLocaleString()}
+        </div>
+      )}
+
+      {/* Toast for cycle request feedback */}
+      {cycleToast && (
+        <div className="fixed top-6 right-6 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 max-w-sm">
+          <Sparkles className="w-4 h-4 flex-shrink-0" />
+          <span className="text-sm font-medium">{cycleToast}</span>
+        </div>
+      )}
 
       {/* Kanban */}
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-5 gap-4">

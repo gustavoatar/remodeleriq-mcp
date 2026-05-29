@@ -175,6 +175,41 @@ app.get("/stats/summary", async (c) => {
   });
 });
 
+// CYCLE REQUEST: dashboard "Request new cycle" button writes here
+app.post("/request-cycle", async (c) => {
+  const body = await c.req.json().catch(() => ({}));
+  const note = (body as { note?: string }).note || null;
+  const sessionToken = getCookie(c, SESSION_COOKIE_NAME);
+  let requestedBy: string | null = null;
+  if (sessionToken) {
+    const session = await c.env.DB.prepare(
+      'SELECT user_id FROM user_sessions WHERE session_token = ? AND expires_at > datetime("now")'
+    )
+      .bind(sessionToken)
+      .first<{ user_id: number }>();
+    if (session) {
+      const u = await c.env.DB.prepare("SELECT email FROM user_profiles WHERE id = ?")
+        .bind(session.user_id)
+        .first<{ email: string }>();
+      requestedBy = u?.email || null;
+    }
+  }
+  const res = await c.env.DB.prepare(
+    "INSERT INTO cycle_requests (requested_by, note) VALUES (?, ?)"
+  )
+    .bind(requestedBy, note)
+    .run();
+  return c.json({ id: res.meta.last_row_id, requested_at: new Date().toISOString() });
+});
+
+// CYCLE REQUEST: show recent requests (for dashboard "last requested" indicator)
+app.get("/cycle-requests/recent", async (c) => {
+  const result = await c.env.DB.prepare(
+    "SELECT id, requested_at, requested_by, status, fulfilled_at, cycle_id FROM cycle_requests ORDER BY id DESC LIMIT 5"
+  ).all();
+  return c.json({ requests: result.results || [] });
+});
+
 // GUARDRAILS: list active voice rules (read by swarm copywriter)
 app.get("/guardrails/list", async (c) => {
   const result = await c.env.DB.prepare(
