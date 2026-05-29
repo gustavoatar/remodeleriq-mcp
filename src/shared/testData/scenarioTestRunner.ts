@@ -1,3 +1,4 @@
+// TEST ONLY — not for production import
 /**
  * Scenario Test Runner
  * Validates test scenarios against the scope fingerprinting engine

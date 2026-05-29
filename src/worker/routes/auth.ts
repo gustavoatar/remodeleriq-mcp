@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
+import Stripe from "stripe";
 import { getBetaUserByEmail } from "@/shared/betaUsers";
 import { authMiddleware } from "../middleware/auth";
 import {
@@ -97,6 +98,10 @@ app.post("/sessions", async (c) => {
 
     const googleUser = await userInfoResponse.json() as GoogleUserInfo;
 
+    if (!googleUser.verified_email) {
+      return c.json({ error: "Please verify your Google account email before signing in." }, 400);
+    }
+
     const db = c.env.DB;
 
     // Find or create user profile
@@ -151,7 +156,7 @@ app.post("/sessions", async (c) => {
     setCookie(c, SESSION_COOKIE_NAME, sessionToken, {
       httpOnly: true,
       path: "/",
-      sameSite: "none",
+      sameSite: "lax",
       secure: true,
       maxAge: 60 * 24 * 60 * 60, // 60 days
     });
@@ -263,17 +268,37 @@ app.delete("/users/account", authMiddleware, async (c) => {
   }
 
   const db = c.env.DB;
-  
-  // Delete sessions
-  await db.prepare('DELETE FROM user_sessions WHERE user_id = ?').bind(user.id).run();
-  
-  // Delete user profile
-  await db.prepare('DELETE FROM user_profiles WHERE id = ?').bind(user.id).run();
+  const stripeKey = (c.env as unknown as Record<string, unknown>).STRIPE_SECRET_KEY as string | undefined;
+
+  // Cancel active Stripe subscription before deleting
+  const userProfile = await db.prepare(
+    'SELECT stripe_subscription_id, stripe_customer_id, email FROM user_profiles WHERE id = ?'
+  ).bind(user.id).first<{ stripe_subscription_id: string | null; stripe_customer_id: string | null; email: string }>();
+
+  if (stripeKey && userProfile?.stripe_subscription_id) {
+    try {
+      const stripe = new Stripe(stripeKey, { httpClient: Stripe.createFetchHttpClient() });
+      await stripe.subscriptions.update(userProfile.stripe_subscription_id, { cancel_at_period_end: true });
+    } catch (e) {
+      console.error('Failed to cancel Stripe subscription on account delete:', e);
+      // Continue with deletion even if Stripe cancel fails
+    }
+  }
+
+  const userEmail = userProfile?.email || user.email;
+
+  // Delete all related data atomically
+  await db.batch([
+    db.prepare('DELETE FROM user_sessions WHERE user_id = ?').bind(user.id),
+    db.prepare('DELETE FROM usage_tracking WHERE user_id = ?').bind(user.id),
+    db.prepare('UPDATE magic_link_tokens SET is_used = 1 WHERE email = ?').bind(userEmail),
+    db.prepare('DELETE FROM user_profiles WHERE id = ?').bind(user.id),
+  ]);
 
   setCookie(c, SESSION_COOKIE_NAME, "", {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
+    sameSite: "lax",
     secure: true,
     maxAge: 0,
   });

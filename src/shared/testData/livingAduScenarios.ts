@@ -1,3 +1,4 @@
+// TEST ONLY — not for production import
 /**
  * Living/ADU Scenario Test Data (Scenarios 31-50)
  * Used to validate the Scope Fingerprinting Engine

@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { GoogleGenAI } from "@google/genai";
 import { getCookie } from "hono/cookie";
 import { 
@@ -12,6 +13,7 @@ import authRoutes from './routes/auth';
 import stripeRoutes from './routes/stripe';
 import magicLinkRoutes from './routes/magicLink';
 import { authMiddleware } from './middleware/auth';
+import { type UserProfile as UserProfileType } from './types';
 import { getAllOewsData } from "@/shared/lazyData/oewsData";
 import { lookupZipInfo } from "@/shared/lazyData/zipMsaLookup";
 import { 
@@ -115,20 +117,8 @@ const TIMELINE_LABELS: Record<string, string> = {
 
 const SESSION_COOKIE_NAME = "remodeleriq_session";
 
-interface UserProfile {
-  id: number;
-  user_id: string;
-  email: string;
-  name: string | null;
-  google_id: string | null;
-  google_picture: string | null;
-  is_premium: number;
-  premium_purchased_at: string | null;
-  premium_ends_at: string | null;
-  stripe_session_id: string | null;
-  created_at: string;
-  updated_at: string;
-}
+// Use the canonical UserProfile from types.ts
+type UserProfile = UserProfileType;
 
 interface UserSession {
   id: number;
@@ -147,6 +137,14 @@ type AppEnv = {
 };
 
 const app = new Hono<AppEnv>();
+
+// CORS: restrict to known origins
+app.use('*', cors({
+  origin: ['https://remodeleriq.com', 'https://www.remodeleriq.com', 'https://remodeleriq.remodeleriq.workers.dev'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+}));
 
 // ============================================
 // SHARED UTILITY HELPERS
@@ -247,6 +245,10 @@ export async function generateStructuredResponse<T>(
 /**
  * Simple in-memory rate limiter
  * Tracks requests per session token with sliding window
+ *
+ * NOTE: This rate limiter is per-Worker-isolate. Cloudflare runs many isolates in parallel,
+ * so the effective limit per user is declared_limit × number_of_isolates.
+ * For production-grade rate limiting, replace with Cloudflare KV or Durable Objects.
  */
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
@@ -1631,8 +1633,8 @@ app.get("/api/usage/can-upload", async (c) => {
 
     // Check if user is premium
     const user = await db.prepare(
-      'SELECT id, email, is_premium, subscription_tier FROM user_profiles WHERE id = ?'
-    ).bind(session.user_id).first<{ id: number; email: string; is_premium: number; subscription_tier: string | null }>();
+      'SELECT id, email, is_premium, subscription_tier, subscription_status FROM user_profiles WHERE id = ?'
+    ).bind(session.user_id).first<{ id: number; email: string; is_premium: number; subscription_tier: string | null; subscription_status: string | null }>();
 
     if (!user) {
       return c.json({ 
@@ -1644,7 +1646,7 @@ app.get("/api/usage/can-upload", async (c) => {
       });
     }
 
-    const isPremium = user.is_premium === 1 || user.subscription_tier !== null;
+    const isPremium = user.is_premium === 1 && user.subscription_status === 'active';
 
     // Premium users have unlimited uploads
     if (isPremium) {
@@ -1697,12 +1699,23 @@ app.post("/api/usage/record-upload", async (c) => {
 
       if (session) {
         userId = session.user_id;
-        
-        const user = await db.prepare(
-          'SELECT is_premium, subscription_tier FROM user_profiles WHERE id = ?'
-        ).bind(userId).first<{ is_premium: number; subscription_tier: string | null }>();
 
-        isPremium = user?.is_premium === 1 || user?.subscription_tier !== null;
+        const user = await db.prepare(
+          'SELECT is_premium, subscription_tier, subscription_status FROM user_profiles WHERE id = ?'
+        ).bind(userId).first<{ is_premium: number; subscription_tier: string | null; subscription_status: string | null }>();
+
+        isPremium = user?.is_premium === 1 && user?.subscription_status === 'active';
+
+        // Atomic gatekeeper: reject free users who have hit their limit before inserting
+        if (!isPremium) {
+          const uploadCount = await db.prepare(
+            `SELECT COUNT(*) as count FROM usage_tracking WHERE user_id = ? AND action_type = 'upload'`
+          ).bind(userId).first<{ count: number }>();
+          const count = uploadCount?.count || 0;
+          if (count >= FREE_TOTAL_ANALYSES) {
+            return c.json({ error: "Daily upload limit reached", limitReached: true }, 429);
+          }
+        }
       }
     }
 
@@ -1798,14 +1811,12 @@ app.post("/api/usage/track-login", async (c) => {
 // ADMIN STATS ENDPOINT
 // ============================================
 
-const ADMIN_EMAILS = new Set([
-  'eduardosatar@gmail.com',
-  'sebastianatar@gmail.com',
-  'edatar50@icloud.com',
-  'edatar-garcia@quickenloans.com',
-  'gustavo.atar@gmail.com',
-  'gustavo@remodeleriq.com',
-]);
+function isAdminEmail(email: string, env: unknown): boolean {
+  const adminList = ((env as Record<string, unknown>).ADMIN_EMAILS as string | undefined || 'gustavo.atar@gmail.com,gustavo@remodeleriq.com')
+    .split(',')
+    .map((e: string) => e.trim().toLowerCase());
+  return adminList.includes(email.toLowerCase());
+}
 
 app.get("/api/admin/stats", async (c) => {
   try {
@@ -1829,7 +1840,7 @@ app.get("/api/admin/stats", async (c) => {
       'SELECT email FROM user_profiles WHERE id = ?'
     ).bind(session.user_id).first<{ email: string }>();
 
-    if (!user || !ADMIN_EMAILS.has(user.email.toLowerCase())) {
+    if (!user || !isAdminEmail(user.email, c.env)) {
       return c.json({ error: 'Forbidden' }, 403);
     }
 
@@ -1936,7 +1947,7 @@ app.get("/api/admin/export/users", async (c) => {
       'SELECT email FROM user_profiles WHERE id = ?'
     ).bind(session.user_id).first<{ email: string }>();
 
-    if (!user || !ADMIN_EMAILS.has(user.email.toLowerCase())) {
+    if (!user || !isAdminEmail(user.email, c.env)) {
       return c.json({ error: 'Forbidden' }, 403);
     }
 
@@ -2072,7 +2083,7 @@ app.get("/api/admin/errors", async (c) => {
       'SELECT email FROM user_profiles WHERE id = ?'
     ).bind(session.user_id).first<{ email: string }>();
 
-    if (!user || !ADMIN_EMAILS.has(user.email.toLowerCase())) {
+    if (!user || !isAdminEmail(user.email, c.env)) {
       return c.json({ error: 'Forbidden' }, 403);
     }
 
@@ -2400,9 +2411,7 @@ async function refreshPPIData(db: D1Database, apiKey: string): Promise<{ success
       throw new Error(data.message?.join(', ') || 'BLS API request failed');
     }
 
-    // Clear old cache and insert new data
-    await db.prepare('DELETE FROM ppi_material_cache').run();
-
+    // Upsert new data (no DELETE — avoids empty-cache window during refresh)
     let insertedCount = 0;
     for (const series of data.Results.series) {
       const materialKey = PPI_SERIES_MAP[series.seriesID];
@@ -2447,10 +2456,13 @@ async function refreshPPIData(db: D1Database, apiKey: string): Promise<{ success
   }
 }
 
-// Fetch fresh PPI data from BLS and cache it (manual endpoint)
-app.post("/api/ppi/refresh", async (c) => {
+// Fetch fresh PPI data from BLS and cache it (admin only)
+app.post("/api/ppi/refresh", authMiddleware, async (c) => {
+  const user = c.get('user');
+  if (!isAdminEmail(user.email, c.env)) return c.json({ error: "Forbidden" }, 403);
+
   const apiKey = (c.env as unknown as Record<string, unknown>).BLS_API_KEY as string | undefined;
-  
+
   if (!apiKey) {
     return c.json({ success: false, error: 'BLS API key not configured' }, 500);
   }
@@ -3493,8 +3505,10 @@ app.get("/api/bid-benchmarks", async (c) => {
   }
 });
 
-// Get all available benchmarks (for admin/debugging)
-app.get("/api/bid-benchmarks/all", async (c) => {
+// Get all available benchmarks (admin only)
+app.get("/api/bid-benchmarks/all", authMiddleware, async (c) => {
+  const user = c.get('user');
+  if (!isAdminEmail(user.email, c.env)) return c.json({ error: "Forbidden" }, 403);
   try {
     const db = c.env.DB;
 
@@ -3530,7 +3544,7 @@ async function updateBidBenchmarks(db: D1Database, projectType: string, stateCod
     `SELECT total_amount, price_per_sqft, issues_detected, trade_breakdown
      FROM bid_analytics 
      WHERE project_type = ? 
-     AND (state_code = ? OR (? IS NULL AND state_code IS NULL))
+     AND (state_code = ? OR (? IS NULL AND state_code IS NULL)) -- SQLite: '? IS NULL' with a bound parameter evaluates correctly — binding null gives true
      AND expires_at > datetime("now")
      AND is_deleted = 0
      AND total_amount IS NOT NULL`
@@ -5947,7 +5961,12 @@ app.get("/api/trusted-radar/search", async (c) => {
   const zip = c.req.query("zip") || "";
   const latParam = c.req.query("lat");
   const lngParam = c.req.query("lng");
-  const trade = c.req.query("trade") || "all";
+  const rawTrade = c.req.query("trade") || "all";
+  // Allowlist check — only accept trades defined in TRADE_TO_KEYWORDS
+  if (!(rawTrade in TRADE_TO_KEYWORDS)) {
+    return c.json({ success: false, error: "Invalid trade value", contractors: [], center: null, totalFound: 0 }, 400);
+  }
+  const trade = rawTrade;
   const radiusParam = c.req.query("radius") || "25";
   const radiusMiles = parseInt(radiusParam, 10);
   const radiusMeters = Math.min(radiusMiles * 1609, 50000); // Google max is 50km

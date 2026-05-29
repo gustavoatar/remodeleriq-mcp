@@ -25,7 +25,7 @@ export interface GoogleUserInfo {
 
 export interface UserProfile {
   id: number;
-  user_id: string;
+  user_id: string | null;
   email: string;
   name: string | null;
   google_id: string | null;
@@ -34,6 +34,11 @@ export interface UserProfile {
   premium_purchased_at: string | null;
   premium_ends_at: string | null;
   stripe_session_id: string | null;
+  subscription_tier: string | null;
+  subscription_status: string | null;
+  current_period_end: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -71,16 +76,8 @@ export function generateSessionToken(): string {
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
-export function getAppOrigin(c: { req: { header: (name: string) => string | undefined } }): string {
-  const origin = c.req.header('origin') || c.req.header('referer');
-  if (origin) {
-    try {
-      const url = new URL(origin);
-      return `${url.protocol}//${url.host}`;
-    } catch {
-      // Fall through to default
-    }
-  }
+export function getAppOrigin(_c: { req: { header: (name: string) => string | undefined } }): string {
+  // Always return the canonical published URL — do not trust Origin/Referer headers
   return PUBLISHED_APP_URL;
 }
 

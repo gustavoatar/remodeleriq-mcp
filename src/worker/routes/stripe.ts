@@ -459,66 +459,7 @@ app.post("/subscription/guest/lifetime-pass", async (c) => {
   }
 });
 
-// Legacy: Create Stripe checkout session (kept for backward compatibility)
-app.post("/premium/checkout", authMiddleware, async (c) => {
-  // Redirect to project pass
-  const user = c.get("user");
-  if (!user) {
-    return c.json({ error: "Not authenticated" }, 401);
-  }
-  
-  // Forward to project pass endpoint
-  return c.json({ error: "Please use /api/subscription/project-pass or /api/subscription/remodeler-pass" }, 400);
-});
-
-// Guest checkout - no login required, Stripe collects email
-app.post("/premium/guest-checkout", async (c) => {
-  const stripeKey = (c.env as unknown as Record<string, unknown>).STRIPE_SECRET_KEY as string | undefined;
-  if (!stripeKey) {
-    console.error('Stripe guest checkout error: STRIPE_SECRET_KEY not configured');
-    return c.json({ error: "Payment processing not configured. Please contact support." }, 500);
-  }
-
-  console.log('Creating Stripe GUEST checkout session');
-  console.log('Stripe key mode:', stripeKey.startsWith('sk_live_') ? 'LIVE' : stripeKey.startsWith('sk_test_') ? 'TEST' : 'UNKNOWN');
-
-  const stripe = new Stripe(stripeKey, {
-    httpClient: Stripe.createFetchHttpClient(),
-  });
-
-  try {
-    const origin = getAppOrigin(c);
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: { 
-              name: "RemodelerIQ Premium - 1 Year",
-              description: "Unlimited bid analyses, market comparisons, and negotiation scripts for 12 months"
-            },
-            unit_amount: 9999, // $99.99 in cents
-          },
-          quantity: 1,
-        },
-      ],
-      success_url: `${origin}/premium?payment=success&guest=true`,
-      cancel_url: `${origin}/premium?payment=cancelled`,
-      // No metadata userId - webhook will handle guest purchases via customer_details.email
-      metadata: {
-        guestCheckout: "true",
-      },
-    });
-
-    console.log('Stripe GUEST checkout session created:', session.id, 'URL:', session.url);
-    return c.json({ url: session.url });
-  } catch (err: any) {
-    console.error('Stripe guest checkout error:', err?.message || err);
-    return c.json({ error: `Failed to create checkout session: ${err?.message || 'Unknown error'}` }, 500);
-  }
-});
+// /premium/checkout and /premium/guest-checkout removed — use /api/subscription/project-pass or /api/subscription/remodeler-pass
 
 // Stripe webhook handler - supports subscriptions
 app.post("/webhooks/stripe", async (c) => {
@@ -548,6 +489,19 @@ app.post("/webhooks/stripe", async (c) => {
   const origin = getAppOrigin(c);
 
   console.log(`Webhook received: ${event.type}`);
+
+  // Idempotency: skip already-processed events
+  const existing = await db.prepare('SELECT id FROM stripe_event_ids WHERE event_id = ?').bind(event.id).first();
+  if (existing) {
+    console.log(`Webhook duplicate skipped: ${event.id}`);
+    return c.json({ received: true });
+  }
+  await db.prepare('INSERT OR IGNORE INTO stripe_event_ids (event_id, created_at) VALUES (?, datetime("now"))').bind(event.id).run();
+
+  // Fire-and-forget: clean up events older than 30 days
+  c.executionCtx?.waitUntil(
+    db.prepare("DELETE FROM stripe_event_ids WHERE created_at < datetime('now', '-30 days')").run()
+  );
 
   // Helper to activate subscription for a user
   async function activateSubscription(
@@ -709,13 +663,14 @@ app.post("/webhooks/stripe", async (c) => {
       const periodEnd = new Date(subscription.current_period_end * 1000);
       
       await db.prepare(`
-        UPDATE user_profiles SET 
+        UPDATE user_profiles SET
+          is_premium = 1,
           subscription_status = 'active',
           current_period_end = ?,
           updated_at = datetime("now")
         WHERE stripe_subscription_id = ?
       `).bind(periodEnd.toISOString(), subscriptionId).run();
-      
+
       console.log(`Subscription ${subscriptionId} renewed, new period end: ${periodEnd.toISOString()}`);
     }
   }
@@ -741,10 +696,11 @@ app.post("/webhooks/stripe", async (c) => {
   // Handle customer.subscription.deleted (cancellation)
   if (event.type === "customer.subscription.deleted") {
     const subscription = event.data.object as Stripe.Subscription;
-    
+
     await db.prepare(`
-      UPDATE user_profiles SET 
+      UPDATE user_profiles SET
         is_premium = 0,
+        subscription_tier = NULL,
         subscription_status = 'cancelled',
         updated_at = datetime("now")
       WHERE stripe_subscription_id = ?
@@ -808,45 +764,7 @@ app.post("/test-welcome-email", authMiddleware, async (c) => {
   }
 });
 
-// Quick test endpoint - no auth, can specify email via query param
-app.get("/send-test-email", async (c) => {
-  const targetEmail = c.req.query("email") || "gustavo@remodeleriq.com";
-  const targetName = targetEmail.split('@')[0].split(/[._0-9]/)[0];
-  const capitalizedName = targetName.charAt(0).toUpperCase() + targetName.slice(1).toLowerCase();
-  const origin = getAppOrigin(c);
-  
-  const premiumEndsAt = new Date();
-  premiumEndsAt.setFullYear(premiumEndsAt.getFullYear() + 1);
-
-  console.log(`[TEST EMAIL] Attempting to send test email to ${targetEmail}`);
-
-  try {
-    const result = await sendPremiumWelcomeEmail(c.env, targetEmail, capitalizedName, premiumEndsAt, origin);
-    
-    console.log(`[TEST EMAIL] Result:`, JSON.stringify(result));
-    
-    if (result.success) {
-      return c.json({ 
-        success: true, 
-        message: `Test email sent to ${targetEmail}`,
-        message_id: result.message_id 
-      });
-    } else {
-      return c.json({ 
-        success: false, 
-        error: result.error,
-        message: `Failed to send email to ${targetEmail}` 
-      }, 500);
-    }
-  } catch (err: any) {
-    console.error(`[TEST EMAIL] Exception:`, err);
-    return c.json({ 
-      success: false, 
-      error: err?.message || 'Unknown error',
-      stack: err?.stack 
-    }, 500);
-  }
-});
+// send-test-email endpoint removed — unauthenticated email sending is a security risk
 
 // Webhook diagnostic endpoint - JSON for React page
 app.get("/webhook-status-json", async (c) => {
@@ -939,59 +857,7 @@ app.get("/webhook-status", async (c) => {
   return c.html(html);
 });
 
-// Manually trigger guest premium flow - for testing without Stripe webhook
-app.get("/simulate-guest-purchase", async (c) => {
-  const email = c.req.query("email");
-  if (!email) {
-    return c.json({ error: "email query parameter required" }, 400);
-  }
-  
-  const db = c.env.DB;
-  const origin = getAppOrigin(c);
-  const customerName = email.split('@')[0];
-  
-  const premiumEndsAt = new Date();
-  premiumEndsAt.setFullYear(premiumEndsAt.getFullYear() + 1);
-  
-  try {
-    // Check if user exists by email
-    const existingUser = await db.prepare(
-      'SELECT id FROM user_profiles WHERE email = ?'
-    ).bind(email).first();
-    
-    if (existingUser) {
-      // Update existing user
-      await db.prepare(
-        'UPDATE user_profiles SET is_premium = 1, premium_purchased_at = datetime("now"), premium_ends_at = ?, stripe_session_id = ?, updated_at = datetime("now") WHERE email = ?'
-      ).bind(premiumEndsAt.toISOString(), 'simulated_' + Date.now(), email).run();
-      console.log(`[SIMULATE] Updated existing user ${email} to premium`);
-    } else {
-      // Create new guest user profile
-      const guestUserId = `guest_${email.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
-      await db.prepare(
-        'INSERT INTO user_profiles (user_id, email, name, is_premium, premium_purchased_at, premium_ends_at, stripe_session_id, created_at, updated_at) VALUES (?, ?, ?, 1, datetime("now"), ?, ?, datetime("now"), datetime("now"))'
-      ).bind(guestUserId, email, customerName, premiumEndsAt.toISOString(), 'simulated_' + Date.now()).run();
-      console.log(`[SIMULATE] Created new guest premium user: ${email}`);
-    }
-    
-    // Send welcome email
-    const firstName = customerName.split(/[._0-9]/)[0];
-    const capitalizedName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
-    const emailResult = await sendPremiumWelcomeEmail(c.env, email, capitalizedName, premiumEndsAt, origin);
-    
-    return c.json({
-      success: true,
-      email,
-      premiumEndsAt: premiumEndsAt.toISOString(),
-      emailSent: emailResult.success,
-      emailError: emailResult.success ? null : emailResult.error,
-      message_id: emailResult.success ? emailResult.message_id : null
-    });
-  } catch (err: any) {
-    console.error(`[SIMULATE] Error:`, err);
-    return c.json({ success: false, error: err?.message }, 500);
-  }
-});
+// simulate-guest-purchase endpoint removed — unauthenticated premium grant is a security risk
 
 // Test checkout - creates a $0.01 charge for testing payment flow
 app.post("/test-checkout", async (c) => {

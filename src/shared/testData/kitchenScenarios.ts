@@ -1,3 +1,4 @@
+// TEST ONLY — not for production import
 /**
  * Kitchen Scenario Test Data (Scenarios 1-15)
  * Used to validate the Scope Fingerprinting Engine

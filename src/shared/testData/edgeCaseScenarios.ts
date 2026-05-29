@@ -1,3 +1,4 @@
+// TEST ONLY — not for production import
 /**
  * Edge Case Scenario Test Data
  * Validates the Lock-in Threshold feature of the Scope Fingerprinting Engine

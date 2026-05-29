@@ -9,9 +9,8 @@ import { PREMIUM_MODE_ENABLED } from './featureFlags';
 // Set to true to give EVERYONE (including guests) premium access
 export const EVERYONE_HAS_PREMIUM = !PREMIUM_MODE_ENABLED;
 
-// Investor demo mode - secret URL param grants premium access without login
-// Usage: remodeleriq.com/?demo=INVESTOR_CODE
-export const INVESTOR_DEMO_CODE = 'riq26invest';
+// Investor demo mode disabled — URL-based premium bypass removed for security
+export const INVESTOR_DEMO_CODE = '';
 
 export interface BetaUser {
   firstName: string;

@@ -1,3 +1,4 @@
+// TEST ONLY — not for production import
 /**
  * Specialty Scenario Test Data (Scenarios 86-100)
  * Used to validate the Scope Fingerprinting Engine

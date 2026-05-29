@@ -7,6 +7,14 @@ import { sendEmail } from "../lib/email";
 const TOKEN_EXPIRY_MINUTES = 30;
 const SESSION_EXPIRY_DAYS = 60;
 
+// Per-email rate limiter for magic-link requests (max 5 per 10 minutes per email)
+// NOTE: This rate limiter is per-Worker-isolate. Cloudflare runs many isolates in parallel,
+// so the effective limit per user is declared_limit × number_of_isolates.
+// For production-grade rate limiting, replace with Cloudflare KV or Durable Objects.
+const magicLinkRateLimit = new Map<string, { count: number; resetAt: number }>();
+const MAGIC_LINK_MAX_ATTEMPTS = 5;
+const MAGIC_LINK_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+
 // Generate secure random token
 function generateToken(): string {
   const array = new Uint8Array(32);
@@ -63,11 +71,23 @@ app.post("/auth/magic-link/request", async (c) => {
   }
 
   const normalizedEmail = email.toLowerCase().trim();
-  
+
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(normalizedEmail)) {
     return c.json({ error: "Invalid email format" }, 400);
+  }
+
+  // Per-email rate limit: max 5 requests per 10 minutes
+  const now = Date.now();
+  let rl = magicLinkRateLimit.get(normalizedEmail);
+  if (!rl || rl.resetAt < now) {
+    rl = { count: 0, resetAt: now + MAGIC_LINK_WINDOW_MS };
+    magicLinkRateLimit.set(normalizedEmail, rl);
+  }
+  rl.count++;
+  if (rl.count > MAGIC_LINK_MAX_ATTEMPTS) {
+    return c.json({ error: "Too many sign-in attempts. Please wait 10 minutes and try again." }, 429);
   }
 
   const db = c.env.DB;
@@ -218,10 +238,9 @@ app.get("/auth/magic-link/verify", async (c) => {
     console.error('Failed to track login:', e);
   }
 
-  // Return user info + session token (mobile clients use the token; browsers use the httpOnly cookie)
+  // Return user info — session is set as httpOnly cookie above (web clients use the cookie)
   return c.json({
     success: true,
-    sessionToken,
     user: {
       id: userProfile.id,
       email: userProfile.email,
@@ -279,15 +298,26 @@ app.get("/auth/me", async (c) => {
   });
 });
 
-// Logout - clear session
+// Logout - clear session and invalidate pending magic-link tokens
 app.post("/auth/logout", async (c) => {
   const sessionToken = getCookie(c, SESSION_COOKIE_NAME);
-  
+
   if (sessionToken) {
     const db = c.env.DB;
-    await db.prepare(
-      'DELETE FROM user_sessions WHERE session_token = ?'
-    ).bind(sessionToken).run();
+
+    // Get user email before deleting the session
+    const session = await db.prepare(
+      'SELECT up.email FROM user_sessions us JOIN user_profiles up ON us.user_id = up.id WHERE us.session_token = ?'
+    ).bind(sessionToken).first() as { email: string } | null;
+
+    await db.prepare('DELETE FROM user_sessions WHERE session_token = ?').bind(sessionToken).run();
+
+    // Invalidate any pending magic-link tokens for this user
+    if (session?.email) {
+      await db.prepare(
+        'UPDATE magic_link_tokens SET is_used = 1, updated_at = datetime("now") WHERE email = ? AND is_used = 0'
+      ).bind(session.email).run();
+    }
   }
 
   // Clear cookie
@@ -302,10 +332,16 @@ app.post("/auth/logout", async (c) => {
   return c.json({ success: true });
 });
 
-// Diagnostic test endpoint - sends a simple test email
+// Diagnostic test endpoint - sends a simple test email (admin only)
 app.get("/auth/test-email", async (c) => {
+  const adminSecret = (c.env as unknown as Record<string, unknown>).ADMIN_SECRET as string | undefined;
+  const providedSecret = c.req.query("secret");
+  if (!adminSecret || !providedSecret || providedSecret !== adminSecret) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
   const email = c.req.query("email");
-  
+
   if (!email) {
     return c.json({ error: "Add ?email=your@email.com to test" }, 400);
   }

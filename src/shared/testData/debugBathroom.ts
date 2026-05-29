@@ -1,3 +1,4 @@
+// TEST ONLY — not for production import
 /**
  * Debug script for failing bathroom tests
  */

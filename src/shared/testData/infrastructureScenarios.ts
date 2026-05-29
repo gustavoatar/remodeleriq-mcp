@@ -1,3 +1,4 @@
+// TEST ONLY — not for production import
 /**
  * Infrastructure Scenario Test Data (Scenarios 71-85)
  * Used to validate the Scope Fingerprinting Engine

@@ -1,3 +1,4 @@
+// TEST ONLY — not for production import
 /**
  * Bathroom Scenario Test Data (Scenarios 16-30)
  * Used to validate the Scope Fingerprinting Engine

@@ -1,3 +1,4 @@
+// TEST ONLY — not for production import
 /**
  * Exterior Scenario Test Data (Scenarios 51-70)
  * Used to validate the Scope Fingerprinting Engine
