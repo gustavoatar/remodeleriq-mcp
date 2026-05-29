@@ -12,6 +12,7 @@ import analyzeCommunity from './routes/analyze-community';
 import authRoutes from './routes/auth';
 import stripeRoutes from './routes/stripe';
 import magicLinkRoutes from './routes/magicLink';
+import contentDraftsRoutes from './routes/contentDrafts';
 import { authMiddleware } from './middleware/auth';
 import { type UserProfile as UserProfileType } from './types';
 import { getAllOewsData } from "@/shared/lazyData/oewsData";
@@ -348,6 +349,7 @@ app.route('/api/analyze/community', analyzeCommunity);
 app.route('/api', authRoutes);
 app.route('/api', stripeRoutes);
 app.route('/api', magicLinkRoutes);
+app.route('/api/admin/content', contentDraftsRoutes);
 
 // ============================================
 // GEOLOCATION ENDPOINT

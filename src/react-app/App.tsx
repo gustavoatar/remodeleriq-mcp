@@ -22,6 +22,7 @@ import MagicLinkVerifyPage from "@/react-app/pages/MagicLinkVerify";
 import LoginPage from "@/react-app/pages/Login";
 import WebhookStatusPage from "@/react-app/pages/WebhookStatus";
 import AdminPage from "@/react-app/pages/Admin";
+import ContentDashboardPage from "@/react-app/pages/ContentDashboard";
 import FeedbackModal from "@/react-app/components/FeedbackModal";
 import ScrollToTop from "@/react-app/components/ScrollToTop";
 import { ErrorBoundary } from "@/react-app/components/ErrorBoundary";
@@ -112,6 +113,7 @@ export default function App() {
           <Route path="/auth/verify" element={<MagicLinkVerifyPage />} />
           <Route path="/webhook-status" element={<WebhookStatusPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/content" element={<ContentDashboardPage />} />
         </Routes>
         <FeedbackButton onClick={() => setFeedbackOpen(true)} />
       </Router>
