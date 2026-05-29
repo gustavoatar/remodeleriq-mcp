@@ -146,6 +146,44 @@ app.use('*', cors({
   credentials: true,
 }));
 
+// SEO: 301 redirects for stale Mocha-era URLs (kills GSC "Not found (404)" reports)
+const STALE_URL_REDIRECTS: Record<string, string> = {
+  '/signup': '/join',
+  '/sign-up': '/join',
+  '/signin': '/login',
+  '/sign-in': '/login',
+  '/pricing': '/premium',
+  '/plans': '/premium',
+  '/upgrade': '/premium',
+  '/subscribe': '/premium',
+  '/dashboard': '/',
+  '/home': '/',
+  '/app': '/',
+  '/about': '/how-we-score',
+  '/how-it-works': '/how-we-score',
+  '/scoring': '/how-we-score',
+  '/cost-guides': '/remodeling-cost-guides/',
+  '/remodel-costs': '/remodeling-cost-guides/',
+  '/remodel-cost': '/remodeling-cost-guides/',
+  '/remodeling-costs': '/remodeling-cost-guides/',
+  '/contractor-search': '/trusted-radar',
+  '/verify': '/trusted-radar',
+  '/check-contractor': '/trusted-radar',
+  '/labor': '/labor-rates',
+  '/glossary-of-terms': '/glossary',
+  '/oauth/callback': '/auth/google-callback',
+  '/auth/callback': '/auth/google-callback',
+};
+
+app.use('*', async (c, next) => {
+  const url = new URL(c.req.url);
+  const target = STALE_URL_REDIRECTS[url.pathname];
+  if (target) {
+    return c.redirect(target, 301);
+  }
+  await next();
+});
+
 // ============================================
 // SHARED UTILITY HELPERS
 // ============================================
@@ -6362,6 +6400,28 @@ Only return grades/licenses that are definitely for this exact business. If unce
   }
   
   return c.json({ success: true, enriched });
+});
+
+// SPA fallback: serve index.html for any unmatched route so React Router
+// can handle client-side routing on direct hits. Critical for SEO — without
+// this, sitemap-listed routes like /trusted-radar /studio /join return 404.
+app.notFound(async (c) => {
+  const env = c.env as unknown as { ASSETS?: { fetch: (req: Request) => Promise<Response> } };
+  if (!env.ASSETS) {
+    return c.text('Not Found', 404);
+  }
+  const url = new URL(c.req.url);
+  // Don't SPA-fallback API or asset paths — those should 404 cleanly.
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/assets/')) {
+    return c.text('Not Found', 404);
+  }
+  // Fetch the SPA shell from Workers Assets and return it
+  const shellUrl = new URL('/', url);
+  const shellRes = await env.ASSETS.fetch(new Request(shellUrl.toString(), { method: 'GET' }));
+  return new Response(shellRes.body, {
+    status: 200,
+    headers: shellRes.headers,
+  });
 });
 
 async function scheduledHandler(

@@ -1,0 +1,834 @@
+[
+  {
+    "city_slug": "albuquerque-nm",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "albuquerque-nm",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "albuquerque-nm",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "albuquerque-nm",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "appleton-wi",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "appleton-wi",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "appleton-wi",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "appleton-wi",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "atlanta-ga",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "atlanta-ga",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "atlanta-ga",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "atlanta-ga",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "austin-tx",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "austin-tx",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "austin-tx",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "austin-tx",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "baltimore-md",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "baltimore-md",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "baltimore-md",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "baltimore-md",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "birmingham-al",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "birmingham-al",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "birmingham-al",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "birmingham-al",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "boston-ma",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "boston-ma",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "boston-ma",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "boston-ma",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "buffalo-ny",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "buffalo-ny",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "buffalo-ny",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "buffalo-ny",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "charlotte-nc",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "charlotte-nc",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "charlotte-nc",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "charlotte-nc",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "chicago-il",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "chicago-il",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "chicago-il",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "chicago-il",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "cleveland-oh",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "cleveland-oh",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "cleveland-oh",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "cleveland-oh",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "columbus-oh",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "columbus-oh",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "columbus-oh",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "columbus-oh",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "dallas-tx",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "dallas-tx",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "dallas-tx",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "dallas-tx",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "denver-co",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "denver-co",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "denver-co",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "denver-co",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "el-paso-tx",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "el-paso-tx",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "el-paso-tx",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "el-paso-tx",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "grand-rapids-mi",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "grand-rapids-mi",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "grand-rapids-mi",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "grand-rapids-mi",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "greensboro-nc",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "greensboro-nc",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "greensboro-nc",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "greensboro-nc",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "hartford-ct",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "hartford-ct",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "hartford-ct",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "hartford-ct",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "houston-tx",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "houston-tx",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "houston-tx",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "houston-tx",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "indianapolis-in",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "indianapolis-in",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "indianapolis-in",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "indianapolis-in",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "jacksonville-fl",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "jacksonville-fl",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "jacksonville-fl",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "jacksonville-fl",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "kansas-city-mo",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "kansas-city-mo",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "kansas-city-mo",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "kansas-city-mo",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "las-vegas-nv",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "las-vegas-nv",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "las-vegas-nv",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "las-vegas-nv",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "los-angeles-ca",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "los-angeles-ca",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "los-angeles-ca",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "los-angeles-ca",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "louisville-jefferson-county-ky",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "louisville-jefferson-county-ky",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "louisville-jefferson-county-ky",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "louisville-jefferson-county-ky",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "memphis-tn",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "memphis-tn",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "memphis-tn",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "memphis-tn",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "miami-fl",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "miami-fl",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "miami-fl",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "miami-fl",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "minneapolis-mn",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "minneapolis-mn",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "minneapolis-mn",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "minneapolis-mn",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "nashville-tn",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "nashville-tn",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "nashville-tn",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "nashville-tn",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "new-orleans-la",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "new-orleans-la",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "new-orleans-la",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "new-orleans-la",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "new-york-ny",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "new-york-ny",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "new-york-ny",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "new-york-ny",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "north-port-fl",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "north-port-fl",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "north-port-fl",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "north-port-fl",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "oklahoma-city-ok",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "oklahoma-city-ok",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "oklahoma-city-ok",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "oklahoma-city-ok",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "orlando-fl",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "orlando-fl",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "orlando-fl",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "orlando-fl",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "philadelphia-pa",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "philadelphia-pa",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "philadelphia-pa",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "philadelphia-pa",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "phoenix-az",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "phoenix-az",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "phoenix-az",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "phoenix-az",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "portland-or",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "portland-or",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "portland-or",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "portland-or",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "providence-ri",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "providence-ri",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "providence-ri",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "providence-ri",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "raleigh-nc",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "raleigh-nc",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "raleigh-nc",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "raleigh-nc",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "richmond-va",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "richmond-va",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "richmond-va",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "richmond-va",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "riverside-ca",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "riverside-ca",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "riverside-ca",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "riverside-ca",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "salt-lake-city-ut",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "salt-lake-city-ut",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "salt-lake-city-ut",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "salt-lake-city-ut",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "san-antonio-tx",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "san-antonio-tx",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "san-antonio-tx",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "san-antonio-tx",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "san-diego-ca",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "san-diego-ca",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "san-diego-ca",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "san-diego-ca",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "san-francisco-ca",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "san-francisco-ca",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "san-francisco-ca",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "san-francisco-ca",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "seattle-wa",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "seattle-wa",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "seattle-wa",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "seattle-wa",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "st-louis-mo",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "st-louis-mo",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "st-louis-mo",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "st-louis-mo",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "stockton-ca",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "stockton-ca",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "stockton-ca",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "stockton-ca",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "tampa-fl",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "tampa-fl",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "tampa-fl",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "tampa-fl",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "tucson-az",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "tucson-az",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "tucson-az",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "tucson-az",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "virginia-beach-va",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "virginia-beach-va",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "virginia-beach-va",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "virginia-beach-va",
+    "project_slug": "kitchen-remodel"
+  },
+  {
+    "city_slug": "washington-dc",
+    "project_slug": "addition"
+  },
+  {
+    "city_slug": "washington-dc",
+    "project_slug": "basement-remodel"
+  },
+  {
+    "city_slug": "washington-dc",
+    "project_slug": "bathroom-remodel"
+  },
+  {
+    "city_slug": "washington-dc",
+    "project_slug": "kitchen-remodel"
+  }
+]

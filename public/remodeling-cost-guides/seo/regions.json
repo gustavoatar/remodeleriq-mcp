@@ -1,0 +1,262 @@
+[
+  {
+    "city_slug": "albuquerque-nm",
+    "city": "Albuquerque",
+    "state_abbr": "NM"
+  },
+  {
+    "city_slug": "appleton-wi",
+    "city": "Appleton",
+    "state_abbr": "WI"
+  },
+  {
+    "city_slug": "atlanta-ga",
+    "city": "Atlanta",
+    "state_abbr": "GA"
+  },
+  {
+    "city_slug": "austin-tx",
+    "city": "Austin",
+    "state_abbr": "TX"
+  },
+  {
+    "city_slug": "baltimore-md",
+    "city": "Baltimore",
+    "state_abbr": "MD"
+  },
+  {
+    "city_slug": "birmingham-al",
+    "city": "Birmingham",
+    "state_abbr": "AL"
+  },
+  {
+    "city_slug": "boston-ma",
+    "city": "Boston",
+    "state_abbr": "MA"
+  },
+  {
+    "city_slug": "buffalo-ny",
+    "city": "Buffalo",
+    "state_abbr": "NY"
+  },
+  {
+    "city_slug": "charlotte-nc",
+    "city": "Charlotte",
+    "state_abbr": "NC"
+  },
+  {
+    "city_slug": "chicago-il",
+    "city": "Chicago",
+    "state_abbr": "IL"
+  },
+  {
+    "city_slug": "cleveland-oh",
+    "city": "Cleveland",
+    "state_abbr": "OH"
+  },
+  {
+    "city_slug": "columbus-oh",
+    "city": "Columbus",
+    "state_abbr": "OH"
+  },
+  {
+    "city_slug": "dallas-tx",
+    "city": "Dallas",
+    "state_abbr": "TX"
+  },
+  {
+    "city_slug": "denver-co",
+    "city": "Denver",
+    "state_abbr": "CO"
+  },
+  {
+    "city_slug": "el-paso-tx",
+    "city": "El Paso",
+    "state_abbr": "TX"
+  },
+  {
+    "city_slug": "grand-rapids-mi",
+    "city": "Grand Rapids",
+    "state_abbr": "MI"
+  },
+  {
+    "city_slug": "greensboro-nc",
+    "city": "Greensboro",
+    "state_abbr": "NC"
+  },
+  {
+    "city_slug": "hartford-ct",
+    "city": "Hartford",
+    "state_abbr": "CT"
+  },
+  {
+    "city_slug": "houston-tx",
+    "city": "Houston",
+    "state_abbr": "TX"
+  },
+  {
+    "city_slug": "indianapolis-in",
+    "city": "Indianapolis",
+    "state_abbr": "IN"
+  },
+  {
+    "city_slug": "jacksonville-fl",
+    "city": "Jacksonville",
+    "state_abbr": "FL"
+  },
+  {
+    "city_slug": "kansas-city-mo",
+    "city": "Kansas City",
+    "state_abbr": "MO"
+  },
+  {
+    "city_slug": "las-vegas-nv",
+    "city": "Las Vegas",
+    "state_abbr": "NV"
+  },
+  {
+    "city_slug": "los-angeles-ca",
+    "city": "Los Angeles",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "louisville-jefferson-county-ky",
+    "city": "Louisville/Jefferson County",
+    "state_abbr": "KY"
+  },
+  {
+    "city_slug": "memphis-tn",
+    "city": "Memphis",
+    "state_abbr": "TN"
+  },
+  {
+    "city_slug": "miami-fl",
+    "city": "Miami",
+    "state_abbr": "FL"
+  },
+  {
+    "city_slug": "minneapolis-mn",
+    "city": "Minneapolis",
+    "state_abbr": "MN"
+  },
+  {
+    "city_slug": "nashville-tn",
+    "city": "Nashville",
+    "state_abbr": "TN"
+  },
+  {
+    "city_slug": "new-orleans-la",
+    "city": "New Orleans",
+    "state_abbr": "LA"
+  },
+  {
+    "city_slug": "new-york-ny",
+    "city": "New York",
+    "state_abbr": "NY"
+  },
+  {
+    "city_slug": "north-port-fl",
+    "city": "North Port",
+    "state_abbr": "FL"
+  },
+  {
+    "city_slug": "oklahoma-city-ok",
+    "city": "Oklahoma City",
+    "state_abbr": "OK"
+  },
+  {
+    "city_slug": "orlando-fl",
+    "city": "Orlando",
+    "state_abbr": "FL"
+  },
+  {
+    "city_slug": "philadelphia-pa",
+    "city": "Philadelphia",
+    "state_abbr": "PA"
+  },
+  {
+    "city_slug": "phoenix-az",
+    "city": "Phoenix",
+    "state_abbr": "AZ"
+  },
+  {
+    "city_slug": "portland-or",
+    "city": "Portland",
+    "state_abbr": "OR"
+  },
+  {
+    "city_slug": "providence-ri",
+    "city": "Providence",
+    "state_abbr": "RI"
+  },
+  {
+    "city_slug": "raleigh-nc",
+    "city": "Raleigh",
+    "state_abbr": "NC"
+  },
+  {
+    "city_slug": "richmond-va",
+    "city": "Richmond",
+    "state_abbr": "VA"
+  },
+  {
+    "city_slug": "riverside-ca",
+    "city": "Riverside",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "salt-lake-city-ut",
+    "city": "Salt Lake City",
+    "state_abbr": "UT"
+  },
+  {
+    "city_slug": "san-antonio-tx",
+    "city": "San Antonio",
+    "state_abbr": "TX"
+  },
+  {
+    "city_slug": "san-diego-ca",
+    "city": "San Diego",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "san-francisco-ca",
+    "city": "San Francisco",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "seattle-wa",
+    "city": "Seattle",
+    "state_abbr": "WA"
+  },
+  {
+    "city_slug": "st-louis-mo",
+    "city": "St. Louis",
+    "state_abbr": "MO"
+  },
+  {
+    "city_slug": "stockton-ca",
+    "city": "Stockton",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "tampa-fl",
+    "city": "Tampa",
+    "state_abbr": "FL"
+  },
+  {
+    "city_slug": "tucson-az",
+    "city": "Tucson",
+    "state_abbr": "AZ"
+  },
+  {
+    "city_slug": "virginia-beach-va",
+    "city": "Virginia Beach",
+    "state_abbr": "VA"
+  },
+  {
+    "city_slug": "washington-dc",
+    "city": "Washington",
+    "state_abbr": "DC"
+  }
+]

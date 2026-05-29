@@ -1,0 +1,18 @@
+[
+  {
+    "project_slug": "addition",
+    "project_name": "Addition"
+  },
+  {
+    "project_slug": "basement-remodel",
+    "project_name": "Basement Remodel"
+  },
+  {
+    "project_slug": "bathroom-remodel",
+    "project_name": "Bathroom Remodel"
+  },
+  {
+    "project_slug": "kitchen-remodel",
+    "project_name": "Kitchen Remodel"
+  }
+]
