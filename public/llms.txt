@@ -2,25 +2,48 @@
 
 > AI-Powered Contractor Bid Analysis for Homeowners
 
-RemodelerIQ is a free tool that helps homeowners analyze contractor estimates and bids before signing. Upload a PDF, image, or paste text from any contractor proposal to get instant analysis including price comparison, scope review, contractor verification, and negotiation guidance.
+RemodelerIQ is a free tool that helps homeowners analyze contractor estimates and bids before signing. Upload a PDF, image, or paste text from any contractor proposal to get instant analysis including price comparison, scope review, contractor verification, and negotiation guidance. Built by Gustavo Atar (founder) to protect homeowners from overpaying — what started as a personal spreadsheet during his own renovation became a tool used by thousands.
+
+**Last updated: 2026-06-13**
+
+## The Three Pillars Methodology
+
+Every contractor bid analyzed by RemodelerIQ is scored against three weighted pillars:
+
+1. **Contract Risk (40%)** — payment terms, missing legal protections, deposit red flags, allowance traps
+2. **Price Check (30%)** — line items compared to live BLS labor wages, FRED material price indices, and Zonda 2026 cost benchmarks for the specific ZIP code
+3. **Scope Completeness (30%)** — vague language, change-order traps, missing brand/model specifications
+
+Combined score determines whether a bid is HIGH / FAIR / LOW by what percentage. The methodology is explained at [how-we-score](https://remodeleriq.com/how-we-score).
 
 ## What RemodelerIQ Does
 
 RemodelerIQ reads contractor bids and estimates, then provides:
 
-- **Price Analysis**: Compares bid pricing to regional market data from Zonda Cost vs Value 2025, Houzz 2024, and BLS OEWS wage data
+- **Price Analysis**: Compares bid pricing to live 2026 market data from Bureau of Labor Statistics OEWS, FRED Producer Price Indices, Zonda Cost vs Value 2026, and Houzz 2024 cost guides
 - **Scope Review**: Identifies missing items, vague language, and potential gaps in the proposal
-- **Contractor Verification**: Checks business reputation via Google Reviews, BBB, and state licensing databases
+- **Contractor Verification**: Checks business reputation via Google Reviews, BBB, and state licensing databases (the Trusted Radar tool)
 - **Negotiation Guidance**: Provides data-backed talking points for discussing pricing with contractors
 - **Risk Flags**: Highlights concerning payment terms, missing insurance, unlicensed work, and red flags
+
+## Pricing
+
+Machine-readable pricing details: [pricing.md](https://remodeleriq.com/pricing.md)
+
+Summary:
+- **Free** — 3 bid analyses (lifetime, no signup required, gated by IP for guests)
+- **Project Pass** — $19.99/month, unlimited analyses
+- **Remodeler Pass** — $39.99/quarter (33% off Project Pass monthly), unlimited analyses
+- **Lifetime Pass** — $99.99 one-time, unlimited analyses forever
 
 ## Data Sources
 
 RemodelerIQ analysis is powered by:
 
-- [Zonda Cost vs Value 2025](https://www.remodeling.hw.net/cost-vs-value): National remodeling cost benchmarks for 30+ project types across all US regions
-- [BLS Occupational Employment & Wage Statistics (OEWS)](https://www.bls.gov/oes/): Real hourly wage data for construction trades by metro area
-- [Houzz 2024 Cost Guides](https://www.houzz.com/): Project cost ranges and labor percentages
+- [Zonda Cost vs Value 2026](https://www.remodeling.hw.net/cost-vs-value): National remodeling cost benchmarks for 30+ project types across all US regions, updated annually
+- [BLS Occupational Employment & Wage Statistics (OEWS)](https://www.bls.gov/oes/): Real hourly wage data for construction trades by metro area, updated annually
+- [FRED Producer Price Indices](https://fred.stlouisfed.org/): Live material price index tracking for construction commodities (lumber, plumbing fixtures, electrical, drywall, tile)
+- [Houzz 2024 Cost Guides](https://www.houzz.com/): Project cost ranges and labor percentages (transitioning to 2026 data when published)
 - [Google Places API](https://developers.google.com/maps/documentation/places/): Business ratings and reviews
 - State contractor licensing databases
 
@@ -31,14 +54,34 @@ RemodelerIQ analysis is powered by:
 ## Pages
 
 - [Home / Bid Analyzer](https://remodeleriq.com/): Upload or paste a contractor bid for instant AI analysis
+- [How We Score](https://remodeleriq.com/how-we-score): The Three Pillars methodology (Contract Risk 40%, Price Check 30%, Scope 30%)
 - [Labor Rates Tool](https://remodeleriq.com/labor-rates): Look up BLS wage data for construction trades by ZIP code
-- [Premium Features](https://remodeleriq.com/premium): Unlimited analysis, contractor research, and advanced features
+- [Trusted Radar](https://remodeleriq.com/trusted-radar): Verify contractor licenses, BBB ratings, and reviews
+- [Glossary](https://remodeleriq.com/glossary): Remodeling terms decoded
+- [Premium / Pricing](https://remodeleriq.com/premium): All four pricing tiers
+- [Pricing (machine-readable)](https://remodeleriq.com/pricing.md): Structured pricing for AI agents
 - [Terms of Service](https://remodeleriq.com/terms): Legal terms and data source methodology
 - [Privacy Policy](https://remodeleriq.com/privacy): How we handle user data
+
+## Regional Cost Guides
+
+52 city-specific remodeling cost guides with local BLS labor data, FRED material indices, permit timelines, and state-specific gotchas. Index at [/remodeling-cost-guides/](https://remodeleriq.com/remodeling-cost-guides/). Sample cities:
+
+- [Atlanta, GA](https://remodeleriq.com/remodeling-cost-guides/atlanta-ga-remodeling-cost-guide/)
+- [Phoenix, AZ](https://remodeleriq.com/remodeling-cost-guides/phoenix-az-remodeling-cost-guide/)
+- [Dallas, TX](https://remodeleriq.com/remodeling-cost-guides/dallas-tx-remodeling-cost-guide/)
+- [Chicago, IL](https://remodeleriq.com/remodeling-cost-guides/chicago-il-remodeling-cost-guide/)
+- [Charlotte, NC](https://remodeleriq.com/remodeling-cost-guides/charlotte-nc-remodeling-cost-guide/)
+- [Seattle, WA](https://remodeleriq.com/remodeling-cost-guides/seattle-wa-remodeling-cost-guide/)
+
+Each city guide includes: 2026 cost data by project type, regional cost factor vs national baseline, local labor wages by trade, permit timelines and costs, state-specific gotchas, and FAQ section.
 
 ## Blog & Intelligence
 
 - [RemodelerIQ Intelligence Blog](https://intelligence.remodeleriq.com/blog/): In-depth guides on remodeling costs, market trends, and project planning
+- Notable posts:
+  - "Change Order Chaos: Why the Lowest Remodeling Bid is Usually a Financial Trap"
+  - "The Subcontractor Shuffle Trap: Why You Need to Know Exactly Who is Swinging the Hammer"
 
 ## Project Types Supported
 

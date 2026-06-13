@@ -21,3 +21,54 @@ Disallow: /webhook-status
 
 # Crawl delay (optional, for polite crawling)
 Crawl-delay: 1
+
+# AI / LLM search crawlers — explicitly welcomed
+# (GPTBot, Claude, Perplexity, Google AI, Bing Copilot)
+# RemodelerIQ wants to be cited in AI Overviews and chat answers.
+
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /settings
+Disallow: /graveyard
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /settings
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /settings
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /settings
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /settings
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /settings
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /settings
+
+# Block training-only crawlers (no citation value)
+User-agent: CCBot
+Disallow: /
