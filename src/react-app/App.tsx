@@ -23,6 +23,7 @@ import LoginPage from "@/react-app/pages/Login";
 import WebhookStatusPage from "@/react-app/pages/WebhookStatus";
 import AdminPage from "@/react-app/pages/Admin";
 import ContentDashboardPage from "@/react-app/pages/ContentDashboard";
+import InboxPage from "@/react-app/pages/Inbox";
 import FeedbackModal from "@/react-app/components/FeedbackModal";
 import ScrollToTop from "@/react-app/components/ScrollToTop";
 import { ErrorBoundary } from "@/react-app/components/ErrorBoundary";
@@ -114,6 +115,7 @@ export default function App() {
           <Route path="/webhook-status" element={<WebhookStatusPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/content" element={<ContentDashboardPage />} />
+          <Route path="/admin/inbox" element={<InboxPage />} />
         </Routes>
         <FeedbackButton onClick={() => setFeedbackOpen(true)} />
       </Router>

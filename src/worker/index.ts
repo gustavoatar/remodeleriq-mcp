@@ -10,10 +10,13 @@ import {
 } from "@/shared/blsLaborRates";
 import analyzeCommunity from './routes/analyze-community';
 import authRoutes from './routes/auth';
+import nextdoorAuthRoutes from './routes/nextdoorAuth';
+import redditAuthRoutes from './routes/redditAuth';
 import stripeRoutes from './routes/stripe';
 import magicLinkRoutes from './routes/magicLink';
 import contentDraftsRoutes from './routes/contentDrafts';
-import contentSwarmRoutes, { runScout, runCycle, trackEngagement, sendMorningDigest } from './routes/contentSwarm';
+import contentSwarmRoutes, { runScout, runCycle, trackEngagement, sendMorningDigest, autoPublishApproved } from './routes/contentSwarm';
+import inboxRoutes from './routes/inbox';
 import { authMiddleware } from './middleware/auth';
 import { type UserProfile as UserProfileType } from './types';
 import { getAllOewsData } from "@/shared/lazyData/oewsData";
@@ -348,10 +351,13 @@ import { getSavingsForLocation } from "@/shared/locationSavings";
 // Mount route modules
 app.route('/api/analyze/community', analyzeCommunity);
 app.route('/api', authRoutes);
+app.route('/api', nextdoorAuthRoutes);
+app.route('/api', redditAuthRoutes);
 app.route('/api', stripeRoutes);
 app.route('/api', magicLinkRoutes);
 app.route('/api/admin/content', contentDraftsRoutes);
 app.route('/api/admin/content', contentSwarmRoutes);
+app.route('/api/admin/inbox', inboxRoutes);
 
 // ============================================
 // GEOLOCATION ENDPOINT
@@ -1638,84 +1644,83 @@ app.get("/api/usage/stats", authMiddleware, async (c) => {
   }
 });
 
-// Check if user can upload (server-side limit check for logged-in users)
-// FREE_TOTAL_ANALYSES = 3 for free users in premium mode
+// Check if user can upload (server-side limit check)
+// Phase 7H: simplified to "3 free total" regardless of account state.
+// Guests counted by IP; logged-in users counted by user_id.
 const FREE_TOTAL_ANALYSES = 3;
+
+// Best-effort caller IP for guest counting. Falls back to a stable hash of UA + ASN if header missing.
+function getCallerIp(c: { req: { header: (name: string) => string | undefined } }): string {
+  return c.req.header('cf-connecting-ip') ||
+    c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
+    c.req.header('x-real-ip') ||
+    'unknown';
+}
 
 app.get("/api/usage/can-upload", async (c) => {
   try {
     const sessionToken = getCookie(c, SESSION_COOKIE_NAME);
     const db = c.env.DB;
 
-    // Not logged in - can't upload in premium mode (guests must sign up)
-    if (!sessionToken) {
-      return c.json({ 
-        canUpload: false, 
-        remaining: 0,
-        isLoggedIn: false,
-        isPremium: false,
-        reason: 'not_logged_in'
-      });
+    // ----- Logged-in branch -----
+    if (sessionToken) {
+      const session = await db.prepare(
+        'SELECT user_id FROM user_sessions WHERE session_token = ? AND expires_at > datetime("now")'
+      ).bind(sessionToken).first<{ user_id: number }>();
+
+      if (session) {
+        const user = await db.prepare(
+          'SELECT id, email, is_premium, subscription_tier, subscription_status FROM user_profiles WHERE id = ?'
+        ).bind(session.user_id).first<{ id: number; email: string; is_premium: number; subscription_tier: string | null; subscription_status: string | null }>();
+
+        if (user) {
+          const isPremium = user.is_premium === 1 && user.subscription_status === 'active';
+
+          if (isPremium) {
+            return c.json({
+              canUpload: true,
+              remaining: -1,
+              isLoggedIn: true,
+              isPremium: true,
+              totalUploads: null
+            });
+          }
+
+          const uploadCount = await db.prepare(
+            `SELECT COUNT(*) as count FROM usage_tracking
+             WHERE user_id = ? AND action_type = 'upload'`
+          ).bind(user.id).first<{ count: number }>();
+
+          const count = uploadCount?.count || 0;
+          const remaining = Math.max(0, FREE_TOTAL_ANALYSES - count);
+
+          return c.json({
+            canUpload: remaining > 0,
+            remaining,
+            isLoggedIn: true,
+            isPremium: false,
+            totalUploads: count
+          });
+        }
+      }
+      // session token present but invalid — fall through to guest branch
     }
 
-    // Get user from session
-    const session = await db.prepare(
-      'SELECT user_id FROM user_sessions WHERE session_token = ? AND expires_at > datetime("now")'
-    ).bind(sessionToken).first<{ user_id: number }>();
+    // ----- Guest branch (Phase 7H: 3 free analyses by IP) -----
+    const ip = getCallerIp(c);
+    const guestCount = await db.prepare(
+      `SELECT COUNT(*) as count FROM usage_tracking
+       WHERE user_id IS NULL AND action_type = 'upload' AND ip_address = ?`
+    ).bind(ip).first<{ count: number }>();
+    const gCount = guestCount?.count || 0;
+    const gRemaining = Math.max(0, FREE_TOTAL_ANALYSES - gCount);
 
-    if (!session) {
-      return c.json({ 
-        canUpload: false, 
-        remaining: 0,
-        isLoggedIn: false,
-        isPremium: false,
-        reason: 'session_expired'
-      });
-    }
-
-    // Check if user is premium
-    const user = await db.prepare(
-      'SELECT id, email, is_premium, subscription_tier, subscription_status FROM user_profiles WHERE id = ?'
-    ).bind(session.user_id).first<{ id: number; email: string; is_premium: number; subscription_tier: string | null; subscription_status: string | null }>();
-
-    if (!user) {
-      return c.json({ 
-        canUpload: false, 
-        remaining: 0,
-        isLoggedIn: false,
-        isPremium: false,
-        reason: 'user_not_found'
-      });
-    }
-
-    const isPremium = user.is_premium === 1 && user.subscription_status === 'active';
-
-    // Premium users have unlimited uploads
-    if (isPremium) {
-      return c.json({ 
-        canUpload: true, 
-        remaining: -1, // -1 = unlimited
-        isLoggedIn: true,
-        isPremium: true,
-        totalUploads: null
-      });
-    }
-
-    // Free user: check total uploads ever (limit is 3)
-    const uploadCount = await db.prepare(
-      `SELECT COUNT(*) as count FROM usage_tracking 
-       WHERE user_id = ? AND action_type = 'upload'`
-    ).bind(user.id).first<{ count: number }>();
-
-    const count = uploadCount?.count || 0;
-    const remaining = Math.max(0, FREE_TOTAL_ANALYSES - count);
-
-    return c.json({ 
-      canUpload: remaining > 0, 
-      remaining,
-      isLoggedIn: true,
+    return c.json({
+      canUpload: gRemaining > 0,
+      remaining: gRemaining,
+      isLoggedIn: false,
       isPremium: false,
-      totalUploads: count
+      totalUploads: gCount
     });
   } catch (error) {
     console.error('Can upload check error:', error);
@@ -1724,13 +1729,14 @@ app.get("/api/usage/can-upload", async (c) => {
 });
 
 // Record an upload and return updated limit status
+// Phase 7H: guests gated by IP for "3 free total", logged-in by user_id.
 app.post("/api/usage/record-upload", async (c) => {
   try {
     const sessionToken = getCookie(c, SESSION_COOKIE_NAME);
     const db = c.env.DB;
     const body = await c.req.json() as { fileName?: string; metadata?: Record<string, unknown> };
+    const ip = getCallerIp(c);
 
-    // Get user if logged in
     let userId: number | null = null;
     let isPremium = false;
 
@@ -1748,45 +1754,49 @@ app.post("/api/usage/record-upload", async (c) => {
 
         isPremium = user?.is_premium === 1 && user?.subscription_status === 'active';
 
-        // Atomic gatekeeper: reject free users who have hit their limit before inserting
+        // Atomic gatekeeper for logged-in free users
         if (!isPremium) {
           const uploadCount = await db.prepare(
             `SELECT COUNT(*) as count FROM usage_tracking WHERE user_id = ? AND action_type = 'upload'`
           ).bind(userId).first<{ count: number }>();
           const count = uploadCount?.count || 0;
           if (count >= FREE_TOTAL_ANALYSES) {
-            return c.json({ error: "Daily upload limit reached", limitReached: true }, 429);
+            return c.json({ error: "Free analysis limit reached", limitReached: true }, 429);
           }
         }
       }
     }
 
-    // Record the upload in database (even for guests, with null user_id)
+    // Guest gatekeeper: 3 free per IP
+    if (!userId) {
+      const guestCount = await db.prepare(
+        `SELECT COUNT(*) as count FROM usage_tracking
+         WHERE user_id IS NULL AND action_type = 'upload' AND ip_address = ?`
+      ).bind(ip).first<{ count: number }>();
+      const count = guestCount?.count || 0;
+      if (count >= FREE_TOTAL_ANALYSES) {
+        return c.json({ error: "Free analysis limit reached", limitReached: true }, 429);
+      }
+    }
+
+    // Record the upload (ip_address stored for guests so we can rate-limit them)
     await db.prepare(
-      'INSERT INTO usage_tracking (user_id, action_type, metadata, created_at) VALUES (?, ?, ?, datetime("now"))'
+      'INSERT INTO usage_tracking (user_id, action_type, metadata, ip_address, created_at) VALUES (?, ?, ?, ?, datetime("now"))'
     ).bind(
       userId,
       'upload',
-      JSON.stringify({ 
+      JSON.stringify({
         fileName: body.fileName,
         isPremium,
         isLoggedIn: userId !== null,
         ...body.metadata
-      })
+      }),
+      userId === null ? ip : null  // only store IP for guests
     ).run();
 
-    // If not logged in, return success but no limit info
-    if (!userId) {
-      return c.json({ 
-        success: true,
-        isLoggedIn: false,
-        canUploadMore: false
-      });
-    }
-
-    // For logged-in users, return updated limit info
+    // Compute remaining for response
     if (isPremium) {
-      return c.json({ 
+      return c.json({
         success: true,
         isLoggedIn: true,
         isPremium: true,
@@ -1795,22 +1805,37 @@ app.post("/api/usage/record-upload", async (c) => {
       });
     }
 
-    // Free user: check remaining uploads
-    const uploadCount = await db.prepare(
-      `SELECT COUNT(*) as count FROM usage_tracking 
-       WHERE user_id = ? AND action_type = 'upload'`
-    ).bind(userId).first<{ count: number }>();
+    if (userId) {
+      const uploadCount = await db.prepare(
+        `SELECT COUNT(*) as count FROM usage_tracking
+         WHERE user_id = ? AND action_type = 'upload'`
+      ).bind(userId).first<{ count: number }>();
+      const count = uploadCount?.count || 0;
+      const remaining = Math.max(0, FREE_TOTAL_ANALYSES - count);
+      return c.json({
+        success: true,
+        isLoggedIn: true,
+        isPremium: false,
+        canUploadMore: remaining > 0,
+        remaining,
+        totalUploads: count
+      });
+    }
 
-    const count = uploadCount?.count || 0;
-    const remaining = Math.max(0, FREE_TOTAL_ANALYSES - count);
-
-    return c.json({ 
+    // Guest: compute remaining by IP
+    const guestPost = await db.prepare(
+      `SELECT COUNT(*) as count FROM usage_tracking
+       WHERE user_id IS NULL AND action_type = 'upload' AND ip_address = ?`
+    ).bind(ip).first<{ count: number }>();
+    const gCount = guestPost?.count || 0;
+    const gRemaining = Math.max(0, FREE_TOTAL_ANALYSES - gCount);
+    return c.json({
       success: true,
-      isLoggedIn: true,
+      isLoggedIn: false,
       isPremium: false,
-      canUploadMore: remaining > 0,
-      remaining,
-      totalUploads: count
+      canUploadMore: gRemaining > 0,
+      remaining: gRemaining,
+      totalUploads: gCount
     });
   } catch (error) {
     console.error('Record upload error:', error);
@@ -6437,6 +6462,7 @@ async function scheduledHandler(
   // - "0 */6 * * *"  → Reddit Scout (every 6h)
   // - "0 11 * * *"   → Morning digest at 7am ET (11 UTC)
   // - "0 */12 * * *" → Engagement tracker (every 12h)
+  // - "30 13 * * *"  → Auto-publish in_review drafts at 8:30am ET (Phase 7A)
   const cron = event.cron;
   console.log(`Scheduled handler fired for cron: ${cron}`);
 
@@ -6488,6 +6514,16 @@ async function scheduledHandler(
       console.log(`Engagement updated for ${result.updated} drafts`);
     } catch (err) {
       console.error("Engagement cron failed:", err);
+    }
+  }
+
+  if (cron === "30 13 * * *") {
+    // Auto-publish: 8:30am ET. Flip in_review drafts to approved unless STOP override was logged.
+    try {
+      const result = await autoPublishApproved(envForRoutes as never);
+      console.log(`Auto-publish result: ${result.held ? 'HELD by override' : `${result.approved} approved`}`);
+    } catch (err) {
+      console.error("Auto-publish cron failed:", err);
     }
   }
 }

@@ -775,16 +775,16 @@ export default function HomePage() {
       
       {currentView === 'landing' && (
         <>
-          {/* Inline upgrade banner — shown when free user hits daily limit */}
+          {/* Inline upgrade banner — shown when user hits the 3 free analyses cap */}
           {showLimitBanner && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={() => setShowLimitBanner(false)}>
               <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center" onClick={e => e.stopPropagation()}>
                 <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Lock className="w-7 h-7 text-emerald-600" />
                 </div>
-                <h2 className="text-xl font-bold text-navy-900 mb-2">Daily limit reached</h2>
+                <h2 className="text-xl font-bold text-navy-900 mb-2">You've used your 3 free analyses</h2>
                 <p className="text-navy-600 mb-6 text-sm leading-relaxed">
-                  You've used your free analysis for today. Upgrade to <strong>Premium</strong> for unlimited analyses, negotiation scripts, and full market data.
+                  Upgrade to <strong>Premium</strong> for unlimited bid analyses, negotiation scripts, and full market data.
                 </p>
                 <button
                   onClick={() => { setShowLimitBanner(false); navigate('/premium'); }}

@@ -37,35 +37,17 @@ app.use("*", async (c, next) => {
 // ====================================================================
 // The canonical RemodelerIQ Assistant voice brief — fed to Gemini as system prompt
 // ====================================================================
-const VOICE_BRIEF = `You are the RemodelerIQ Assistant — an expert general contractor and fierce homeowner advocate. Your job is to draft Reddit and Nextdoor replies for Gustavo Atar (the founder) that help homeowners spot risk in contractor bids.
-
-PERSONA: highly experienced contractor friend. Deeply enthusiastic about remodels, ruthlessly protective of the homeowner's wallet. Confident, never condescending. Empathetic to financial stress.
-
-VOICE METRICS:
-- Strictly 7th-grade reading level
-- Punchy, accessible, zero jargon (or explain inline if used)
-- Witty, sharp, direct — do not mince words on facts
-- 100% non-salesy — earn trust first
-
-THREE PILLARS (answer skeleton — hit at least 2 per reply, proportional to the question):
+// ====================================================================
+// Shared structural rules — both personas inherit these
+// ====================================================================
+const SHARED_VOICE_RULES = `THREE PILLARS (answer skeleton — hit at least 2 per reply, proportional to the question):
 1. Contract Risk (40%) — payment terms, missing protections, red flags
 2. Price Check (30%) — labor + material vs. BLS / FRED / Zonda benchmarks
 3. Scope Completeness (30%) — vague allowances, change-order traps
 
-SIGNATURE PHRASES (use AT LEAST ONE per reply, rotate, never twice in a row):
-- "Here's what I'd do if this were my house..."
-- "The honest truth is..."
-- "Red flag alert:"
-- "Most homeowners don't know this, but..."
-- "This is negotiable—here's how..."
-
-FOUNDER ORIGIN — compressed, one line, used in ~1 of 3 replies only:
-"Built RemodelerIQ to protect homeowners — primarily myself, as I started doing projects. What was once a spreadsheet turned into this tool."
-
 CTA RANDOMIZATION:
 - CTA presence on replies is ~50/50 RANDOM. Some replies are pure helpful advice, no link.
-- When CTA is used, frame as PROTECTION not sale. Canonical template:
-  "Check out RemodelerIQ.com — I built this site and its tools so homeowners could be in the know of things like this before they sign."
+- When CTA is used, frame as PROTECTION not sale.
 - Never lead with "first 3 free" — only secondary.
 
 NEVER (hard kill rules):
@@ -91,6 +73,110 @@ OUTPUT FORMAT: Return ONLY valid JSON matching this exact schema:
   "feature_ticket": "string or null — one-line ticket if question reveals analyzer gap",
   "rationale": "string — one sentence explaining the voice choices you made"
 }`;
+
+// ====================================================================
+// GUSTAVO voice — the founder. First-person, anecdotal, conversational.
+// Used for ~25% of drafts (personal-opinion questions, founder-attributed posts).
+// ====================================================================
+const VOICE_BRIEF_GUSTAVO = `You are the RemodelerIQ Assistant — an expert general contractor and fierce homeowner advocate, writing AS Gustavo Atar (the founder). First-person, anecdotal, conversational. You're a homeowner who got tired of being overcharged and built a tool to fix it.
+
+PERSONA: highly experienced contractor friend. Deeply enthusiastic about remodels, ruthlessly protective of the homeowner's wallet. Confident, never condescending. Empathetic to financial stress.
+
+VOICE METRICS:
+- Strictly 7th-grade reading level
+- Punchy, accessible, zero jargon (or explain inline if used)
+- Witty, sharp, direct — do not mince words on facts
+- 100% non-salesy — earn trust first
+- First-person ("I", "my", "I'd") — never third-person
+- Personal touches: sometimes sign off with first name, reference your own renovation
+
+SIGNATURE PHRASES (use AT LEAST ONE per reply, rotate, never twice in a row):
+- "Here's what I'd do if this were my house..."
+- "The honest truth is..."
+- "Red flag alert:"
+- "Most homeowners don't know this, but..."
+- "This is negotiable—here's how..."
+
+FOUNDER ORIGIN — compressed, one line, used in ~1 of 3 replies only:
+"Built RemodelerIQ to protect homeowners — primarily myself, as I started doing projects. What was once a spreadsheet turned into this tool."
+
+CTA template (when randomly selected):
+"Check out RemodelerIQ.com — I built this site and its tools so homeowners could be in the know of things like this before they sign."
+
+${SHARED_VOICE_RULES}`;
+
+// ====================================================================
+// BELLA voice — the content writer. Journalistic, data-first, third-person.
+// Used for ~75% of drafts (numeric/data questions, blog posts, GBP, comparison content).
+// ====================================================================
+const VOICE_BRIEF_BELLA = `You are Bella — the lead content writer for RemodelerIQ. Your job is to draft Reddit and Nextdoor replies that help homeowners spot risk in contractor bids. You write WITH the RemodelerIQ team, not as the founder. Journalistic, data-first, warm but expert.
+
+PERSONA: knowledgeable industry writer who deeply understands the homeowner's perspective. You explain what the data says, cite sources visibly, and never moralize. You're confident about the numbers because they're verifiable. You're warm because you remember being a confused homeowner yourself once.
+
+VOICE METRICS:
+- Strictly 7th-grade reading level
+- Punchy, accessible, zero jargon (or explain inline if used)
+- Journalistic clarity — the data is the hero, not your opinion
+- Third-person or "we" when referring to RemodelerIQ — NEVER "I built this tool"
+- Refer to RemodelerIQ as "we" or "the team" when needed
+- Cite data sources naturally ("BLS OEWS shows...", "FRED's PPI for plumbing fixtures tracked +12% YoY...")
+
+SIGNATURE PHRASES (use AT LEAST ONE per reply, rotate, never twice in a row):
+- "Here's what the data actually says..."
+- "Most homeowners don't realize this, but..."
+- "Looking at recent quotes we're seeing..."
+- "The pattern keeps coming up..."
+- "Quick reality check on these numbers..."
+
+NEVER USE GUSTAVO'S PHRASES (these are reserved for the founder voice):
+- "Here's what I'd do if this were my house" — this is first-person and founder-specific
+- "Built RemodelerIQ to protect homeowners — primarily myself" — that's the founder origin
+
+CTA template (when randomly selected, ~50% of the time):
+"RemodelerIQ.com runs this kind of check automatically — built so homeowners can verify these numbers before signing."
+
+${SHARED_VOICE_RULES}`;
+
+// Backwards-compat alias kept exported for any future imports of the legacy name
+export const VOICE_BRIEF = VOICE_BRIEF_GUSTAVO;
+
+// ====================================================================
+// Persona selection — weighted 75% Bella / 25% Gustavo with content-aware overrides
+// ====================================================================
+type Persona = "bella" | "gustavo";
+
+// Phrases that signal personal opinion → force Gustavo
+const PERSONAL_OPINION_HINTS = [
+  /would\s+you\b/i,
+  /what\s+would\s+you/i,
+  /in\s+your\s+experience/i,
+  /have\s+you\s+ever/i,
+  /your\s+opinion/i,
+  /personally/i,
+  /as\s+a\s+homeowner/i,
+];
+
+// Phrases that signal pure data/comparison question → force Bella
+const DATA_QUESTION_HINTS = [
+  /compare\s+(these|the)/i,
+  /what\s+(should|does)\s+\$\d/i,
+  /(average|median|typical|fair)\s+(cost|price|range)/i,
+  /(per\s+(square\s+)?(foot|sqft))/i,
+  /BLS|FRED|Zonda|benchmark/i,
+];
+
+function pickPersona(sourceExcerpt: string): Persona {
+  const text = sourceExcerpt || "";
+  // Deterministic overrides beat the random draw
+  if (PERSONAL_OPINION_HINTS.some((re) => re.test(text))) return "gustavo";
+  if (DATA_QUESTION_HINTS.some((re) => re.test(text))) return "bella";
+  // Random 75/25 — Math.random replacement-safe (worker has it)
+  return Math.random() < 0.75 ? "bella" : "gustavo";
+}
+
+function voiceBriefFor(persona: Persona): string {
+  return persona === "bella" ? VOICE_BRIEF_BELLA : VOICE_BRIEF_GUSTAVO;
+}
 
 // ====================================================================
 // SCOUT — fetches new Reddit posts and queues them as 'queued' source rows
@@ -251,6 +337,9 @@ export async function runCycle(env: AppEnv["Bindings"], trigger: "manual" | "cro
   const errors: string[] = [];
 
   for (const row of queued) {
+    // Phase 7-Persona: choose Bella (75%) or Gustavo (25%) per draft
+    const persona = pickPersona(row.source_excerpt);
+
     const userPrompt = `${guardrailsText ? `LEARNED GUARDRAILS FROM PRIOR CYCLES (highest priority — apply before anything else):\n${guardrailsText}\n\n` : ""}SOURCE POST:
 Platform: ${row.platform}
 ${row.source_subreddit_or_hood ? `Channel: ${row.source_subreddit_or_hood}\n` : ""}${row.source_author ? `Author: ${row.source_author}\n` : ""}URL: ${row.source_url}
@@ -266,7 +355,7 @@ TASK: Draft a reply for this post. ${row.platform === "reddit" ? "Reddit primary
         contents: userPrompt,
         config: {
           responseMimeType: "application/json",
-          systemInstruction: VOICE_BRIEF,
+          systemInstruction: voiceBriefFor(persona),
           thinkingConfig: { thinkingBudget: 0 },
         },
       });
@@ -295,6 +384,7 @@ TASK: Draft a reply for this post. ${row.platform === "reddit" ? "Reddit primary
            pillar_tags = ?,
            blog_brief = ?,
            feature_ticket = ?,
+           persona = ?,
            status = 'in_review',
            updated_at = datetime('now')
          WHERE id = ?`
@@ -306,6 +396,7 @@ TASK: Draft a reply for this post. ${row.platform === "reddit" ? "Reddit primary
           parsed.pillar_tags || null,
           parsed.blog_brief || null,
           parsed.feature_ticket || null,
+          persona,
           row.id
         )
         .run();
@@ -443,6 +534,42 @@ export async function sendMorningDigest(env: AppEnv["Bindings"]): Promise<{ sent
 
 app.post("/send-digest", async (c) => {
   const result = await sendMorningDigest(c.env);
+  return c.json(result);
+});
+
+// ====================================================================
+// AUTO-PUBLISH — Phase 7A. Called by the 8:30am ET cron (30 13 * * *).
+// If no STOP override was logged in the last 90 minutes, flip in_review drafts
+// to approved. Publishing to Reddit/Facebook happens via separate publishers
+// (Phase 7D/7G) reading the approved queue.
+// ====================================================================
+export async function autoPublishApproved(env: AppEnv["Bindings"]): Promise<{ approved: number; held: boolean }> {
+  // Look for STOP override in the last 90 minutes against any digest cycle today
+  const recentOverride = await env.DB.prepare(
+    `SELECT id FROM cycle_overrides
+     WHERE action = 'stop' AND datetime(received_at) > datetime('now', '-90 minutes')
+     LIMIT 1`
+  ).first();
+
+  if (recentOverride) {
+    console.log("Auto-publish HELD by STOP override");
+    return { approved: 0, held: true };
+  }
+
+  // Flip all in_review drafts to approved
+  const result = await env.DB.prepare(
+    `UPDATE content_drafts
+     SET status = 'approved', approved_at = datetime('now'), updated_at = datetime('now')
+     WHERE status = 'in_review'`
+  ).run();
+
+  const approved = result.meta.changes || 0;
+  console.log(`Auto-published ${approved} drafts`);
+  return { approved, held: false };
+}
+
+app.post("/auto-publish", async (c) => {
+  const result = await autoPublishApproved(c.env);
   return c.json(result);
 });
 

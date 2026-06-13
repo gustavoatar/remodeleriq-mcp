@@ -210,7 +210,7 @@ export default function PremiumPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-navy-900">Free Account</h3>
-                  <p className="text-xs text-navy-500">{user && !isPremium ? 'Your plan' : 'Sign up for more'}</p>
+                  <p className="text-xs text-navy-500">{user && !isPremium ? 'Your plan' : 'Save your history'}</p>
                 </div>
               </div>
 
@@ -219,8 +219,8 @@ export default function PremiumPage() {
               </div>
 
               <ul className="space-y-2 mb-6 text-sm">
-                <PlanFeature included>1 analysis per day</PlanFeature>
-                <PlanFeature included>All Guest features</PlanFeature>
+                <PlanFeature included>3 free analyses total</PlanFeature>
+                <PlanFeature included>Saved analysis history</PlanFeature>
                 <PlanFeature included>Labor rate audit</PlanFeature>
                 <PlanFeature included>Cost trends</PlanFeature>
               </ul>
