@@ -18,6 +18,7 @@ import contentDraftsRoutes from './routes/contentDrafts';
 import contentSwarmRoutes, { runScout, runCycle, trackEngagement, sendMorningDigest, autoPublishApproved } from './routes/contentSwarm';
 import inboxRoutes from './routes/inbox';
 import blogPublishRoutes from './routes/blogPublish';
+import inboundEmailRoutes from './routes/inboundEmail';
 import { generateBlogDraft } from './lib/blogDrafter';
 import { renderBlocks, buildFaqJsonLd, buildArticleJsonLd } from './lib/wordpressBlocks';
 import { createWpDraft } from './lib/wordpressClient';
@@ -363,6 +364,7 @@ app.route('/api/admin/content', contentDraftsRoutes);
 app.route('/api/admin/content', contentSwarmRoutes);
 app.route('/api/admin/inbox', inboxRoutes);
 app.route('/api/admin/blog', blogPublishRoutes);
+app.route('/api/webhooks', inboundEmailRoutes);
 
 // ============================================
 // GEOLOCATION ENDPOINT

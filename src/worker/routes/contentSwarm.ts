@@ -698,46 +698,150 @@ TASK: Draft a reply for this post. ${row.platform === "reddit" ? "Reddit primary
 // ====================================================================
 // ENGAGEMENT TRACKER — polls published Reddit URLs for upvotes/comments
 // ====================================================================
-export async function trackEngagement(env: AppEnv["Bindings"]): Promise<{ updated: number }> {
-  // Get published drafts with Reddit URLs less than 14 days old
+// Polls published Reddit comment URLs for: (1) upvote/comment counts (saved to
+// content_drafts.gustavo_notes), (2) NEW replies posted in response — those land
+// in unified_inbox as 'reddit_reply' rows, classified by Gemini, with a Bella-
+// drafted reply ready for one-tap approval.
+export async function trackEngagement(env: AppEnv["Bindings"]): Promise<{ updated: number; newReplies: number }> {
   const published = await env.DB.prepare(
-    `SELECT id, published_url FROM content_drafts
+    `SELECT id, published_url, draft_reddit FROM content_drafts
      WHERE status = 'published' AND published_url IS NOT NULL
        AND published_url LIKE '%reddit.com%'
        AND datetime(published_at) > datetime('now', '-14 days')
      LIMIT 50`
-  ).all<{ id: number; published_url: string }>();
+  ).all<{ id: number; published_url: string; draft_reddit: string | null }>();
 
   let updated = 0;
+  let newReplies = 0;
+
   for (const row of published.results || []) {
     try {
-      // Convert any Reddit URL to JSON endpoint
       const jsonUrl = row.published_url.replace(/\/?$/, "") + ".json";
       const res = await fetch(jsonUrl, {
-        headers: { "User-Agent": "RemodelerIQ Scout/1.0" },
+        headers: { "User-Agent": "RemodelerIQ Engagement/1.0" },
       });
       if (!res.ok) continue;
-      const data = (await res.json()) as Array<{ data: { children: Array<{ data: { ups?: number; score?: number; num_comments?: number } }> } }>;
+      const data = (await res.json()) as Array<{
+        data: { children: Array<{ data: RedditCommentTreeNode }> };
+      }>;
       const post = data[0]?.data?.children?.[0]?.data;
-      if (!post) continue;
-      const ups = post.score ?? post.ups ?? 0;
-      const comments = post.num_comments ?? 0;
-      // Save metrics in gustavo_notes as a JSON suffix (simple approach without new table)
-      await env.DB.prepare(
-        `UPDATE content_drafts SET
-           gustavo_notes = COALESCE(gustavo_notes, '') || char(10) || ?,
-           updated_at = datetime('now')
-         WHERE id = ?`
-      )
-        .bind(`[metric ${new Date().toISOString().slice(0, 16)}] ups=${ups} comments=${comments}`, row.id)
-        .run();
-      updated++;
+      const commentTree = data[1]?.data?.children || [];
+
+      if (post) {
+        const ups = post.score ?? post.ups ?? 0;
+        const comments = post.num_comments ?? 0;
+        await env.DB.prepare(
+          `UPDATE content_drafts SET
+             gustavo_notes = COALESCE(gustavo_notes, '') || char(10) || ?,
+             updated_at = datetime('now')
+           WHERE id = ?`
+        )
+          .bind(`[metric ${new Date().toISOString().slice(0, 16)}] ups=${ups} comments=${comments}`, row.id)
+          .run();
+        updated++;
+      }
+
+      // Walk the comment tree looking for direct replies to OUR posted comment.
+      // Our URL points to a specific comment — Reddit returns the parent post + the
+      // thread under it. We want NEW children that weren't logged before.
+      const newCommentIds = await ingestNewRedditReplies(
+        env,
+        row.id,
+        row.published_url,
+        row.draft_reddit || "",
+        commentTree
+      );
+      newReplies += newCommentIds.length;
     } catch (err) {
       console.error(`Engagement track failed for ${row.id}:`, err);
     }
   }
 
-  return { updated };
+  return { updated, newReplies };
+}
+
+interface RedditCommentTreeNode {
+  id?: string;
+  author?: string;
+  body?: string;
+  permalink?: string;
+  ups?: number;
+  score?: number;
+  num_comments?: number;
+  replies?: { data?: { children?: Array<{ data: RedditCommentTreeNode }> } } | "";
+}
+
+// Walk Reddit's nested comment tree, finding replies that aren't already in
+// unified_inbox by external_id. Classifies each new reply and inserts.
+async function ingestNewRedditReplies(
+  env: AppEnv["Bindings"],
+  contentDraftId: number,
+  parentUrl: string,
+  ourComment: string,
+  tree: Array<{ data: RedditCommentTreeNode }>
+): Promise<string[]> {
+  const newIds: string[] = [];
+  const flat: RedditCommentTreeNode[] = [];
+
+  const walk = (nodes: Array<{ data: RedditCommentTreeNode }>) => {
+    for (const n of nodes || []) {
+      const d = n.data;
+      if (!d || !d.id || !d.body) continue;
+      flat.push(d);
+      const repliesData = d.replies && typeof d.replies === "object" ? d.replies.data : undefined;
+      if (repliesData?.children) walk(repliesData.children);
+    }
+  };
+  walk(tree);
+
+  // Dedupe against existing inbox rows
+  if (flat.length === 0) return newIds;
+  const existingPlaceholders = flat.map(() => "?").join(",");
+  const existing = await env.DB.prepare(
+    `SELECT external_id FROM unified_inbox WHERE external_id IN (${existingPlaceholders})`
+  )
+    .bind(...flat.map((f) => `reddit_${f.id}`))
+    .all<{ external_id: string }>();
+  const existingSet = new Set((existing.results || []).map((r) => r.external_id));
+
+  for (const c of flat) {
+    const externalId = `reddit_${c.id}`;
+    if (existingSet.has(externalId)) continue;
+
+    // Skip our own comments (author matches our Reddit account if we know it)
+    if (c.author === "[deleted]" || !c.body) continue;
+
+    const { classifyInboxItem } = await import("../lib/inboxClassifier");
+    const classification = await classifyInboxItem(env as never, {
+      source: "reddit_reply",
+      from_handle: `u/${c.author}`,
+      body: c.body,
+      context: ourComment ? `Our comment they're replying to:\n${ourComment.slice(0, 800)}` : undefined,
+    });
+
+    const permalink = c.permalink ? `https://www.reddit.com${c.permalink}` : parentUrl;
+
+    await env.DB.prepare(
+      `INSERT INTO unified_inbox
+         (source, external_id, from_handle, subject, body, related_draft_id,
+          tag, status, proposed_reply, proposed_persona)
+       VALUES ('reddit_reply', ?, ?, ?, ?, ?, ?, 'new', ?, 'gustavo')`
+    )
+      .bind(
+        externalId,
+        `u/${c.author}`,
+        `Reply on Reddit thread`,
+        `${classification.summary}\n\n${permalink}\n\n---\n\n${c.body.slice(0, 4000)}`,
+        contentDraftId,
+        classification.tag,
+        classification.proposed_reply
+      )
+      .run();
+
+    newIds.push(externalId);
+  }
+
+  return newIds;
 }
 
 app.post("/track-engagement", async (c) => {
