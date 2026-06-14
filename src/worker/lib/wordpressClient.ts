@@ -54,6 +54,7 @@ export interface CreateDraftParams {
   categories?: number[];       // WP category IDs
   tags?: number[];             // WP tag IDs
   status?: "draft" | "publish" | "pending";
+  featured_media?: number;     // WP media ID of the hero image
   meta?: Record<string, unknown>;
   jsonLdHtmlInjection?: string;  // optional Article/FAQ schema injected at end of content
 }
@@ -90,6 +91,7 @@ export async function createWpDraft(
   if (params.slug) body.slug = params.slug;
   if (params.categories) body.categories = params.categories;
   if (params.tags) body.tags = params.tags;
+  if (params.featured_media) body.featured_media = params.featured_media;
   if (params.meta) body.meta = params.meta;
 
   const res = await fetch(`${WP_BASE}/posts`, {

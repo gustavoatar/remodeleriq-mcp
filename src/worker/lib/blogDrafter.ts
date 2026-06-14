@@ -78,7 +78,12 @@ export interface BlogDraft {
   meta_description: string;
   category: string;
   tags: string[];
-  featured_image_brief: string;
+  /** Phase 7C v1 legacy field name — Gemini still emits "featured_image_brief" in some runs */
+  featured_image_brief?: string;
+  /** Phase 7C v2 — Imagen 3 prompt for the post hero image */
+  featured_image_prompt?: string;
+  /** Phase 7C v2 — alt text for the hero image */
+  featured_image_alt?: string;
   last_updated: string;
   blocks: BlogBlock[];
   persona: Persona;

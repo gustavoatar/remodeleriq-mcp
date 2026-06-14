@@ -14,13 +14,20 @@ import {
   renderBlocks,
   buildFaqJsonLd,
   buildArticleJsonLd,
+  extractImagenPrompts,
   type BlogBlock,
+  type ImageResolution,
 } from "../lib/wordpressBlocks";
 import {
   createWpDraft,
   publishWpDraft,
   findCategoryIdBySlug,
 } from "../lib/wordpressClient";
+import {
+  generateFeaturedImage,
+  uploadFeaturedImage,
+  createFeaturedImage,
+} from "../lib/featuredImage";
 
 const app = new Hono<AppEnv>();
 
@@ -48,15 +55,104 @@ app.use("*", async (c, next) => {
   await next();
 });
 
+// Resolve inline image blocks. Caps at 1 image to stay within Workers' 30s wall-time
+// limit when combined with the featured image. Extra images are dropped — Bella can
+// always request another generation pass post-creation if desired.
+async function resolveInlineImages(
+  env: AppEnv["Bindings"],
+  persona: "bella" | "gustavo",
+  prompts: string[],
+  postTitle: string
+): Promise<Map<string, ImageResolution>> {
+  const resolutions = new Map<string, ImageResolution>();
+  if (prompts.length === 0) return resolutions;
+
+  // Cap to 1 inline image per draft to keep total Worker wall time bounded
+  const capped = prompts.slice(0, 1);
+
+  await Promise.all(
+    capped.map(async (prompt, idx) => {
+      try {
+        const generated = await generateFeaturedImage(env as never, prompt);
+        if (!generated) return;
+        const slug = postTitle
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 40);
+        const ext = generated.mimeType === "image/jpeg" ? "jpg" : "png";
+        const filename = `${slug}-inline-${idx + 1}-${Date.now()}.${ext}`;
+        const mediaId = await uploadFeaturedImage(
+          env as never,
+          persona,
+          generated.bytes,
+          generated.mimeType,
+          filename,
+          prompt.slice(0, 100)
+        );
+        if (!mediaId) return;
+        // Build the WP CDN URL the renderer can <img src> to
+        const src = `https://intelligence.remodeleriq.com/wp-json/wp/v2/media/${mediaId}`;
+        // Fetch the media to get the real source_url
+        try {
+          const auth =
+            "Basic " +
+            btoa(
+              `${persona === "bella" ? (env as unknown as Record<string, string>).WORDPRESS_USER_BELLA : (env as unknown as Record<string, string>).WORDPRESS_USER_GUSTAVO}:${persona === "bella" ? (env as unknown as Record<string, string>).WORDPRESS_PASS_BELLA : (env as unknown as Record<string, string>).WORDPRESS_PASS_GUSTAVO}`
+            );
+          const mediaRes = await fetch(src, {
+            headers: {
+              Authorization: auth,
+              "User-Agent": "Mozilla/5.0",
+              Accept: "application/json",
+            },
+          });
+          if (mediaRes.ok) {
+            const mediaJson = (await mediaRes.json()) as { source_url?: string };
+            if (mediaJson.source_url) {
+              resolutions.set(prompt, { src: mediaJson.source_url, mediaId });
+              return;
+            }
+          }
+        } catch (err) {
+          console.error(`Inline image source_url fetch failed:`, err);
+        }
+        resolutions.set(prompt, { src, mediaId });
+      } catch (err) {
+        console.error(`Inline image gen failed for prompt "${prompt.slice(0, 50)}":`, err);
+      }
+    })
+  );
+
+  return resolutions;
+}
+
 // Shared helper: take a generated BlogDraft and push it to WordPress as a draft
 // + create the unified_inbox approval row, link back to content_drafts.
 async function publishDraftToWp(
   env: AppEnv["Bindings"],
   draft: BlogDraft,
   contentDraftId: number | null
-): Promise<{ wpPostId: number; wpLink: string }> {
+): Promise<{ wpPostId: number; wpLink: string; featuredMediaId: number | null }> {
   const blocks = draft.blocks as BlogBlock[];
-  const blockHtml = renderBlocks(blocks);
+
+  // ===== Phase 7C v2 — visual upgrade =====
+  // Step 1: Generate ALL inline image blocks in parallel
+  const imagenPrompts = extractImagenPrompts(blocks);
+  const imageResolutions = await resolveInlineImages(env, draft.persona, imagenPrompts, draft.title);
+
+  // Step 2: Generate the featured (hero) image
+  const featuredPrompt = draft.featured_image_prompt || draft.featured_image_brief || draft.title;
+  const featuredAlt = draft.featured_image_alt || draft.title;
+  const featuredMediaId = await createFeaturedImage(
+    env as never,
+    draft.persona,
+    featuredPrompt,
+    featuredAlt
+  );
+
+  // Step 3: Render blocks with resolved image URLs
+  const blockHtml = renderBlocks(blocks, imageResolutions);
 
   // Build JSON-LD schema for FAQ + Article (Article needs published_at — use draft creation time)
   const now = new Date().toISOString();
@@ -85,6 +181,7 @@ async function publishDraftToWp(
     content: blockHtml,
     excerpt: draft.meta_description,
     categories: categoryId ? [categoryId] : undefined,
+    featured_media: featuredMediaId || undefined,
     status: "draft",
     jsonLdHtmlInjection: schemaInjection,
   });
@@ -139,7 +236,7 @@ async function publishDraftToWp(
     )
     .run();
 
-  return { wpPostId: wpResp.id, wpLink: wpResp.link };
+  return { wpPostId: wpResp.id, wpLink: wpResp.link, featuredMediaId };
 }
 
 // ====================================================================
