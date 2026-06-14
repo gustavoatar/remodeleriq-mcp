@@ -20,6 +20,10 @@ declare global {
     STRIPE_PROJECT_PASS?: string;
     STRIPE_REMODELER_PASS?: string;
     STRIPE_LIFETIME_PASS?: string;
+    NEXTDOOR_CLIENT_ID?: string;
+    NEXTDOOR_CLIENT_SECRET?: string;
+    REDDIT_CLIENT_ID?: string;
+    REDDIT_CLIENT_SECRET?: string;
   }
 }
 

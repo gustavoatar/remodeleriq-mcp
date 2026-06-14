@@ -17,6 +17,10 @@ import magicLinkRoutes from './routes/magicLink';
 import contentDraftsRoutes from './routes/contentDrafts';
 import contentSwarmRoutes, { runScout, runCycle, trackEngagement, sendMorningDigest, autoPublishApproved } from './routes/contentSwarm';
 import inboxRoutes from './routes/inbox';
+import blogPublishRoutes from './routes/blogPublish';
+import { generateBlogDraft } from './lib/blogDrafter';
+import { renderBlocks, buildFaqJsonLd, buildArticleJsonLd } from './lib/wordpressBlocks';
+import { createWpDraft } from './lib/wordpressClient';
 import { authMiddleware } from './middleware/auth';
 import { type UserProfile as UserProfileType } from './types';
 import { getAllOewsData } from "@/shared/lazyData/oewsData";
@@ -358,6 +362,7 @@ app.route('/api', magicLinkRoutes);
 app.route('/api/admin/content', contentDraftsRoutes);
 app.route('/api/admin/content', contentSwarmRoutes);
 app.route('/api/admin/inbox', inboxRoutes);
+app.route('/api/admin/blog', blogPublishRoutes);
 
 // ============================================
 // GEOLOCATION ENDPOINT
@@ -6524,6 +6529,81 @@ async function scheduledHandler(
       console.log(`Auto-publish result: ${result.held ? 'HELD by override' : `${result.approved} approved`}`);
     } catch (err) {
       console.error("Auto-publish cron failed:", err);
+    }
+  }
+
+  if (cron === "0 10 * * SUN") {
+    // Sunday 6am ET (10 UTC): pick oldest blog_brief, draft a long-form post, push to WP as draft.
+    // Lands as an approval row in unified_inbox for Gustavo to flip publish.
+    try {
+      const apiKey = (env as unknown as Record<string, unknown>).GEMINI_API_KEY as string | undefined;
+      if (!apiKey) {
+        console.log('Weekly blog cron skipped: no GEMINI_API_KEY');
+      } else {
+        const row = await env.DB.prepare(
+          `SELECT id, blog_brief FROM content_drafts
+           WHERE blog_brief IS NOT NULL
+             AND length(blog_brief) > 30
+             AND wp_post_id IS NULL
+           ORDER BY id ASC LIMIT 1`
+        ).first<{ id: number; blog_brief: string }>();
+
+        if (!row) {
+          console.log('Weekly blog cron: no queued briefs');
+        } else {
+          const draft = await generateBlogDraft(apiKey, row.blog_brief);
+          const blockHtml = renderBlocks(draft.blocks);
+          const now = new Date().toISOString();
+          const articleSchema = buildArticleJsonLd({
+            title: draft.title,
+            description: draft.meta_description,
+            url: "",
+            author: draft.persona,
+            datePublished: now,
+            dateModified: now,
+          });
+          const faqSchema = buildFaqJsonLd(draft.blocks);
+          const schemaInjection = [articleSchema, faqSchema].filter(Boolean).join("\n");
+
+          const wpResp = await createWpDraft(env as never, {
+            persona: draft.persona,
+            title: draft.title,
+            content: blockHtml,
+            excerpt: draft.meta_description,
+            status: "draft",
+            jsonLdHtmlInjection: schemaInjection,
+          });
+
+          await env.DB.prepare(
+            `UPDATE content_drafts SET
+               wp_post_id = ?, wp_pillar = ?, persona = ?,
+               blog_drafted_at = datetime('now'), updated_at = datetime('now')
+             WHERE id = ?`
+          )
+            .bind(wpResp.id, draft.pillar, draft.persona, row.id)
+            .run();
+
+          await env.DB.prepare(
+            `INSERT INTO unified_inbox
+               (source, external_id, from_handle, subject, body, related_draft_id,
+                tag, status, proposed_persona)
+             VALUES ('draft_pending', ?, ?, ?, ?, ?, 'approval', 'new', ?)`
+          )
+            .bind(
+              `wp-${wpResp.id}`,
+              draft.persona,
+              `[BLOG DRAFT] ${draft.title}`,
+              `Pillar: ${draft.category}\nPreview: ${wpResp.link}?preview=true\nMeta: ${draft.meta_description}`,
+              row.id,
+              draft.persona
+            )
+            .run();
+
+          console.log(`Weekly blog drafted: ${draft.persona} / ${draft.pillar} / WP #${wpResp.id}`);
+        }
+      }
+    } catch (err) {
+      console.error("Weekly blog cron failed:", err);
     }
   }
 }
