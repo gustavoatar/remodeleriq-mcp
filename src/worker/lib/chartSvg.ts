@@ -41,20 +41,22 @@ function esc(s: string | number): string {
     .replace(/"/g, "&quot;");
 }
 
-function fmt(value: number, format: "currency" | "percent" | "raw" = "raw"): string {
+function fmt(value: number | undefined | null, format: "currency" | "percent" | "raw" = "raw"): string {
+  const n = typeof value === "number" && isFinite(value) ? value : 0;
   if (format === "currency") {
-    if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(1)}K`;
-    return `$${value.toFixed(2)}`;
+    if (Math.abs(n) >= 1000) return `$${(n / 1000).toFixed(1)}K`;
+    return `$${n.toFixed(2)}`;
   }
-  if (format === "percent") return `${value.toFixed(1)}%`;
-  return value.toLocaleString();
+  if (format === "percent") return `${n.toFixed(1)}%`;
+  return n.toLocaleString();
 }
 
-// Brand palette
+// Brand palette — uses the canonical brand green #1F9C4C consistent with
+// remodeleriq.com email templates and CTAs (NOT generic Tailwind emerald).
 const PALETTE = {
-  primary: "#10b981",      // emerald-500
-  primary_dark: "#047857", // emerald-700
-  accent: "#fbbf24",       // amber-400
+  primary: "#1F9C4C",      // RemodelerIQ brand green
+  primary_dark: "#157a3a", // darker brand green
+  accent: "#f59e0b",       // amber-500
   text_dark: "#0f172a",    // slate-900
   text_muted: "#475569",   // slate-600
   text_light: "#f8fafc",   // slate-50
@@ -74,7 +76,12 @@ export function renderBarChartSvg(data: BarChartData): string {
   const padding = { top: 80, right: 80, bottom: 60, left: 200 };
   const rowH = 38;
   const rowGap = 8;
-  const sorted = [...data.rows].sort((a, b) => b.value - a.value);
+  // Normalize rows — Gemini sometimes emits rows without value
+  const rows = (data.rows || []).map((r) => ({
+    ...r,
+    value: typeof r.value === "number" && isFinite(r.value) ? r.value : 0,
+  }));
+  const sorted = [...rows].sort((a, b) => b.value - a.value);
   const H = padding.top + sorted.length * (rowH + rowGap) + padding.bottom;
   const max = Math.max(...sorted.map((r) => r.value));
   const chartWidth = W - padding.left - padding.right;

@@ -58,54 +58,54 @@ function esc(s: string): string {
 
 function renderHero(b: Extract<BlogBlock, { type: "hero" }>): string {
   return `<!-- wp:cover {"customOverlayColor":"#0f172a","minHeight":380,"className":"riq-hero"} -->
-<div class="wp-block-cover riq-hero" style="background-color:#0f172a;min-height:380px">
-  <span aria-hidden="true" class="wp-block-cover__background has-background-dim" style="background-color:#0f172a"></span>
+<div class="wp-block-cover riq-hero" style="background-color:#0f172a;min-height:380px;padding:48px 32px;">
+  <span aria-hidden="true" class="wp-block-cover__background has-background-dim-0" style="background-color:#0f172a"></span>
   <div class="wp-block-cover__inner-container">
-    <!-- wp:heading {"level":1,"textColor":"white"} -->
-    <h1 class="has-white-color has-text-color">${esc(b.title)}</h1>
+    <!-- wp:heading {"level":1,"textColor":"white","className":"riq-hero-title"} -->
+    <h1 class="riq-hero-title has-white-color has-text-color" style="color:#ffffff;font-size:2.75rem;font-weight:800;letter-spacing:-0.025em;line-height:1.15;margin:0 0 16px;">${esc(b.title)}</h1>
     <!-- /wp:heading -->
-    <!-- wp:paragraph {"textColor":"white","fontSize":"large"} -->
-    <p class="has-white-color has-text-color has-large-font-size">${esc(b.subtitle)}</p>
+    <!-- wp:paragraph {"textColor":"white","className":"riq-hero-subtitle"} -->
+    <p class="riq-hero-subtitle has-white-color has-text-color" style="color:#e2e8f0;font-size:1.25rem;line-height:1.5;margin:0;">${esc(b.subtitle)}</p>
     <!-- /wp:paragraph -->
   </div>
 </div>
 <!-- /wp:cover -->
 
-<!-- wp:paragraph {"className":"riq-snippet","fontSize":"medium"} -->
-<p class="riq-snippet has-medium-font-size"><strong>${esc(b.snippet_paragraph)}</strong></p>
+<!-- wp:paragraph {"className":"riq-snippet","style":{"typography":{"firstLetter":true}}} -->
+<p class="riq-snippet" style="font-size:1.2rem;line-height:1.7;color:#0f172a;margin:32px 0;font-weight:500;"><span style="float:left;font-size:5rem;line-height:0.85;font-weight:800;color:#1F9C4C;padding:6px 12px 0 0;font-family:Georgia,serif;">${esc(b.snippet_paragraph.charAt(0))}</span>${esc(b.snippet_paragraph.slice(1))}</p>
 <!-- /wp:paragraph -->`;
 }
 
 function renderH2(b: Extract<BlogBlock, { type: "h2" }>): string {
   return `<!-- wp:heading {"level":2,"className":"riq-h2"} -->
-<h2 class="riq-h2">${esc(b.text)}</h2>
+<h2 class="riq-h2" style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;margin:48px 0 16px;line-height:1.2;">${esc(b.text)}</h2>
 <!-- /wp:heading -->`;
 }
 
 function renderH3(b: Extract<BlogBlock, { type: "h3" }>): string {
   return `<!-- wp:heading {"level":3,"className":"riq-h3"} -->
-<h3 class="riq-h3">${esc(b.text)}</h3>
+<h3 class="riq-h3" style="font-size:1.4rem;font-weight:700;color:#0f172a;margin:32px 0 12px;line-height:1.3;">${esc(b.text)}</h3>
 <!-- /wp:heading -->`;
 }
 
 function renderParagraph(b: Extract<BlogBlock, { type: "paragraph" }>): string {
   return `<!-- wp:paragraph -->
-<p>${esc(b.text)}</p>
+<p style="font-size:1.05rem;line-height:1.7;color:#1e293b;margin:0 0 18px;">${esc(b.text)}</p>
 <!-- /wp:paragraph -->`;
 }
 
 function renderStatCallout(b: Extract<BlogBlock, { type: "stat_callout" }>): string {
   const dateSuffix = b.date ? ` (${esc(b.date)})` : "";
-  return `<!-- wp:group {"className":"riq-stat-callout","backgroundColor":"emerald","textColor":"white"} -->
-<div class="wp-block-group riq-stat-callout has-emerald-background-color has-white-color has-background has-text-color">
-  <!-- wp:heading {"level":3,"className":"riq-stat-number","textColor":"white"} -->
-  <h3 class="riq-stat-number has-white-color has-text-color">${esc(b.big_number)}</h3>
+  return `<!-- wp:group {"className":"riq-stat-callout"} -->
+<div class="wp-block-group riq-stat-callout" style="background-color:#1F9C4C;color:#ffffff;padding:32px 28px;border-radius:12px;margin:32px 0;text-align:center;">
+  <!-- wp:heading {"level":3,"className":"riq-stat-number"} -->
+  <h3 class="riq-stat-number" style="color:#ffffff;font-size:3rem;font-weight:800;letter-spacing:-0.02em;line-height:1;margin:0 0 8px;">${esc(b.big_number)}</h3>
   <!-- /wp:heading -->
-  <!-- wp:paragraph {"className":"riq-stat-label","textColor":"white"} -->
-  <p class="riq-stat-label has-white-color has-text-color"><strong>${esc(b.label)}</strong></p>
+  <!-- wp:paragraph {"className":"riq-stat-label"} -->
+  <p class="riq-stat-label" style="color:#ffffff;font-size:1.05rem;font-weight:600;margin:0 0 6px;line-height:1.4;">${esc(b.label)}</p>
   <!-- /wp:paragraph -->
-  <!-- wp:paragraph {"className":"riq-stat-source","fontSize":"small","textColor":"white"} -->
-  <p class="riq-stat-source has-white-color has-text-color has-small-font-size">Source: ${esc(b.source)}${dateSuffix}</p>
+  <!-- wp:paragraph {"className":"riq-stat-source"} -->
+  <p class="riq-stat-source" style="color:#d1fae5;font-size:0.8rem;margin:0;font-style:italic;">Source: ${esc(b.source)}${dateSuffix}</p>
   <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->`;
@@ -129,54 +129,56 @@ ${body}
 }
 
 function renderPullQuote(b: Extract<BlogBlock, { type: "pull_quote" }>): string {
-  return `<!-- wp:pullquote {"className":"riq-pull-quote"} -->
-<figure class="wp-block-pullquote riq-pull-quote">
-  <blockquote>
-    <p>${esc(b.text)}</p>
-    <cite>${esc(b.attribution)}</cite>
-  </blockquote>
-</figure>
-<!-- /wp:pullquote -->`;
+  // Use wp:quote (not wp:pullquote) — themes apply cursive/script fonts to pullquote
+  // by default. wp:quote with explicit inline styling stays clean serif.
+  return `<!-- wp:quote {"className":"riq-pull-quote"} -->
+<blockquote class="wp-block-quote riq-pull-quote" style="border-left:4px solid #1F9C4C;background:#f8fafc;padding:24px 28px;margin:32px 0;border-radius:0 8px 8px 0;font-style:normal;">
+  <p style="font-size:1.35rem;font-weight:600;color:#0f172a;line-height:1.4;margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;">"${esc(b.text)}"</p>
+  <cite style="font-size:0.95rem;color:#475569;font-style:normal;font-weight:500;">— ${esc(b.attribution)}</cite>
+</blockquote>
+<!-- /wp:quote -->`;
 }
 
 function renderFaq(b: Extract<BlogBlock, { type: "faq" }>): string {
   const items = b.items
     .map((item) => `<!-- wp:heading {"level":3,"className":"riq-faq-q"} -->
-<h3 class="riq-faq-q">${esc(item.q)}</h3>
+<h3 class="riq-faq-q" style="font-size:1.2rem;font-weight:700;color:#0f172a;margin:24px 0 8px;line-height:1.35;">${esc(item.q)}</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"riq-faq-a"} -->
-<p class="riq-faq-a">${esc(item.a)}</p>
+<p class="riq-faq-a" style="font-size:1rem;line-height:1.65;color:#334155;margin:0 0 12px;">${esc(item.a)}</p>
 <!-- /wp:paragraph -->`)
     .join("\n\n");
 
   return `<!-- wp:heading {"level":2,"className":"riq-faq-heading"} -->
-<h2 class="riq-faq-heading">Frequently Asked Questions</h2>
+<h2 class="riq-faq-heading" style="font-size:2rem;font-weight:800;color:#0f172a;margin:48px 0 16px;letter-spacing:-0.02em;">Frequently Asked Questions</h2>
 <!-- /wp:heading -->
 
 <!-- wp:group {"className":"riq-faq-block"} -->
-<div class="wp-block-group riq-faq-block">
+<div class="wp-block-group riq-faq-block" style="background:#f8fafc;padding:32px;border-radius:12px;margin:16px 0 32px;">
 ${items}
 </div>
 <!-- /wp:group -->`;
 }
 
 function renderSectionCover(b: Extract<BlogBlock, { type: "section_cover" }>): string {
-  const themes: Record<string, { bg: string; text: string; accent: string }> = {
-    dark: { bg: "#0f172a", text: "white", accent: "emerald" },
-    emerald: { bg: "#047857", text: "white", accent: "white" },
-    amber: { bg: "#92400e", text: "white", accent: "amber" },
+  // Themes use explicit inline backgrounds and #ffffff text (NOT theme color
+  // presets) so we don't depend on the WP theme defining "emerald" etc.
+  const themes: Record<string, { bg: string }> = {
+    dark: { bg: "#0f172a" },
+    emerald: { bg: "#1F9C4C" }, // brand green
+    amber: { bg: "#b45309" },
   };
   const t = themes[b.theme || "dark"];
-  return `<!-- wp:cover {"customOverlayColor":"${t.bg}","minHeight":280,"className":"riq-section-cover"} -->
-<div class="wp-block-cover riq-section-cover" style="background-color:${t.bg};min-height:280px;padding:48px 32px;">
+  return `<!-- wp:cover {"customOverlayColor":"${t.bg}","minHeight":260,"className":"riq-section-cover"} -->
+<div class="wp-block-cover riq-section-cover" style="background-color:${t.bg};min-height:260px;padding:48px 32px;margin:40px 0;border-radius:12px;overflow:hidden;">
   <span aria-hidden="true" class="wp-block-cover__background has-background-dim-0" style="background-color:${t.bg}"></span>
   <div class="wp-block-cover__inner-container">
-    <!-- wp:heading {"level":2,"textColor":"${t.text}","className":"riq-section-cover-title"} -->
-    <h2 class="riq-section-cover-title has-${t.text}-color has-text-color" style="font-weight:800;letter-spacing:-0.02em;">${esc(b.title)}</h2>
+    <!-- wp:heading {"level":2,"className":"riq-section-cover-title"} -->
+    <h2 class="riq-section-cover-title" style="color:#ffffff;font-size:2rem;font-weight:800;letter-spacing:-0.02em;line-height:1.2;margin:0 0 14px;">${esc(b.title)}</h2>
     <!-- /wp:heading -->
-    <!-- wp:paragraph {"textColor":"${t.text}","fontSize":"large"} -->
-    <p class="has-${t.text}-color has-text-color has-large-font-size" style="line-height:1.55;">${esc(b.body)}</p>
+    <!-- wp:paragraph {"className":"riq-section-cover-body"} -->
+    <p class="riq-section-cover-body" style="color:#e2e8f0;font-size:1.1rem;line-height:1.55;margin:0;">${esc(b.body)}</p>
     <!-- /wp:paragraph -->
   </div>
 </div>
@@ -187,7 +189,7 @@ function renderTwoColumn(b: Extract<BlogBlock, { type: "two_column" }>): string 
   const themeBg = (theme: "ok" | "warning" | undefined) =>
     theme === "warning" ? "#fef2f2" : theme === "ok" ? "#ecfdf5" : "#f8fafc";
   const themeBorder = (theme: "ok" | "warning" | undefined) =>
-    theme === "warning" ? "#ef4444" : theme === "ok" ? "#10b981" : "#cbd5e1";
+    theme === "warning" ? "#dc2626" : theme === "ok" ? "#1F9C4C" : "#cbd5e1";
 
   return `<!-- wp:columns {"className":"riq-two-column"} -->
 <div class="wp-block-columns riq-two-column">
@@ -220,20 +222,20 @@ function renderThreeColumn(b: Extract<BlogBlock, { type: "three_column" }>): str
   const cols = b.items
     .map(
       (item) => `  <!-- wp:column -->
-  <div class="wp-block-column" style="background:#f8fafc;padding:24px;border-radius:8px;text-align:center;">
-    ${item.icon_emoji ? `<!-- wp:paragraph {"fontSize":"x-large"} --><p class="has-x-large-font-size" style="font-size:48px;margin:0 0 8px;">${esc(item.icon_emoji)}</p><!-- /wp:paragraph -->` : ""}
+  <div class="wp-block-column" style="background:#f8fafc;padding:28px 20px;border-radius:10px;text-align:center;border:1px solid #e2e8f0;">
+    ${item.icon_emoji ? `<!-- wp:paragraph {"className":"riq-col-icon"} --><p class="riq-col-icon" style="font-size:1.75rem;line-height:1;margin:0 auto 14px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:#ffffff;border:1px solid #d1fae5;border-radius:50%;">${esc(item.icon_emoji)}</p><!-- /wp:paragraph -->` : ""}
     <!-- wp:heading {"level":3,"className":"riq-col-heading"} -->
-    <h3 class="riq-col-heading" style="margin-top:0;font-weight:700;font-size:1.2rem;">${esc(item.heading)}</h3>
+    <h3 class="riq-col-heading" style="margin:0 0 8px;font-weight:700;font-size:1.05rem;color:#0f172a;letter-spacing:-0.01em;">${esc(item.heading)}</h3>
     <!-- /wp:heading -->
     <!-- wp:paragraph -->
-    <p>${esc(item.body)}</p>
+    <p style="font-size:0.95rem;line-height:1.55;color:#475569;margin:0;">${esc(item.body)}</p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /wp:column -->`
     )
     .join("\n");
   return `<!-- wp:columns {"className":"riq-three-column"} -->
-<div class="wp-block-columns riq-three-column">
+<div class="wp-block-columns riq-three-column" style="gap:16px;margin:32px 0;">
 ${cols}
 </div>
 <!-- /wp:columns -->`;
@@ -279,37 +281,73 @@ ${svg}
 <!-- /wp:html -->`;
 }
 
+// Real internal URLs allowed for CTA buttons. Anything else gets rewritten to /
+const VALID_INTERNAL_URLS = new Set([
+  "https://remodeleriq.com",
+  "https://remodeleriq.com/",
+  "https://remodeleriq.com/how-we-score",
+  "https://remodeleriq.com/labor-rates",
+  "https://remodeleriq.com/trusted-radar",
+  "https://remodeleriq.com/glossary",
+  "https://remodeleriq.com/premium",
+  "https://remodeleriq.com/remodeling-cost-guides/",
+  "https://remodeleriq.com/studio",
+  "https://intelligence.remodeleriq.com",
+  "https://intelligence.remodeleriq.com/",
+]);
+
+function sanitizeUrl(url: string): string {
+  const trimmed = (url || "").trim();
+  if (!trimmed) return "https://remodeleriq.com";
+  // External URLs (other domains): allow as-is
+  if (/^https?:\/\//i.test(trimmed) && !trimmed.includes("remodeleriq.com")) return trimmed;
+  // Internal URLs: must be in the whitelist OR a remodeling-cost-guides subpath
+  if (VALID_INTERNAL_URLS.has(trimmed)) return trimmed;
+  if (/^https:\/\/remodeleriq\.com\/remodeling-cost-guides\/[a-z0-9-]+-remodeling-cost-guide\/?$/i.test(trimmed)) return trimmed;
+  if (/^https:\/\/intelligence\.remodeleriq\.com\/[a-z0-9-]+\/?$/i.test(trimmed)) return trimmed;
+  // Fall back to homepage rather than 404 — Bella invented this URL
+  return "https://remodeleriq.com";
+}
+
 function renderCtaButtonGroup(b: Extract<BlogBlock, { type: "cta_button_group" }>): string {
   const buttons = b.buttons
     .map(
-      (btn) => `  <!-- wp:button {"className":"riq-cta-btn-${btn.style || "primary"}"} -->
-  <div class="wp-block-button riq-cta-btn-${btn.style || "primary"}">
-    <a class="wp-block-button__link" href="${esc(btn.url)}" style="${btn.style === "secondary" ? "background:transparent;border:2px solid #10b981;color:#10b981;" : "background:#10b981;color:white;"}padding:14px 32px;border-radius:8px;font-weight:600;text-decoration:none;">${esc(btn.label)}</a>
+      (btn) => {
+        const url = sanitizeUrl(btn.url);
+        const style = btn.style || "primary";
+        const buttonStyles = style === "secondary"
+          ? "background:#ffffff;border:2px solid #1F9C4C;color:#1F9C4C;padding:13px 28px;border-radius:8px;font-weight:600;text-decoration:none;font-size:1rem;display:inline-block;"
+          : "background:#1F9C4C;color:#ffffff;padding:14px 28px;border-radius:8px;font-weight:600;text-decoration:none;font-size:1rem;display:inline-block;border:2px solid #1F9C4C;";
+        return `  <!-- wp:button {"className":"riq-cta-btn-${style}"} -->
+  <div class="wp-block-button riq-cta-btn-${style}" style="margin:6px;">
+    <a class="wp-block-button__link" href="${esc(url)}" style="${buttonStyles}">${esc(btn.label)}</a>
   </div>
-  <!-- /wp:button -->`
+  <!-- /wp:button -->`;
+      }
     )
     .join("\n");
 
   return `${b.heading ? `<!-- wp:heading {"level":3,"className":"riq-cta-group-heading"} -->
-<h3 class="riq-cta-group-heading" style="text-align:center;margin-top:32px;">${esc(b.heading)}</h3>
+<h3 class="riq-cta-group-heading" style="text-align:center;margin:40px 0 16px;font-size:1.4rem;font-weight:700;color:#0f172a;">${esc(b.heading)}</h3>
 <!-- /wp:heading -->\n\n` : ""}<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"className":"riq-cta-group"} -->
-<div class="wp-block-buttons riq-cta-group" style="justify-content:center;gap:12px;margin:24px 0;">
+<div class="wp-block-buttons riq-cta-group" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0 32px;">
 ${buttons}
 </div>
 <!-- /wp:buttons -->`;
 }
 
 function renderCtaBanner(b: Extract<BlogBlock, { type: "cta_banner" }>): string {
-  return `<!-- wp:group {"className":"riq-cta-banner","backgroundColor":"emerald","textColor":"white","layout":{"type":"constrained"}} -->
-<div class="wp-block-group riq-cta-banner has-emerald-background-color has-white-color has-background has-text-color">
-  <!-- wp:paragraph {"textColor":"white","fontSize":"large"} -->
-  <p class="has-white-color has-text-color has-large-font-size"><strong>${esc(b.text)}</strong></p>
+  const url = sanitizeUrl(b.button_url);
+  return `<!-- wp:group {"className":"riq-cta-banner"} -->
+<div class="wp-block-group riq-cta-banner" style="background-color:#1F9C4C;color:#ffffff;padding:40px 32px;border-radius:12px;margin:40px 0;text-align:center;">
+  <!-- wp:paragraph {"className":"riq-cta-banner-text"} -->
+  <p class="riq-cta-banner-text" style="color:#ffffff;font-size:1.35rem;font-weight:700;line-height:1.4;margin:0 0 20px;">${esc(b.text)}</p>
   <!-- /wp:paragraph -->
-  <!-- wp:buttons -->
-  <div class="wp-block-buttons">
-    <!-- wp:button {"backgroundColor":"white","textColor":"emerald","className":"riq-cta-button"} -->
+  <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+  <div class="wp-block-buttons" style="display:flex;justify-content:center;">
+    <!-- wp:button {"className":"riq-cta-button"} -->
     <div class="wp-block-button riq-cta-button">
-      <a class="wp-block-button__link has-emerald-color has-white-background-color has-text-color has-background" href="${esc(b.button_url)}">${esc(b.button_label)}</a>
+      <a class="wp-block-button__link" href="${esc(url)}" style="background:#ffffff;color:#1F9C4C;padding:14px 32px;border-radius:8px;font-weight:700;text-decoration:none;font-size:1rem;display:inline-block;">${esc(b.button_label)}</a>
     </div>
     <!-- /wp:button -->
   </div>
@@ -388,7 +426,7 @@ export function buildArticleJsonLd(opts: {
   datePublished: string;
   dateModified: string;
 }): string {
-  const authorName = opts.author === "bella" ? "Bella" : "Gustavo Atar";
+  const authorName = opts.author === "bella" ? "Bella" : "Gustavo";
   const ld = {
     "@context": "https://schema.org",
     "@type": "Article",
