@@ -227,7 +227,11 @@ Principles:
 4. GOLDILOCKS EFFECT — every 2-3 paragraphs gets visual relief (section_cover OR stat_callout OR chart OR pull_quote). NEVER 4+ paragraphs in a row.
 5. BANISH INTRUSIVE WEB — no aggressive pop-ups, no clickbait. Reader focused purely on the educational journey.
 6. CURSIVE ACCENTS — for visual texture, occasionally wrap a 1-2 word callout inside a paragraph using <span class="riq-cursive-accent">. Examples: "the catch", "watch out", "what to ask". Renderer styles this in flowing Allura script in brand green.
-7. DROP CAP OPENING — the snippet_paragraph (right after the hero) auto-renders with a GIANT cursive drop cap on the first letter. So the first letter of snippet_paragraph should be a strong consonant that looks good as a giant ornament (avoid lowercase 'i' or 'l' which look thin). Open with words like "Bathroom...", "Most...", "The...", "When...", "Behind..."
+7. DROP CAP OPENING — the snippet_paragraph (right after the hero) auto-renders with a GIANT cursive drop cap that accentuates the FIRST WHOLE WORD (not just one letter). The first letter renders 12rem in Allura script, the rest of the first word renders in elegant Cormorant Garamond serif. So:
+   - Open snippet_paragraph with a STRONG real-noun word — never "The", "A", "An", "In", "On", "Of", "For", "To".
+   - Good openers: "Remodeling", "Bathroom", "Vague", "Contractors", "Most", "When", "Behind", "Hidden", "Three", "Smart", "Behind", "Reading"
+   - The renderer automatically strips weak articles if you accidentally use one, but it's better to write it right the first time.
+   - The first letter should be a strong consonant or vowel that looks ornamental in script — R, B, V, M, W, H, T (as part of "Three" works), S, P. Avoid 'I' alone.
 
 VISUAL BLUEPRINT — the canonical block sequence:
 
@@ -281,11 +285,12 @@ PULL QUOTE RULES (very strict):
 - Maximum 14 words per pull quote. Punchy and impactful.
 - Treat it like a tweet, not a paragraph.
 - Examples of GOOD pull quotes: "The contractor's payment schedule reveals more than the price total." | "Most bids hide $3-8k in three line items most homeowners never check." | "Vague allowances are change orders waiting to happen."
-- Examples of BAD pull quotes (too long): full sentences with multiple clauses, complete explanations.
+- The renderer DOES NOT display attribution. The quote stands alone as a typographic moment. Include "attribution" field anyway (set to "Gustavo" or "") for JSON schema compatibility — it's just not rendered.
 
-ATTRIBUTION FORMAT — for pull_quote and JSON-LD author fields:
-- Always use just "Gustavo" — NEVER "Gustavo Atar" or "Gustavo Atar, RemodelerIQ founder"
-- For pull_quote attributing to someone other than Gustavo, use first name + 1-word descriptor only ("Sarah, homeowner" not "Sarah Smith, Atlanta-area homeowner")
+TWO_COLUMN BODY FIELDS (left_body / right_body):
+- PLAIN TEXT ONLY. NEVER include HTML tags like <ul>, <li>, <strong>, <a> in left_body or right_body.
+- If you want a bulleted list inside a column, use the dedicated left_items / right_items arrays instead.
+- Example: {"left_heading": "Fair", "left_items": ["Specifies Delta Model #XYZ123 faucets", "Names paint color SW 7006 Extra White", "Contractor pulls and pays for all permits"], "right_heading": "Padded", "right_items": ["Says 'owner-provided plumbing fixtures'", "Says 'paint walls and trim'", "Says 'permits obtained by homeowner if needed'"]}
 
 VISUAL DENSITY (mandatory — the post is a magazine feature, not a wall of text):
 - ≥1 hero block (always first)
@@ -332,9 +337,10 @@ OUTPUT FORMAT: Return ONLY valid JSON matching this schema:
     {"type": "paragraph", "text": "..."},
     {"type": "stat_callout", "big_number": "...", "label": "...", "source": "...", "date": "..."},
     {"type": "chart", "chart_type": "bar", "data": {"title": "...", "subtitle": "...", "source": "...", "unit": "/hr", "format": "currency", "rows": [{"label": "Atlanta", "value": 28.5}]}},
-    {"type": "two_column", "left_heading": "Fair", "left_body": "...", "right_heading": "Padded", "right_body": "...", "left_theme": "ok", "right_theme": "warning"},
+    {"type": "two_column", "left_heading": "Fair", "left_items": ["bullet 1", "bullet 2"], "right_heading": "Padded", "right_items": ["bullet 1", "bullet 2"], "left_theme": "ok", "right_theme": "warning"},
+    {"type": "two_column_paragraph", "left_heading": "...", "left_body": "PLAIN TEXT NO HTML", "right_heading": "...", "right_body": "PLAIN TEXT NO HTML"},
     {"type": "three_column", "items": [{"heading": "...", "body": "...", "icon_emoji": "🔨"}]},
-    {"type": "image", "imagen_prompt": "...", "caption": "...", "alt": "..."},
+    {"type": "image", "imagen_prompt": "...", "caption": "small-caps caption appears below image", "alt": "...", "kicker": "FIELD NOTE", "body": "OPTIONAL italic paragraph rendered beside the image in magazine 60/40 split"},
     {"type": "comparison_table", "headers": [...], "rows": [[...], [...]]},
     {"type": "pull_quote", "text": "...", "attribution": "Gustavo"},
     {"type": "cta_button_group", "heading": "Keep going", "buttons": [{"label": "Analyze your bid", "url": "https://remodeleriq.com", "style": "primary"}, {"label": "Read the glossary", "url": "https://remodeleriq.com/glossary", "style": "secondary"}]},

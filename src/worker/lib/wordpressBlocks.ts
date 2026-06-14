@@ -26,8 +26,10 @@ export type BlogBlock =
       type: "two_column";
       left_heading: string;
       left_body: string;
+      left_items?: string[];     // Optional bulleted list (preferred over inline HTML)
       right_heading: string;
       right_body: string;
+      right_items?: string[];    // Optional bulleted list
       left_theme?: "ok" | "warning";
       right_theme?: "ok" | "warning";
     }
@@ -37,6 +39,10 @@ export type BlogBlock =
       imagen_prompt: string;
       caption: string;
       alt: string;
+      /** Optional magazine layout — paragraph text rendered beside the image */
+      body?: string;
+      /** Optional kicker — small all-caps label above the caption (e.g., "FIELD NOTE") */
+      kicker?: string;
     }
   | {
       type: "chart";
@@ -56,27 +62,65 @@ function esc(s: string): string {
   return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+// Strong-consonant words that look great as a giant cursive drop cap.
+// If Bella opens the snippet with an article ("The", "A", "An"), we promote
+// the first real noun/verb to the start by reshuffling — or detect & note.
+const WEAK_OPENING_WORDS = new Set(["the", "a", "an", "in", "on", "at", "of", "to", "for", "with"]);
+
+function rewriteOpeningForDropCap(snippet: string): string {
+  // If the snippet starts with a weak word (article/preposition), the drop cap
+  // would land on something like "T" of "The" — that's what we want to avoid.
+  // Strategy: capitalize-promote the second word OR add a brief lead-in.
+  // Simpler heuristic: just return as-is, and let Bella's brief enforce a
+  // strong opening word. This function is a safety net for edge cases.
+  const trimmed = snippet.trim();
+  if (!trimmed) return snippet;
+  const firstWord = trimmed.split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, "");
+  if (!WEAK_OPENING_WORDS.has(firstWord)) return trimmed;
+  // Weak opening detected — drop the article so the next word becomes the start.
+  // "The bathroom remodel..." → "Bathroom remodel..."
+  // "A common red flag..." → "Common red flag..."
+  const words = trimmed.split(/\s+/);
+  if (words.length < 3) return trimmed;
+  words.shift();
+  // Capitalize the new first word
+  words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+  return words.join(" ");
+}
+
 function renderHero(b: Extract<BlogBlock, { type: "hero" }>): string {
-  // The Google Fonts import + the drop-cap CSS are injected as an HTML block at
-  // the very top of the post so they cascade to all riq-* class selectors below.
-  // Allura is a flowing script — gives the magazine-cursive feel without making
-  // long text unreadable (we only use it on single letters / 1-2 words).
+  const snippet = rewriteOpeningForDropCap(b.snippet_paragraph || "");
+  // Find the index where the first word ends — drop cap applies to that whole word
+  const firstSpaceIdx = snippet.indexOf(" ");
+  const firstWord = firstSpaceIdx === -1 ? snippet : snippet.slice(0, firstSpaceIdx);
+  const rest = firstSpaceIdx === -1 ? "" : snippet.slice(firstSpaceIdx);
+  const firstLetter = firstWord.charAt(0);
+  const firstWordTail = firstWord.slice(1);
+
   return `<!-- wp:html -->
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&display=swap');
 .riq-snippet { font-family: 'Inter', system-ui, sans-serif; }
-.riq-snippet::first-letter,
-.riq-dropcap {
+.riq-snippet .riq-dropcap-letter {
   font-family: 'Allura', 'Pinyon Script', cursive;
-  font-size: 8rem;
-  line-height: 0.85;
+  font-size: 12rem;
+  line-height: 0.7;
   font-weight: 400;
   color: #1F9C4C;
   float: left;
-  padding: 18px 16px 0 0;
+  padding: 26px 10px 0 0;
   margin: 0;
 }
-.riq-cursive-accent { font-family: 'Allura', cursive; color: #1F9C4C; font-weight: 400; line-height: 1; }
+.riq-snippet .riq-dropcap-word-tail {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 700;
+  font-size: 3rem;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+.riq-cursive-accent { font-family: 'Allura', cursive; color: #1F9C4C; font-weight: 400; font-size: 1.6em; line-height: 1; }
+.riq-magazine-caption { font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #475569; margin-top: 12px; }
+.riq-pull-quote p { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; }
 </style>
 <!-- /wp:html -->
 
@@ -95,7 +139,7 @@ function renderHero(b: Extract<BlogBlock, { type: "hero" }>): string {
 <!-- /wp:cover -->
 
 <!-- wp:paragraph {"className":"riq-snippet"} -->
-<p class="riq-snippet" style="font-size:1.2rem;line-height:1.75;color:#0f172a;margin:40px 0 32px;font-weight:400;"><span class="riq-dropcap">${esc(b.snippet_paragraph.charAt(0))}</span>${esc(b.snippet_paragraph.slice(1))}</p>
+<p class="riq-snippet" style="font-size:1.2rem;line-height:1.8;color:#0f172a;margin:56px 0 40px;font-weight:400;"><span class="riq-dropcap-letter">${esc(firstLetter)}</span><span class="riq-dropcap-word-tail">${esc(firstWordTail)}</span>${esc(rest)}</p>
 <!-- /wp:paragraph -->`;
 }
 
@@ -152,12 +196,12 @@ ${body}
 }
 
 function renderPullQuote(b: Extract<BlogBlock, { type: "pull_quote" }>): string {
-  // Use wp:quote (not wp:pullquote) — themes apply cursive/script fonts to pullquote
-  // by default. wp:quote with explicit inline styling stays clean serif.
+  // Magazine-style pull quote — large italic serif, no formal sign-off line.
+  // The quote stands on its own as a typographic moment. Attribution is intentionally
+  // suppressed per Gustavo's direction (no "— Gustavo" tag-on).
   return `<!-- wp:quote {"className":"riq-pull-quote"} -->
-<blockquote class="wp-block-quote riq-pull-quote" style="border-left:4px solid #1F9C4C;background:#f8fafc;padding:24px 28px;margin:32px 0;border-radius:0 8px 8px 0;font-style:normal;">
-  <p style="font-size:1.35rem;font-weight:600;color:#0f172a;line-height:1.4;margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;">"${esc(b.text)}"</p>
-  <cite style="font-size:0.95rem;color:#475569;font-style:normal;font-weight:500;">— ${esc(b.attribution)}</cite>
+<blockquote class="wp-block-quote riq-pull-quote" style="border:none;border-left:3px solid #1F9C4C;background:transparent;padding:8px 0 8px 28px;margin:48px 8px;font-style:italic;">
+  <p style="font-size:1.85rem;font-weight:500;color:#0f172a;line-height:1.3;margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-style:italic;letter-spacing:-0.01em;">${esc(b.text)}</p>
 </blockquote>
 <!-- /wp:quote -->`;
 }
@@ -208,35 +252,59 @@ function renderSectionCover(b: Extract<BlogBlock, { type: "section_cover" }>): s
 <!-- /wp:cover -->`;
 }
 
+// Strip HTML-looking content that Gemini sometimes embeds in body strings,
+// converting common patterns into clean plain-text or extracted bullet items.
+function stripBodyHtml(body: string): { text: string; items: string[] } {
+  if (!body) return { text: "", items: [] };
+  // If the body contains <li> tags, extract them as bullet items
+  const liMatches = body.match(/<li[^>]*>([\s\S]*?)<\/li>/gi);
+  if (liMatches && liMatches.length > 0) {
+    const items = liMatches.map((m) =>
+      m.replace(/<li[^>]*>/i, "").replace(/<\/li>/i, "").replace(/<[^>]+>/g, "").trim().replace(/^["']|["']$/g, "")
+    ).filter(Boolean);
+    return { text: "", items };
+  }
+  // Otherwise just strip all HTML and return as text
+  return { text: body.replace(/<[^>]+>/g, "").trim(), items: [] };
+}
+
 function renderTwoColumn(b: Extract<BlogBlock, { type: "two_column" }>): string {
   const themeBg = (theme: "ok" | "warning" | undefined) =>
     theme === "warning" ? "#fef2f2" : theme === "ok" ? "#ecfdf5" : "#f8fafc";
   const themeBorder = (theme: "ok" | "warning" | undefined) =>
     theme === "warning" ? "#dc2626" : theme === "ok" ? "#1F9C4C" : "#cbd5e1";
 
-  return `<!-- wp:columns {"className":"riq-two-column"} -->
-<div class="wp-block-columns riq-two-column">
-  <!-- wp:column -->
-  <div class="wp-block-column" style="background:${themeBg(b.left_theme)};border-left:4px solid ${themeBorder(b.left_theme)};padding:24px;border-radius:8px;">
-    <!-- wp:heading {"level":3,"className":"riq-col-heading"} -->
-    <h3 class="riq-col-heading" style="margin-top:0;font-weight:700;">${esc(b.left_heading)}</h3>
-    <!-- /wp:heading -->
-    <!-- wp:paragraph -->
-    <p>${esc(b.left_body)}</p>
-    <!-- /wp:paragraph -->
-  </div>
-  <!-- /wp:column -->
+  // Resolve body OR items for each column. Strip any HTML Gemini snuck in.
+  const left = b.left_items?.length
+    ? { text: "", items: b.left_items }
+    : stripBodyHtml(b.left_body || "");
+  const right = b.right_items?.length
+    ? { text: "", items: b.right_items }
+    : stripBodyHtml(b.right_body || "");
 
-  <!-- wp:column -->
-  <div class="wp-block-column" style="background:${themeBg(b.right_theme)};border-left:4px solid ${themeBorder(b.right_theme)};padding:24px;border-radius:8px;">
+  const renderSide = (heading: string, side: { text: string; items: string[] }, theme: "ok" | "warning" | undefined) => {
+    const bodyOrList = side.items.length > 0
+      ? `<!-- wp:list -->
+    <ul style="padding-left:20px;margin:0;font-size:0.98rem;line-height:1.6;color:#1e293b;">${side.items.map((it) => `<li style="margin-bottom:8px;">${esc(it)}</li>`).join("")}</ul>
+    <!-- /wp:list -->`
+      : `<!-- wp:paragraph -->
+    <p style="font-size:1rem;line-height:1.6;color:#1e293b;margin:0;">${esc(side.text)}</p>
+    <!-- /wp:paragraph -->`;
+    return `  <!-- wp:column -->
+  <div class="wp-block-column" style="background:${themeBg(theme)};border-left:4px solid ${themeBorder(theme)};padding:24px;border-radius:0 8px 8px 0;">
     <!-- wp:heading {"level":3,"className":"riq-col-heading"} -->
-    <h3 class="riq-col-heading" style="margin-top:0;font-weight:700;">${esc(b.right_heading)}</h3>
+    <h3 class="riq-col-heading" style="margin:0 0 14px;font-weight:700;font-size:1.25rem;color:#0f172a;letter-spacing:-0.01em;">${esc(heading)}</h3>
     <!-- /wp:heading -->
-    <!-- wp:paragraph -->
-    <p>${esc(b.right_body)}</p>
-    <!-- /wp:paragraph -->
+    ${bodyOrList}
   </div>
-  <!-- /wp:column -->
+  <!-- /wp:column -->`;
+  };
+
+  return `<!-- wp:columns {"className":"riq-two-column"} -->
+<div class="wp-block-columns riq-two-column" style="gap:16px;margin:32px 0;">
+${renderSide(b.left_heading, left, b.left_theme)}
+
+${renderSide(b.right_heading, right, b.right_theme)}
 </div>
 <!-- /wp:columns -->`;
 }
@@ -264,27 +332,54 @@ ${cols}
 <!-- /wp:columns -->`;
 }
 
-// Renders an <img> with an Imagen-generated URL. The URL is filled in by the publisher
-// AFTER the image is generated + uploaded to WP media library. Until then the alt
-// + caption render but the src is a placeholder data attribute the publisher swaps.
+// Magazine-style image rendering — caption in small-caps, optional body text
+// rendered in a 60/40 split next to the image (image takes the wider column).
+// References the editorial layout shared by Gustavo (large dramatic image,
+// quiet typographic caption beneath, optional side narrative).
 function renderImageBlock(
   b: Extract<BlogBlock, { type: "image" }>,
   resolvedSrc?: string,
   resolvedMediaId?: number
 ): string {
-  if (!resolvedSrc) {
-    // Placeholder for the publisher to replace post-upload
-    return `<!-- wp:image {"className":"riq-inline-image","data-imagen-prompt":"${esc(b.imagen_prompt)}"} -->
-<figure class="wp-block-image riq-inline-image" data-imagen-prompt="${esc(b.imagen_prompt)}">
-  <!-- IMAGE_PLACEHOLDER: ${esc(b.imagen_prompt)} -->
-  <figcaption><em>${esc(b.caption)}</em></figcaption>
-</figure>
-<!-- /wp:image -->`;
+  const captionHtml = `
+    ${b.kicker ? `<p style="font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#1F9C4C;margin:14px 0 4px;">${esc(b.kicker)}</p>` : ""}
+    <p class="riq-magazine-caption">${esc(b.caption)}</p>`;
+
+  // Body-side magazine layout
+  if (b.body && b.body.trim().length > 0 && resolvedSrc) {
+    return `<!-- wp:columns {"className":"riq-image-magazine","verticalAlignment":"center"} -->
+<div class="wp-block-columns riq-image-magazine" style="gap:32px;margin:48px 0;align-items:center;">
+  <!-- wp:column {"width":"60%"} -->
+  <div class="wp-block-column" style="flex-basis:60%;">
+    <figure class="wp-block-image" style="margin:0;">
+      <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" style="width:100%;height:auto;display:block;border-radius:4px;"${resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : ""}/>
+    </figure>
+    ${captionHtml}
+  </div>
+  <!-- /wp:column -->
+  <!-- wp:column {"width":"40%"} -->
+  <div class="wp-block-column" style="flex-basis:40%;">
+    <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.25rem;line-height:1.55;color:#1e293b;font-style:italic;margin:0;">${esc(b.body)}</p>
+  </div>
+  <!-- /wp:column -->
+</div>
+<!-- /wp:columns -->`;
   }
-  return `<!-- wp:image {"id":${resolvedMediaId || 0},"sizeSlug":"large","className":"riq-inline-image"} -->
-<figure class="wp-block-image size-large riq-inline-image">
-  <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}"${resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : ""}/>
-  <figcaption><em>${esc(b.caption)}</em></figcaption>
+
+  // Standalone magazine image — large, centered, with quiet caption
+  if (!resolvedSrc) {
+    return `<!-- wp:html -->
+<figure style="margin:48px 0;">
+  <!-- IMAGE_PLACEHOLDER: ${esc(b.imagen_prompt)} -->
+  ${captionHtml}
+</figure>
+<!-- /wp:html -->`;
+  }
+
+  return `<!-- wp:image {"id":${resolvedMediaId || 0},"sizeSlug":"large","className":"riq-magazine-image"} -->
+<figure class="wp-block-image size-large riq-magazine-image" style="margin:48px 0;">
+  <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" style="width:100%;height:auto;display:block;border-radius:4px;"${resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : ""}/>
+  ${captionHtml}
 </figure>
 <!-- /wp:image -->`;
 }
