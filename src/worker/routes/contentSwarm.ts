@@ -287,6 +287,20 @@ PULL QUOTE RULES (very strict):
 - Examples of GOOD pull quotes: "The contractor's payment schedule reveals more than the price total." | "Most bids hide $3-8k in three line items most homeowners never check." | "Vague allowances are change orders waiting to happen."
 - The renderer DOES NOT display attribution. The quote stands alone as a typographic moment. Include "attribution" field anyway (set to "Gustavo" or "") for JSON schema compatibility — it's just not rendered.
 
+CTA BANNER FORMAT — the closing CTA at the end of every post:
+- "kicker" — small all-caps pill above the headline. Examples: "DATA BEATS GUT FEELINGS", "PROTECT YOUR EQUITY", "BEFORE YOU SIGN", "THE PRO MOVE".
+- "headline" — bold sans-serif statement, 2-4 words max with optional period for emphasis. Examples: "Negotiate Like a Pro.", "Read Every Line.", "Audit Before You Sign.", "Stop Guessing."
+- "text" — single sentence body explaining the value. Use the {brand} placeholder where you want "RemodelerIQ" to appear as a styled brand link (the renderer turns {brand} into a bold underlined link automatically). Example: "Stop gambling with your home equity. Upload your bid to {brand} for a 100-point audit against gold-standard market data."
+- "button_label" — short imperative, all-caps in the rendered output. Examples: "Audit Your Bid Now", "Start Free", "Get The Score", "Check Your Quote".
+- "button_url" — must be in VALID CTA URLs list (https://remodeleriq.com is the safest default).
+
+COMPARISON TABLE FORMAT — for side-by-side specs/ranges/comparisons:
+- Use comparison_table when you have 2+ columns of structured DATA (numbers, ranges, specs). NOT for narrative comparisons (use two_column for narrative).
+- headers[0] is treated as the row-label column (rendered in bold dark slate).
+- Other headers render as brand-green uppercase bar at top.
+- Body rows zebra-stripe automatically. Don't worry about styling — just provide clean text.
+- Good example headers: ["Project Type", "Fair Range", "Padded Range"] | ["Trade", "BLS Median Wage", "Burdened Rate"] | ["Region", "Mid-range Kitchen", "Mid-range Bath"]
+
 TWO_COLUMN BODY FIELDS (left_body / right_body):
 - PLAIN TEXT ONLY. NEVER include HTML tags like <ul>, <li>, <strong>, <a> in left_body or right_body.
 - If you want a bulleted list inside a column, use the dedicated left_items / right_items arrays instead.
@@ -345,7 +359,7 @@ OUTPUT FORMAT: Return ONLY valid JSON matching this schema:
     {"type": "pull_quote", "text": "...", "attribution": "Gustavo"},
     {"type": "cta_button_group", "heading": "Keep going", "buttons": [{"label": "Analyze your bid", "url": "https://remodeleriq.com", "style": "primary"}, {"label": "Read the glossary", "url": "https://remodeleriq.com/glossary", "style": "secondary"}]},
     {"type": "faq", "items": [{"q": "...", "a": "..."}, ...]},
-    {"type": "cta_banner", "text": "...", "button_label": "...", "button_url": "https://remodeleriq.com"}
+    {"type": "cta_banner", "kicker": "DATA BEATS GUT FEELINGS", "headline": "Negotiate Like a Pro.", "text": "Stop gambling with your home equity. Upload your bid to {brand} for a 100-point audit against gold-standard market data.", "button_label": "Audit Your Bid Now", "button_url": "https://remodeleriq.com"}
   ]
 }`;
 

@@ -56,7 +56,17 @@ export type BlogBlock =
     }
   | { type: "pull_quote"; text: string; attribution: string }
   | { type: "faq"; items: { q: string; a: string }[] }
-  | { type: "cta_banner"; text: string; button_label: string; button_url: string };
+  | {
+      type: "cta_banner";
+      /** Small all-caps kicker rendered in a green pill above the headline (e.g., "DATA BEATS GUT FEELINGS") */
+      kicker?: string;
+      /** Large bold headline (e.g., "Negotiate Like a Pro.") */
+      headline?: string;
+      /** Body sentence — supports {brand} placeholder which renders as styled inline link */
+      text: string;
+      button_label: string;
+      button_url: string;
+    };
 
 function esc(s: string): string {
   return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -99,7 +109,7 @@ function renderHero(b: Extract<BlogBlock, { type: "hero" }>): string {
 
   return `<!-- wp:html -->
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&display=swap');
 .riq-snippet { font-family: 'Inter', system-ui, sans-serif; }
 .riq-snippet .riq-dropcap-letter {
   font-family: 'Allura', 'Pinyon Script', cursive;
@@ -179,29 +189,46 @@ function renderStatCallout(b: Extract<BlogBlock, { type: "stat_callout" }>): str
 }
 
 function renderComparisonTable(b: Extract<BlogBlock, { type: "comparison_table" }>): string {
-  const headers = b.headers.map((h) => `<th>${esc(h)}</th>`).join("");
-  const body = b.rows
-    .map((row) => `<tr>${row.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`)
+  const headerCellStyle = "padding:14px 16px;text-align:left;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#ffffff;background:#1F9C4C;border:none;";
+  const bodyCellStyle = "padding:14px 16px;text-align:left;font-family:'Inter',sans-serif;font-size:0.98rem;font-weight:400;color:#1e293b;line-height:1.5;border-bottom:1px solid #e2e8f0;vertical-align:top;";
+  const firstColStyle = "font-weight:700;color:#0f172a;";
+
+  const headers = b.headers.map((h) => `<th style="${headerCellStyle}">${esc(h)}</th>`).join("");
+  const body = (b.rows || [])
+    .map((row, rowIdx) => {
+      const zebra = rowIdx % 2 === 1 ? "background:#f8fafc;" : "background:#ffffff;";
+      const cells = row.map((c, colIdx) => {
+        const extra = colIdx === 0 ? firstColStyle : "";
+        return `<td style="${bodyCellStyle}${extra}">${esc(c)}</td>`;
+      }).join("");
+      return `      <tr style="${zebra}">${cells}</tr>`;
+    })
     .join("\n");
-  return `<!-- wp:table {"hasFixedLayout":true,"className":"riq-comparison-table"} -->
-<figure class="wp-block-table riq-comparison-table">
-  <table>
-    <thead><tr>${headers}</tr></thead>
+
+  return `<!-- wp:html -->
+<figure class="wp-block-table riq-comparison-table" style="margin:32px 0;overflow:hidden;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(15,23,42,0.04);">
+  <table style="border-collapse:collapse;width:100%;font-family:'Inter',sans-serif;background:#ffffff;">
+    <thead>
+      <tr>${headers}</tr>
+    </thead>
     <tbody>
 ${body}
     </tbody>
   </table>
 </figure>
-<!-- /wp:table -->`;
+<!-- /wp:html -->`;
 }
 
 function renderPullQuote(b: Extract<BlogBlock, { type: "pull_quote" }>): string {
-  // Magazine-style pull quote — large italic serif, no formal sign-off line.
-  // The quote stands on its own as a typographic moment. Attribution is intentionally
-  // suppressed per Gustavo's direction (no "— Gustavo" tag-on).
+  // Editorial pull quote — large bold serif statement, NOT italic-thin. Reads
+  // as a typographic moment, not a decorative quote. Brand-green left bar
+  // accent. No attribution sign-off per Gustavo's direction.
+  // Uses Fraunces variable font (or system serif) for that chunky-elegant
+  // editorial display feel.
   return `<!-- wp:quote {"className":"riq-pull-quote"} -->
-<blockquote class="wp-block-quote riq-pull-quote" style="border:none;border-left:3px solid #1F9C4C;background:transparent;padding:8px 0 8px 28px;margin:48px 8px;font-style:italic;">
-  <p style="font-size:1.85rem;font-weight:500;color:#0f172a;line-height:1.3;margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-style:italic;letter-spacing:-0.01em;">${esc(b.text)}</p>
+<blockquote class="wp-block-quote riq-pull-quote" style="border:none;background:transparent;padding:0;margin:64px 0;position:relative;">
+  <span aria-hidden="true" style="position:absolute;left:-8px;top:-32px;font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:8rem;line-height:1;color:#1F9C4C;font-weight:900;opacity:0.18;">&ldquo;</span>
+  <p style="font-family:'Fraunces','Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:2.1rem;font-weight:600;color:#0f172a;line-height:1.25;margin:0;letter-spacing:-0.02em;font-style:normal;padding-left:8px;border-left:4px solid #1F9C4C;padding:0 0 0 24px;">${esc(b.text)}</p>
 </blockquote>
 <!-- /wp:quote -->`;
 }
@@ -332,54 +359,60 @@ ${cols}
 <!-- /wp:columns -->`;
 }
 
-// Magazine-style image rendering — caption in small-caps, optional body text
-// rendered in a 60/40 split next to the image (image takes the wider column).
-// References the editorial layout shared by Gustavo (large dramatic image,
-// quiet typographic caption beneath, optional side narrative).
+// Magazine-style image rendering — heavy editorial feel inspired by Tubik
+// Studio's satellite-image-as-art reference. Caption renders as a structured
+// metadata block (kicker + caption text) anchored bottom-right of the figure
+// when standalone, or as a tight info column when paired with side body text.
 function renderImageBlock(
   b: Extract<BlogBlock, { type: "image" }>,
   resolvedSrc?: string,
   resolvedMediaId?: number
 ): string {
-  const captionHtml = `
-    ${b.kicker ? `<p style="font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#1F9C4C;margin:14px 0 4px;">${esc(b.kicker)}</p>` : ""}
-    <p class="riq-magazine-caption">${esc(b.caption)}</p>`;
+  // Metadata-style caption block — kicker rendered as small all-caps brand-green
+  // label, caption text below in tight small-caps slate. Mirrors the
+  // editorial "LOCATION — COORDINATES" treatment.
+  const renderMetaBlock = (extraStyle: string = "") => `
+    <div class="riq-image-meta" style="display:flex;align-items:baseline;gap:14px;border-top:1px solid #e2e8f0;padding-top:10px;margin-top:14px;${extraStyle}">
+      ${b.kicker ? `<span style="font-family:'Inter',sans-serif;font-size:0.7rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#1F9C4C;flex-shrink:0;">${esc(b.kicker)}</span>` : ""}
+      <span class="riq-magazine-caption" style="font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin:0;line-height:1.4;">${esc(b.caption)}</span>
+    </div>`;
 
-  // Body-side magazine layout
+  // Body-side magazine layout — 55/45 tight pairing. Image gets dramatic
+  // dark border-radius, body sits in serif italic with tight measure.
   if (b.body && b.body.trim().length > 0 && resolvedSrc) {
-    return `<!-- wp:columns {"className":"riq-image-magazine","verticalAlignment":"center"} -->
-<div class="wp-block-columns riq-image-magazine" style="gap:32px;margin:48px 0;align-items:center;">
-  <!-- wp:column {"width":"60%"} -->
-  <div class="wp-block-column" style="flex-basis:60%;">
+    return `<!-- wp:columns {"className":"riq-image-magazine","verticalAlignment":"top"} -->
+<div class="wp-block-columns riq-image-magazine" style="gap:40px;margin:56px 0;align-items:flex-start;">
+  <!-- wp:column {"width":"55%"} -->
+  <div class="wp-block-column" style="flex-basis:55%;">
     <figure class="wp-block-image" style="margin:0;">
-      <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" style="width:100%;height:auto;display:block;border-radius:4px;"${resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : ""}/>
+      <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" style="width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 12px 40px rgba(15,23,42,0.18);"${resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : ""}/>
     </figure>
-    ${captionHtml}
+    ${renderMetaBlock()}
   </div>
   <!-- /wp:column -->
-  <!-- wp:column {"width":"40%"} -->
-  <div class="wp-block-column" style="flex-basis:40%;">
-    <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.25rem;line-height:1.55;color:#1e293b;font-style:italic;margin:0;">${esc(b.body)}</p>
+  <!-- wp:column {"width":"45%"} -->
+  <div class="wp-block-column" style="flex-basis:45%;padding-top:16px;">
+    <p style="font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:1.5rem;line-height:1.4;color:#0f172a;font-style:normal;font-weight:500;margin:0;letter-spacing:-0.01em;">${esc(b.body)}</p>
   </div>
   <!-- /wp:column -->
 </div>
 <!-- /wp:columns -->`;
   }
 
-  // Standalone magazine image — large, centered, with quiet caption
+  // Standalone image — large dramatic with caption metadata block below
   if (!resolvedSrc) {
     return `<!-- wp:html -->
-<figure style="margin:48px 0;">
+<figure style="margin:56px 0;">
   <!-- IMAGE_PLACEHOLDER: ${esc(b.imagen_prompt)} -->
-  ${captionHtml}
+  ${renderMetaBlock()}
 </figure>
 <!-- /wp:html -->`;
   }
 
   return `<!-- wp:image {"id":${resolvedMediaId || 0},"sizeSlug":"large","className":"riq-magazine-image"} -->
-<figure class="wp-block-image size-large riq-magazine-image" style="margin:48px 0;">
-  <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" style="width:100%;height:auto;display:block;border-radius:4px;"${resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : ""}/>
-  ${captionHtml}
+<figure class="wp-block-image size-large riq-magazine-image" style="margin:56px 0;">
+  <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" style="width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 12px 40px rgba(15,23,42,0.18);"${resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : ""}/>
+  ${renderMetaBlock()}
 </figure>
 <!-- /wp:image -->`;
 }
@@ -456,20 +489,31 @@ ${buttons}
 
 function renderCtaBanner(b: Extract<BlogBlock, { type: "cta_banner" }>): string {
   const url = sanitizeUrl(b.button_url);
+  // Body text supports {brand} placeholder — renders as bold underlined inline link to RemodelerIQ
+  const bodyText = (b.text || "").replace(
+    /\{brand\}/g,
+    `<a href="https://remodeleriq.com" style="color:#1F9C4C;font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;">RemodelerIQ</a>`
+  );
+  const kicker = b.kicker || "DATA BEATS GUT FEELINGS";
+  const headline = b.headline || "Negotiate Like a Pro.";
+
   return `<!-- wp:group {"className":"riq-cta-banner"} -->
-<div class="wp-block-group riq-cta-banner" style="background-color:#1F9C4C;color:#ffffff;padding:40px 32px;border-radius:12px;margin:40px 0;text-align:center;">
-  <!-- wp:paragraph {"className":"riq-cta-banner-text"} -->
-  <p class="riq-cta-banner-text" style="color:#ffffff;font-size:1.35rem;font-weight:700;line-height:1.4;margin:0 0 20px;">${esc(b.text)}</p>
+<div class="wp-block-group riq-cta-banner" style="background:#ffffff;padding:64px 32px 72px;margin:64px 0 32px;text-align:center;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;">
+  <!-- wp:html -->
+  <span class="riq-cta-kicker" style="display:inline-block;background:#dcfce7;color:#1F9C4C;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;padding:8px 22px;border-radius:999px;margin-bottom:24px;">${esc(kicker)}</span>
+  <!-- /wp:html -->
+
+  <!-- wp:heading {"level":2,"className":"riq-cta-headline"} -->
+  <h2 class="riq-cta-headline" style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:3.5rem;font-weight:900;color:#0f172a;letter-spacing:-0.035em;line-height:1.05;margin:0 auto 24px;max-width:780px;">${esc(headline)}</h2>
+  <!-- /wp:heading -->
+
+  <!-- wp:paragraph {"className":"riq-cta-body"} -->
+  <p class="riq-cta-body" style="font-family:'Inter',sans-serif;font-size:1.2rem;line-height:1.55;color:#475569;margin:0 auto 40px;max-width:680px;font-weight:400;">${bodyText}</p>
   <!-- /wp:paragraph -->
-  <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-  <div class="wp-block-buttons" style="display:flex;justify-content:center;">
-    <!-- wp:button {"className":"riq-cta-button"} -->
-    <div class="wp-block-button riq-cta-button">
-      <a class="wp-block-button__link" href="${esc(url)}" style="background:#ffffff;color:#1F9C4C;padding:14px 32px;border-radius:8px;font-weight:700;text-decoration:none;font-size:1rem;display:inline-block;">${esc(b.button_label)}</a>
-    </div>
-    <!-- /wp:button -->
-  </div>
-  <!-- /wp:buttons -->
+
+  <!-- wp:html -->
+  <p style="margin:0;"><a href="${esc(url)}" class="riq-cta-mega-btn" style="display:inline-flex;align-items:center;gap:14px;background:#1F9C4C;color:#ffffff;padding:22px 44px;border-radius:999px;font-family:'Inter',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;box-shadow:0 6px 16px rgba(31,156,76,0.25);transition:transform 0.15s ease;">${esc(b.button_label)} <span style="display:inline-block;font-size:1.3rem;font-weight:400;">&rarr;</span></a></p>
+  <!-- /wp:html -->
 </div>
 <!-- /wp:group -->`;
 }
