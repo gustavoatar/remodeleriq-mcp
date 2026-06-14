@@ -121,9 +121,28 @@ export function renderComparisonBarsSvg(data: ComparisonBarsData): string {
   const padding = { top: 100, right: 60, bottom: 80, left: 180 };
   const rowH = 32;
   const rowGap = 14;
-  const H = padding.top + data.rows.length * (rowH * 2 + rowGap) + padding.bottom;
-  const allVals = data.rows.flatMap((r) => [r.left, r.right]);
-  const max = Math.max(...allVals);
+  // Normalize rows — Gemini sometimes emits rows without left/right OR uses
+  // different field names. Fall back to 0 for missing values.
+  const rows = (data.rows || []).map((r) => {
+    const anyR = r as unknown as Record<string, unknown>;
+    const left = typeof r.left === "number" ? r.left
+      : typeof anyR.fair === "number" ? (anyR.fair as number)
+      : typeof anyR.low === "number" ? (anyR.low as number)
+      : typeof anyR.before === "number" ? (anyR.before as number)
+      : 0;
+    const right = typeof r.right === "number" ? r.right
+      : typeof anyR.padded === "number" ? (anyR.padded as number)
+      : typeof anyR.high === "number" ? (anyR.high as number)
+      : typeof anyR.after === "number" ? (anyR.after as number)
+      : 0;
+    return { label: r.label || "—", left, right };
+  });
+  const H = padding.top + rows.length * (rowH * 2 + rowGap) + padding.bottom;
+  const allVals = rows.flatMap((r) => [r.left, r.right]);
+  const max = Math.max(...allVals, 1);
+  // Coerce labels to non-undefined
+  const leftLabel = data.left_label || "Fair";
+  const rightLabel = data.right_label || "Padded";
   const chartWidth = W - padding.left - padding.right;
 
   const bgColor = theme === "dark" ? PALETTE.bg_dark : PALETTE.bg_card;
@@ -131,7 +150,7 @@ export function renderComparisonBarsSvg(data: ComparisonBarsData): string {
   const labelColor = theme === "dark" ? PALETTE.text_light : PALETTE.text_dark;
   const subColor = theme === "dark" ? "#94a3b8" : PALETTE.text_muted;
 
-  const rows = data.rows
+  const renderedRows = rows
     .map((row, i) => {
       const y = padding.top + i * (rowH * 2 + rowGap);
       const leftW = max > 0 ? (row.left / max) * chartWidth : 0;
@@ -150,11 +169,11 @@ export function renderComparisonBarsSvg(data: ComparisonBarsData): string {
   ${data.subtitle ? `<text x="${W / 2}" y="58" text-anchor="middle" font-size="13" fill="${subColor}" font-family="Inter, system-ui, sans-serif">${esc(data.subtitle)}</text>` : ""}
 
   <rect x="${padding.left}" y="70" width="14" height="14" fill="${PALETTE.primary}" rx="2"/>
-  <text x="${padding.left + 22}" y="82" font-size="13" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(data.left_label)}</text>
-  <rect x="${padding.left + 200}" y="70" width="14" height="14" fill="#ef4444" rx="2"/>
-  <text x="${padding.left + 222}" y="82" font-size="13" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(data.right_label)}</text>
+  <text x="${padding.left + 22}" y="82" font-size="13" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(leftLabel)}</text>
+  <rect x="${padding.left + 200}" y="70" width="14" height="14" fill="#dc2626" rx="2"/>
+  <text x="${padding.left + 222}" y="82" font-size="13" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(rightLabel)}</text>
 
-  ${rows}
+  ${renderedRows}
   <text x="${W - padding.right}" y="${H - 20}" text-anchor="end" font-size="11" fill="${subColor}" font-family="Inter, system-ui, sans-serif" font-style="italic">Source: ${esc(data.source)}</text>
 </svg>`;
 }
@@ -170,7 +189,13 @@ export function renderDonutSvg(data: DonutData): string {
   const cy = 230;
   const outerR = 150;
   const innerR = 95;
-  const total = data.rows.reduce((s, r) => s + r.value, 0);
+  // Normalize rows — guarantee value is a number
+  const rows = (data.rows || []).map((r) => ({
+    ...r,
+    value: typeof r.value === "number" && isFinite(r.value) ? r.value : 0,
+    label: r.label || "—",
+  }));
+  const total = rows.reduce((s, r) => s + r.value, 0) || 1;
 
   const bgColor = theme === "dark" ? PALETTE.bg_dark : PALETTE.bg_card;
   const titleColor = theme === "dark" ? PALETTE.text_light : PALETTE.text_dark;
@@ -181,7 +206,7 @@ export function renderDonutSvg(data: DonutData): string {
   const SLICE_COLORS = ["#10b981", "#3b82f6", "#fbbf24", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899"];
 
   let angleStart = -Math.PI / 2;
-  const slices = data.rows
+  const slices = rows
     .map((row, i) => {
       const angle = (row.value / total) * Math.PI * 2;
       const angleEnd = angleStart + angle;
@@ -201,7 +226,7 @@ export function renderDonutSvg(data: DonutData): string {
     })
     .join("");
 
-  const legend = data.rows
+  const legend = rows
     .map((row, i) => {
       const color = row.color || SLICE_COLORS[i % SLICE_COLORS.length];
       const pct = ((row.value / total) * 100).toFixed(0);

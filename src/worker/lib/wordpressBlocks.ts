@@ -57,12 +57,35 @@ function esc(s: string): string {
 }
 
 function renderHero(b: Extract<BlogBlock, { type: "hero" }>): string {
-  return `<!-- wp:cover {"customOverlayColor":"#0f172a","minHeight":380,"className":"riq-hero"} -->
-<div class="wp-block-cover riq-hero" style="background-color:#0f172a;min-height:380px;padding:48px 32px;">
+  // The Google Fonts import + the drop-cap CSS are injected as an HTML block at
+  // the very top of the post so they cascade to all riq-* class selectors below.
+  // Allura is a flowing script — gives the magazine-cursive feel without making
+  // long text unreadable (we only use it on single letters / 1-2 words).
+  return `<!-- wp:html -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@400;600;700;800&display=swap');
+.riq-snippet { font-family: 'Inter', system-ui, sans-serif; }
+.riq-snippet::first-letter,
+.riq-dropcap {
+  font-family: 'Allura', 'Pinyon Script', cursive;
+  font-size: 8rem;
+  line-height: 0.85;
+  font-weight: 400;
+  color: #1F9C4C;
+  float: left;
+  padding: 18px 16px 0 0;
+  margin: 0;
+}
+.riq-cursive-accent { font-family: 'Allura', cursive; color: #1F9C4C; font-weight: 400; line-height: 1; }
+</style>
+<!-- /wp:html -->
+
+<!-- wp:cover {"customOverlayColor":"#0f172a","minHeight":380,"className":"riq-hero"} -->
+<div class="wp-block-cover riq-hero" style="background-color:#0f172a;min-height:380px;padding:56px 32px;">
   <span aria-hidden="true" class="wp-block-cover__background has-background-dim-0" style="background-color:#0f172a"></span>
   <div class="wp-block-cover__inner-container">
     <!-- wp:heading {"level":1,"textColor":"white","className":"riq-hero-title"} -->
-    <h1 class="riq-hero-title has-white-color has-text-color" style="color:#ffffff;font-size:2.75rem;font-weight:800;letter-spacing:-0.025em;line-height:1.15;margin:0 0 16px;">${esc(b.title)}</h1>
+    <h1 class="riq-hero-title has-white-color has-text-color" style="color:#ffffff;font-size:3rem;font-weight:800;letter-spacing:-0.025em;line-height:1.1;margin:0 0 16px;">${esc(b.title)}</h1>
     <!-- /wp:heading -->
     <!-- wp:paragraph {"textColor":"white","className":"riq-hero-subtitle"} -->
     <p class="riq-hero-subtitle has-white-color has-text-color" style="color:#e2e8f0;font-size:1.25rem;line-height:1.5;margin:0;">${esc(b.subtitle)}</p>
@@ -71,8 +94,8 @@ function renderHero(b: Extract<BlogBlock, { type: "hero" }>): string {
 </div>
 <!-- /wp:cover -->
 
-<!-- wp:paragraph {"className":"riq-snippet","style":{"typography":{"firstLetter":true}}} -->
-<p class="riq-snippet" style="font-size:1.2rem;line-height:1.7;color:#0f172a;margin:32px 0;font-weight:500;"><span style="float:left;font-size:5rem;line-height:0.85;font-weight:800;color:#1F9C4C;padding:6px 12px 0 0;font-family:Georgia,serif;">${esc(b.snippet_paragraph.charAt(0))}</span>${esc(b.snippet_paragraph.slice(1))}</p>
+<!-- wp:paragraph {"className":"riq-snippet"} -->
+<p class="riq-snippet" style="font-size:1.2rem;line-height:1.75;color:#0f172a;margin:40px 0 32px;font-weight:400;"><span class="riq-dropcap">${esc(b.snippet_paragraph.charAt(0))}</span>${esc(b.snippet_paragraph.slice(1))}</p>
 <!-- /wp:paragraph -->`;
 }
 
