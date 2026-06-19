@@ -19,6 +19,8 @@ import contentSwarmRoutes, { runScout, runCycle, trackEngagement, sendMorningDig
 import inboxRoutes from './routes/inbox';
 import blogPublishRoutes from './routes/blogPublish';
 import inboundEmailRoutes from './routes/inboundEmail';
+import facebookWebhookRoutes from './routes/facebookWebhook';
+import facebookPublishRoutes from './routes/facebookPublish';
 import { generateBlogDraft } from './lib/blogDrafter';
 import { renderBlocks, buildFaqJsonLd, buildArticleJsonLd } from './lib/wordpressBlocks';
 import { createWpDraft } from './lib/wordpressClient';
@@ -365,6 +367,8 @@ app.route('/api/admin/content', contentSwarmRoutes);
 app.route('/api/admin/inbox', inboxRoutes);
 app.route('/api/admin/blog', blogPublishRoutes);
 app.route('/api/webhooks', inboundEmailRoutes);
+app.route('/api/webhooks', facebookWebhookRoutes);
+app.route('/api/admin/facebook', facebookPublishRoutes);
 
 // ============================================
 // GEOLOCATION ENDPOINT
@@ -6542,18 +6546,41 @@ async function scheduledHandler(
       if (!apiKey) {
         console.log('Weekly blog cron skipped: no GEMINI_API_KEY');
       } else {
+        // Phase 7-Pillars — draft HUBS first (so spokes have a hub to link to),
+        // then data reports, then comparisons, then spokes; oldest within a tier.
         const row = await env.DB.prepare(
-          `SELECT id, blog_brief FROM content_drafts
+          `SELECT id, blog_brief, content_format, wp_pillar FROM content_drafts
            WHERE blog_brief IS NOT NULL
              AND length(blog_brief) > 30
              AND wp_post_id IS NULL
-           ORDER BY id ASC LIMIT 1`
-        ).first<{ id: number; blog_brief: string }>();
+           ORDER BY
+             CASE content_format
+               WHEN 'hub' THEN 0 WHEN 'data_report' THEN 1
+               WHEN 'comparison' THEN 2 ELSE 3 END,
+             id ASC
+           LIMIT 1`
+        ).first<{ id: number; blog_brief: string; content_format: string | null; wp_pillar: string | null }>();
 
         if (!row) {
           console.log('Weekly blog cron: no queued briefs');
         } else {
-          const draft = await generateBlogDraft(apiKey, row.blog_brief);
+          const fmt = (row.content_format || 'spoke') as 'hub' | 'spoke' | 'comparison' | 'data_report';
+          // For spokes, find the published hub for this pillar to link up to.
+          let hubUrl: string | undefined;
+          if (fmt === 'spoke' && row.wp_pillar) {
+            const hub = await env.DB.prepare(
+              `SELECT published_url FROM content_drafts
+               WHERE wp_pillar = ? AND content_format = 'hub'
+                 AND published_url IS NOT NULL
+               ORDER BY published_at DESC LIMIT 1`
+            ).bind(row.wp_pillar).first<{ published_url: string }>();
+            hubUrl = hub?.published_url || undefined;
+          }
+          const draft = await generateBlogDraft(apiKey, row.blog_brief, {
+            format: fmt,
+            hubUrl,
+            forcePillar: (row.wp_pillar as 'cost_data' | 'contract_risk' | 'scope_negotiation' | 'regional' | null) || undefined,
+          });
           const blockHtml = renderBlocks(draft.blocks);
           const now = new Date().toISOString();
           const articleSchema = buildArticleJsonLd({

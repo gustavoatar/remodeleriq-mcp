@@ -66,6 +66,29 @@ export type BlogBlock =
       text: string;
       button_label: string;
       button_url: string;
+    }
+  | {
+      /** Bold "the short version" box — large text, brand-green left border, light tint.
+       * Renders the standalone 40-60 word answer/verdict. */
+      type: "verdict_callout";
+      /** Small all-caps label above the text (defaults to "THE SHORT VERSION") */
+      label?: string;
+      text: string;
+    }
+  | {
+      /** Amber/red warning card for a red-flag warning. */
+      type: "red_flag_callout";
+      title: string;
+      body: string;
+      /** Small uppercase pill (defaults to "⚠ RED FLAG") */
+      tag?: string;
+    }
+  | {
+      /** Numbered "ask your contractor this" script cards. */
+      type: "talk_track";
+      /** Section heading (defaults to "The Talk Track") */
+      heading?: string;
+      scripts: { prompt: string; why?: string }[];
     };
 
 function esc(s: string): string {
@@ -518,6 +541,49 @@ function renderCtaBanner(b: Extract<BlogBlock, { type: "cta_banner" }>): string 
 <!-- /wp:group -->`;
 }
 
+function renderVerdictCallout(b: Extract<BlogBlock, { type: "verdict_callout" }>): string {
+  const label = b.label || "THE SHORT VERSION";
+  return `<!-- wp:html -->
+<div class="riq-verdict-callout" style="background:#ecfdf5;border-left:6px solid #1F9C4C;padding:32px 32px 34px;margin:40px 0;border-radius:0 12px 12px 0;">
+  <span style="display:block;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#1F9C4C;margin:0 0 14px;">${esc(label)}</span>
+  <p style="font-family:'Inter',sans-serif;font-size:1.45rem;line-height:1.5;font-weight:600;color:#0f172a;margin:0;letter-spacing:-0.01em;">${esc(b.text)}</p>
+</div>
+<!-- /wp:html -->`;
+}
+
+function renderRedFlagCallout(b: Extract<BlogBlock, { type: "red_flag_callout" }>): string {
+  const tag = b.tag || "⚠ RED FLAG";
+  return `<!-- wp:html -->
+<div class="riq-red-flag-callout" style="background:#fef2f2;border:1px solid #fecaca;border-left:6px solid #dc2626;padding:28px 28px 30px;margin:32px 0;border-radius:0 12px 12px 0;">
+  <span style="display:inline-block;background:#dc2626;color:#ffffff;font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:6px 16px;border-radius:999px;margin:0 0 16px;">${esc(tag)}</span>
+  <h3 class="riq-red-flag-title" style="font-family:'Inter',sans-serif;font-size:1.3rem;font-weight:700;color:#0f172a;letter-spacing:-0.01em;line-height:1.3;margin:0 0 10px;">${esc(b.title)}</h3>
+  <p style="font-family:'Inter',sans-serif;font-size:1.02rem;line-height:1.65;color:#1e293b;margin:0;">${esc(b.body)}</p>
+</div>
+<!-- /wp:html -->`;
+}
+
+function renderTalkTrack(b: Extract<BlogBlock, { type: "talk_track" }>): string {
+  const heading = b.heading || "The Talk Track";
+  const cards = (b.scripts || [])
+    .map(
+      (s, idx) => `  <div class="riq-talk-track-card" style="display:flex;gap:18px;align-items:flex-start;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:22px 24px;margin:0 0 14px;">
+    <span style="flex-shrink:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1F9C4C;color:#ffffff;font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:800;border-radius:50%;line-height:1;">${idx + 1}</span>
+    <div style="flex:1;">
+      <p style="font-family:'Inter',sans-serif;font-size:1.12rem;line-height:1.45;font-weight:700;color:#0f172a;margin:0;letter-spacing:-0.01em;">&ldquo;${esc(s.prompt)}&rdquo;</p>
+      ${s.why ? `<p style="font-family:'Inter',sans-serif;font-size:0.92rem;line-height:1.55;color:#475569;margin:10px 0 0;"><span style="font-weight:700;color:#1F9C4C;">Why:</span> ${esc(s.why)}</p>` : ""}
+    </div>
+  </div>`
+    )
+    .join("\n");
+
+  return `<!-- wp:html -->
+<div class="riq-talk-track" style="margin:40px 0;">
+  <h3 class="riq-talk-track-heading" style="font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;margin:0 0 18px;">${esc(heading)}</h3>
+${cards}
+</div>
+<!-- /wp:html -->`;
+}
+
 export interface ImageResolution {
   src: string;
   mediaId: number;
@@ -548,6 +614,9 @@ export function renderBlocks(
         case "pull_quote": return renderPullQuote(b);
         case "faq": return renderFaq(b);
         case "cta_banner": return renderCtaBanner(b);
+        case "verdict_callout": return renderVerdictCallout(b);
+        case "red_flag_callout": return renderRedFlagCallout(b);
+        case "talk_track": return renderTalkTrack(b);
         default: return "";
       }
     })

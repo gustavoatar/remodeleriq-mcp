@@ -233,19 +233,7 @@ Principles:
    - The renderer automatically strips weak articles if you accidentally use one, but it's better to write it right the first time.
    - The first letter should be a strong consonant or vowel that looks ornamental in script — R, B, V, M, W, H, T (as part of "Three" works), S, P. Avoid 'I' alone.
 
-VISUAL BLUEPRINT — the canonical block sequence:
-
-  hero → snippet_paragraph (auto drop-cap)
-  → H2 (first major question) → 2 paragraphs → stat_callout
-  → section_cover (dark "moment") → H2 → paragraphs → chart
-  → H2 → two_column (fair-vs-padded OR red-flag-vs-green-flag)
-  → pull_quote (Gustavo, 1 sentence, ≤14 words)
-  → H2 → three_column → image
-  → section_cover (another scroll moment)
-  → H2 → paragraphs → comparison_table
-  → cta_button_group
-  → faq (always last before closing CTA)
-  → cta_banner
+BLOCK SEQUENCE: Follow the LAYOUT TEMPLATE provided in the user prompt — it specifies your block order and density for THIS post. Do not default to a fixed skeleton; different posts must look structurally different. The hero is always first (its snippet_paragraph auto-renders the drop cap), and the post always closes with a CTA (cta_banner or cta_button_group per the template) — everything between is template-driven.
 
 PERSONA REMINDER: knowledgeable industry writer, warm but expert, data-as-hero. Refer to RemodelerIQ as "we" or "the team". NEVER use "I built this tool" (that's Gustavo's line).
 
@@ -306,18 +294,17 @@ TWO_COLUMN BODY FIELDS (left_body / right_body):
 - If you want a bulleted list inside a column, use the dedicated left_items / right_items arrays instead.
 - Example: {"left_heading": "Fair", "left_items": ["Specifies Delta Model #XYZ123 faucets", "Names paint color SW 7006 Extra White", "Contractor pulls and pays for all permits"], "right_heading": "Padded", "right_items": ["Says 'owner-provided plumbing fixtures'", "Says 'paint walls and trim'", "Says 'permits obtained by homeowner if needed'"]}
 
-VISUAL DENSITY (mandatory — the post is a magazine feature, not a wall of text):
-- ≥1 hero block (always first)
-- ≥3 section_cover blocks — dark dividers between major sections (theme: "dark" most common, "emerald" for callouts, "amber" for warnings)
-- ≥3 stat_callout blocks (emerald background, big number + source citation)
-- ≥1 chart block (inline SVG — pick bar / comparison_bars / donut based on data)
-- ≥1 two_column block (fair vs padded comparison, OR pros vs cons)
-- ≥1 three_column block (when grouping 3 items — 3 trades, 3 phases, 3 traps)
-- ≥1 image block (Imagen-generated inline image; YOU write the imagen_prompt)
-- ≥2 pull_quote blocks (Gustavo-attributed insights)
-- ≥1 cta_button_group (2-3 buttons, NOT just one — RemodelerIQ + glossary + related blog post)
-- ≥1 faq block at the END (5-7 Q&As)
-- ≥1 cta_banner closing CTA
+VISUAL DENSITY: Match the density implied by your assigned LAYOUT TEMPLATE. Always include a hero first and a closing CTA (cta_banner or cta_button_group per the template); everything else is template-driven. Do not force a fixed minimum count of every block type into every post — that's what made posts look identical. Use the visual devices the template calls for, in the amounts it calls for.
+
+BLOCK VOCABULARY — the devices you may use (the template tells you WHICH and how MANY; this list just documents what exists):
+- hero, section_cover (theme: "dark" | "emerald" | "amber"), h2, h3, paragraph
+- stat_callout (emerald background, big number + source citation)
+- comparison_table (structured DATA columns), two_column (narrative side-by-side, fair-vs-padded), three_column (3 grouped cards)
+- chart (bar / comparison_bars / donut), image (Imagen inline image — YOU write the imagen_prompt)
+- pull_quote (≤14-word typographic moment), faq (5-7 Q&As, near the end), cta_button_group (soft, 2-3 buttons), cta_banner (loud closing CTA)
+- verdict_callout — the "short version" box holding your 40-60 word standalone answer. Shape: {"type": "verdict_callout", "label": "THE SHORT VERSION", "text": "the 40-60 word answer"} ("label" optional).
+- red_flag_callout — an amber/red warning card. Shape: {"type": "red_flag_callout", "tag": "⚠ RED FLAG", "title": "short bold warning", "body": "explanation paragraph"} ("tag" optional).
+- talk_track — numbered "ask your contractor this" script cards. Shape: {"type": "talk_track", "heading": "The Talk Track", "scripts": [{"prompt": "the exact question to ask", "why": "why it matters"}]} ("heading" and each "why" optional).
 
 FEATURED IMAGE — the post hero (separate from inline blocks):
 - "featured_image_prompt" — describe the Imagen-3 prompt for the post's hero image.
@@ -352,7 +339,10 @@ OUTPUT FORMAT: Return ONLY valid JSON matching this schema:
     {"type": "stat_callout", "big_number": "...", "label": "...", "source": "...", "date": "..."},
     {"type": "chart", "chart_type": "bar", "data": {"title": "...", "subtitle": "...", "source": "...", "unit": "/hr", "format": "currency", "rows": [{"label": "Atlanta", "value": 28.5}]}},
     {"type": "two_column", "left_heading": "Fair", "left_items": ["bullet 1", "bullet 2"], "right_heading": "Padded", "right_items": ["bullet 1", "bullet 2"], "left_theme": "ok", "right_theme": "warning"},
-    {"type": "two_column_paragraph", "left_heading": "...", "left_body": "PLAIN TEXT NO HTML", "right_heading": "...", "right_body": "PLAIN TEXT NO HTML"},
+    {"type": "two_column", "left_heading": "...", "left_body": "PLAIN TEXT NO HTML", "right_heading": "...", "right_body": "PLAIN TEXT NO HTML"},
+    {"type": "verdict_callout", "label": "THE SHORT VERSION", "text": "the 40-60 word standalone answer"},
+    {"type": "red_flag_callout", "tag": "⚠ RED FLAG", "title": "short bold warning", "body": "explanation paragraph"},
+    {"type": "talk_track", "heading": "The Talk Track", "scripts": [{"prompt": "the exact question to ask your contractor", "why": "why it matters"}]},
     {"type": "three_column", "items": [{"heading": "...", "body": "...", "icon_emoji": "🔨"}]},
     {"type": "image", "imagen_prompt": "...", "caption": "small-caps caption appears below image", "alt": "...", "kicker": "FIELD NOTE", "body": "OPTIONAL italic paragraph rendered beside the image in magazine 60/40 split"},
     {"type": "comparison_table", "headers": [...], "rows": [[...], [...]]},
@@ -401,13 +391,20 @@ OUTPUT FORMAT: Same JSON schema as VOICE_BRIEF_BELLA_LONGFORM:
   "tags": ["string", ...],
   "featured_image_brief": "string — what kind of hero image to source",
   "last_updated": "YYYY-MM-DD",
+BLOCK SEQUENCE: Follow the LAYOUT TEMPLATE provided in the user prompt — it specifies your block order and density for THIS post. The hero is always first (its snippet_paragraph auto-renders a drop cap); close with a SOFT cta_button_group, never the loud cta_banner. Everything between is template-driven — don't fall back to a fixed skeleton.
+
   "blocks": [
     {"type": "hero", "title": "...", "subtitle": "...", "snippet_paragraph": "..."},
     {"type": "h2", "text": "..."},
     {"type": "paragraph", "text": "..."},
+    {"type": "verdict_callout", "label": "THE SHORT VERSION", "text": "the 40-60 word standalone answer"},
     {"type": "stat_callout", "big_number": "...", "label": "...", "source": "...", "date": "..."},
+    {"type": "image", "imagen_prompt": "...", "caption": "...", "alt": "...", "kicker": "FIELD NOTE", "body": "OPTIONAL italic paragraph rendered beside the image in a magazine split"},
+    {"type": "talk_track", "heading": "The Talk Track", "scripts": [{"prompt": "the exact question to ask your contractor", "why": "why it matters"}]},
+    {"type": "red_flag_callout", "tag": "⚠ RED FLAG", "title": "short bold warning", "body": "explanation paragraph"},
     {"type": "pull_quote", "text": "...", "attribution": "Gustavo"},
-    {"type": "faq", "items": [{"q": "...", "a": "..."}, ...]}
+    {"type": "faq", "items": [{"q": "...", "a": "..."}, ...]},
+    {"type": "cta_button_group", "heading": "...", "buttons": [{"label": "...", "url": "https://remodeleriq.com", "style": "secondary"}]}
   ]
 }`;
 
@@ -811,15 +808,32 @@ async function ingestNewRedditReplies(
     // Skip our own comments (author matches our Reddit account if we know it)
     if (c.author === "[deleted]" || !c.body) continue;
 
+    // Phase 7E — engagement signal. A reply riding upvotes is where leads convert.
+    const ups = c.ups ?? c.score ?? 0;
+    const ENGAGEMENT_THRESHOLD = 5;
+    const isHot = ups >= ENGAGEMENT_THRESHOLD;
+    const engagementContext = [
+      ourComment ? `Our comment they're replying to:\n${ourComment.slice(0, 800)}` : "",
+      `This reply currently has ${ups} upvote(s).${isHot ? " This is a HIGH-ENGAGEMENT thread — it's converting on its own. Stay purely helpful, absolutely no CTA." : ""}`,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
     const { classifyInboxItem } = await import("../lib/inboxClassifier");
     const classification = await classifyInboxItem(env as never, {
       source: "reddit_reply",
       from_handle: `u/${c.author}`,
       body: c.body,
-      context: ourComment ? `Our comment they're replying to:\n${ourComment.slice(0, 800)}` : undefined,
+      context: engagementContext,
     });
 
+    // Deterministically elevate hot replies to engagement/high regardless of the
+    // model's call — an upvoted reply on our comment is the conversion moment.
+    const finalTag = isHot ? "engagement" : classification.tag;
     const permalink = c.permalink ? `https://www.reddit.com${c.permalink}` : parentUrl;
+    const subject = isHot
+      ? `🔥 Engaged reply (${ups} upvotes) on Reddit thread`
+      : `Reply on Reddit thread`;
 
     await env.DB.prepare(
       `INSERT INTO unified_inbox
@@ -830,10 +844,10 @@ async function ingestNewRedditReplies(
       .bind(
         externalId,
         `u/${c.author}`,
-        `Reply on Reddit thread`,
+        subject,
         `${classification.summary}\n\n${permalink}\n\n---\n\n${c.body.slice(0, 4000)}`,
         contentDraftId,
-        classification.tag,
+        finalTag,
         classification.proposed_reply
       )
       .run();

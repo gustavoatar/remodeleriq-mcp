@@ -9,7 +9,12 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { type AppEnv, SESSION_COOKIE_NAME } from "../types";
-import { generateBlogDraft, type BlogDraft } from "../lib/blogDrafter";
+import {
+  generateBlogDraft,
+  type BlogDraft,
+  type ContentFormat,
+  type Pillar,
+} from "../lib/blogDrafter";
 import {
   renderBlocks,
   buildFaqJsonLd,
@@ -23,6 +28,7 @@ import {
   publishWpDraft,
   findCategoryIdBySlug,
 } from "../lib/wordpressClient";
+import { createPagePost } from "../lib/facebookClient";
 import {
   generateFeaturedImage,
   uploadFeaturedImage,
@@ -127,6 +133,23 @@ async function resolveInlineImages(
   return resolutions;
 }
 
+// Phase 7-Pillars — find the published hub URL for a pillar so spokes can link up.
+async function lookupHubUrl(
+  env: AppEnv["Bindings"],
+  pillar: string | null
+): Promise<string | undefined> {
+  if (!pillar) return undefined;
+  const hub = await env.DB.prepare(
+    `SELECT published_url FROM content_drafts
+     WHERE wp_pillar = ? AND content_format = 'hub'
+       AND published_url IS NOT NULL
+     ORDER BY published_at DESC LIMIT 1`
+  )
+    .bind(pillar)
+    .first<{ published_url: string }>();
+  return hub?.published_url || undefined;
+}
+
 // Shared helper: take a generated BlogDraft and push it to WordPress as a draft
 // + create the unified_inbox approval row, link back to content_drafts.
 async function publishDraftToWp(
@@ -137,19 +160,19 @@ async function publishDraftToWp(
   const blocks = draft.blocks as BlogBlock[];
 
   // ===== Phase 7C v2 — visual upgrade =====
-  // Step 1: Generate ALL inline image blocks in parallel
+  // Generate inline + featured (hero) images CONCURRENTLY. Each underlying Imagen
+  // call already carries its own 18s per-model timeout (see featuredImage.ts), and
+  // inline images are capped to 1, so running both legs in parallel keeps total
+  // image wall-time to a single ~18s window instead of stacking them. This whole
+  // helper runs in a ctx.waitUntil() background task (see runBlogDraftJob), so it
+  // is no longer bound by the synchronous request budget either way.
   const imagenPrompts = extractImagenPrompts(blocks);
-  const imageResolutions = await resolveInlineImages(env, draft.persona, imagenPrompts, draft.title);
-
-  // Step 2: Generate the featured (hero) image
   const featuredPrompt = draft.featured_image_prompt || draft.featured_image_brief || draft.title;
   const featuredAlt = draft.featured_image_alt || draft.title;
-  const featuredMediaId = await createFeaturedImage(
-    env as never,
-    draft.persona,
-    featuredPrompt,
-    featuredAlt
-  );
+  const [imageResolutions, featuredMediaId] = await Promise.all([
+    resolveInlineImages(env, draft.persona, imagenPrompts, draft.title),
+    createFeaturedImage(env as never, draft.persona, featuredPrompt, featuredAlt),
+  ]);
 
   // Step 3: Render blocks with resolved image URLs
   const blockHtml = renderBlocks(blocks, imageResolutions);
@@ -193,6 +216,7 @@ async function publishDraftToWp(
          wp_post_id = ?,
          wp_pillar = ?,
          persona = ?,
+         status = 'in_review',
          blog_drafted_at = datetime('now'),
          updated_at = datetime('now')
        WHERE id = ?`
@@ -239,14 +263,119 @@ async function publishDraftToWp(
   return { wpPostId: wpResp.id, wpLink: wpResp.link, featuredMediaId };
 }
 
+// Sentinel status used to "claim" a content_drafts row while its draft + images
+// are being generated in the background. Both the manual /from-queue selector and
+// the Sunday cron selector exclude rows in this state so a second trigger can't
+// pick up a brief that's already mid-flight.
+export const BLOG_DRAFTING_STATUS = "blog_drafting";
+
+// Full text + image pipeline as one call: classify/generate the draft via Gemini,
+// run the heavy image pipeline, push the WP draft, and drop the unified_inbox row.
+export async function generateAndPublishBlog(
+  env: AppEnv["Bindings"],
+  apiKey: string,
+  opts: {
+    brief: string;
+    format: ContentFormat;
+    hubUrl?: string;
+    forcePersona?: "bella" | "gustavo";
+    forcePillar?: Pillar;
+    contentDraftId: number | null;
+  }
+): Promise<{
+  wpPostId: number;
+  wpLink: string;
+  title: string;
+  persona: "bella" | "gustavo";
+  pillar: Pillar;
+  format: ContentFormat;
+}> {
+  const draft = await generateBlogDraft(apiKey, opts.brief, {
+    forcePersona: opts.forcePersona,
+    forcePillar: opts.forcePillar,
+    format: opts.format,
+    hubUrl: opts.hubUrl,
+  });
+  const result = await publishDraftToWp(env, draft, opts.contentDraftId);
+  return {
+    wpPostId: result.wpPostId,
+    wpLink: result.wpLink,
+    title: draft.title,
+    persona: draft.persona,
+    pillar: draft.pillar,
+    format: draft.format,
+  };
+}
+
+// Background-safe wrapper for generateAndPublishBlog. Designed to be handed to
+// ctx.waitUntil() so the heavy Gemini text gen + Imagen pipeline (which blows past
+// the synchronous request budget on hub/data_report-length posts) runs detached
+// from the client connection. On failure it RELEASES the claim by restoring the
+// row's prior status, so the brief becomes eligible again on the next trigger.
+export async function runBlogDraftJob(
+  env: AppEnv["Bindings"],
+  apiKey: string,
+  opts: {
+    brief: string;
+    format: ContentFormat;
+    hubUrl?: string;
+    forcePersona?: "bella" | "gustavo";
+    forcePillar?: Pillar;
+    contentDraftId: number | null;
+    /** Status to restore if the job fails (only used when contentDraftId is set). */
+    priorStatus?: string | null;
+  }
+): Promise<void> {
+  try {
+    const result = await generateAndPublishBlog(env, apiKey, opts);
+    console.log(
+      `Blog draft job complete: ${result.persona} / ${result.pillar} / WP #${result.wpPostId}` +
+        (opts.contentDraftId ? ` (content_draft ${opts.contentDraftId})` : "")
+    );
+  } catch (err) {
+    console.error("Blog draft job failed:", err);
+    // Release the claim so the brief can be retried. Guard on the sentinel so we
+    // never clobber a status set by a concurrent/later run.
+    if (opts.contentDraftId != null) {
+      try {
+        await env.DB.prepare(
+          `UPDATE content_drafts SET status = ?, updated_at = datetime('now')
+           WHERE id = ? AND status = ?`
+        )
+          .bind(opts.priorStatus ?? "blog_brief", opts.contentDraftId, BLOG_DRAFTING_STATUS)
+          .run();
+      } catch (releaseErr) {
+        console.error("Failed to release blog draft claim:", releaseErr);
+      }
+    }
+  }
+}
+
+// Claim a content_drafts row for background drafting by flipping it to the
+// BLOG_DRAFTING_STATUS sentinel. Guarded on wp_post_id IS NULL + sentinel-free so
+// two concurrent triggers can't both win the same row. Returns true if claimed.
+export async function claimBlogDraftRow(
+  env: AppEnv["Bindings"],
+  contentDraftId: number
+): Promise<boolean> {
+  const res = await env.DB.prepare(
+    `UPDATE content_drafts SET status = ?, updated_at = datetime('now')
+     WHERE id = ? AND wp_post_id IS NULL AND (status IS NULL OR status != ?)`
+  )
+    .bind(BLOG_DRAFTING_STATUS, contentDraftId, BLOG_DRAFTING_STATUS)
+    .run();
+  return (res.meta.changes || 0) > 0;
+}
+
 // ====================================================================
 // POST /draft — manual draft from a topic string
 // ====================================================================
 app.post("/draft", async (c) => {
-  const { brief, forcePersona, forcePillar, contentDraftId } = await c.req.json<{
+  const { brief, forcePersona, forcePillar, format, contentDraftId } = await c.req.json<{
     brief: string;
     forcePersona?: "bella" | "gustavo";
     forcePillar?: "cost_data" | "contract_risk" | "scope_negotiation" | "regional";
+    format?: "hub" | "spoke" | "comparison" | "data_report";
     contentDraftId?: number;
   }>();
 
@@ -258,20 +387,51 @@ app.post("/draft", async (c) => {
   if (!apiKey) return c.json({ error: "GEMINI_API_KEY missing" }, 500);
 
   try {
-    const draft = await generateBlogDraft(apiKey, brief, { forcePersona, forcePillar });
-    const result = await publishDraftToWp(c.env, draft, contentDraftId || null);
-    return c.json({
-      success: true,
-      persona: draft.persona,
-      pillar: draft.pillar,
-      title: draft.title,
-      wpPostId: result.wpPostId,
-      wpDraftPreview: `${result.wpLink}?preview=true`,
-    });
-  } catch (err) {
-    console.error("Blog draft failed:", err);
+    const fmt = format || "spoke";
+    const hubUrl = fmt === "spoke" ? await lookupHubUrl(c.env, forcePillar || null) : undefined;
+
+    // If this maps to an existing queued brief, claim it so a concurrent
+    // /from-queue or the Sunday cron can't grab it while we draft in the background.
+    let priorStatus: string | null = null;
+    if (contentDraftId) {
+      const existing = await c.env.DB.prepare(
+        "SELECT status FROM content_drafts WHERE id = ?"
+      )
+        .bind(contentDraftId)
+        .first<{ status: string | null }>();
+      priorStatus = existing?.status ?? null;
+      await claimBlogDraftRow(c.env, contentDraftId);
+    }
+
+    // Heavy work (Gemini text gen + Imagen pipeline + WP create) runs detached from
+    // the request so a hub/data_report-length post can't blow the request budget and
+    // drop the connection mid-flight. The WP draft + inbox row land when it finishes.
+    c.executionCtx.waitUntil(
+      runBlogDraftJob(c.env, apiKey, {
+        brief,
+        format: fmt,
+        hubUrl,
+        forcePersona,
+        forcePillar,
+        contentDraftId: contentDraftId || null,
+        priorStatus,
+      })
+    );
+
     return c.json(
-      { error: err instanceof Error ? err.message : "Blog draft failed" },
+      {
+        status: "drafting",
+        contentDraftId: contentDraftId || null,
+        linkedHub: hubUrl || null,
+        message:
+          "Draft + images are generating in the background. The WP draft and inbox approval row will appear when complete (wp_post_id gets set on the content_drafts row).",
+      },
+      202
+    );
+  } catch (err) {
+    console.error("Blog draft scheduling failed:", err);
+    return c.json(
+      { error: err instanceof Error ? err.message : "Blog draft scheduling failed" },
       500
     );
   }
@@ -284,25 +444,39 @@ app.post("/from-queue", async (c) => {
   const apiKey = (c.env as unknown as Record<string, unknown>).GEMINI_API_KEY as string | undefined;
   if (!apiKey) return c.json({ error: "GEMINI_API_KEY missing" }, 500);
 
-  // Find oldest unfulfilled blog brief
+  // Find next brief — hubs first (so spokes have a hub to link to), then
+  // data reports, comparisons, spokes; oldest within a tier.
   const row = await c.env.DB.prepare(
-    `SELECT id, blog_brief, persona FROM content_drafts
+    `SELECT id, blog_brief, persona, content_format, wp_pillar FROM content_drafts
      WHERE blog_brief IS NOT NULL
        AND length(blog_brief) > 30
        AND wp_post_id IS NULL
-     ORDER BY id ASC LIMIT 1`
-  ).first<{ id: number; blog_brief: string; persona: string | null }>();
+     ORDER BY
+       CASE content_format
+         WHEN 'hub' THEN 0 WHEN 'data_report' THEN 1
+         WHEN 'comparison' THEN 2 ELSE 3 END,
+       id ASC
+     LIMIT 1`
+  ).first<{ id: number; blog_brief: string; persona: string | null; content_format: string | null; wp_pillar: string | null }>();
 
   if (!row) return c.json({ message: "No queued blog briefs" });
 
   try {
-    const draft = await generateBlogDraft(apiKey, row.blog_brief);
+    const fmt = (row.content_format || "spoke") as "hub" | "spoke" | "comparison" | "data_report";
+    const hubUrl = fmt === "spoke" ? await lookupHubUrl(c.env, row.wp_pillar) : undefined;
+    const draft = await generateBlogDraft(apiKey, row.blog_brief, {
+      format: fmt,
+      hubUrl,
+      forcePillar: (row.wp_pillar as "cost_data" | "contract_risk" | "scope_negotiation" | "regional" | null) || undefined,
+    });
     const result = await publishDraftToWp(c.env, draft, row.id);
     return c.json({
       success: true,
       contentDraftId: row.id,
       persona: draft.persona,
       pillar: draft.pillar,
+      format: draft.format,
+      linkedHub: hubUrl || null,
       title: draft.title,
       wpPostId: result.wpPostId,
       wpDraftPreview: `${result.wpLink}?preview=true`,
@@ -352,7 +526,25 @@ app.post("/:contentDraftId/publish", async (c) => {
       .bind(`wp-${row.wp_post_id}`)
       .run();
 
-    return c.json({ success: true, link: resp.link, status: resp.status });
+    // Phase 7G — Cross-post to Facebook Page (best-effort, never fails the WP publish)
+    let fbResult: { posted: boolean; fb_post_id?: string; error?: string } = { posted: false };
+    try {
+      const fbEnv = c.env as unknown as Record<string, string | undefined>;
+      if (fbEnv.FACEBOOK_PAGE_ID && fbEnv.FACEBOOK_PAGE_ACCESS_TOKEN) {
+        // Brief caption — full Gemini caption gen happens via /from-blog/:id manual trigger
+        const fallbackCaption = `New on the RemodelerIQ blog.\n\n${resp.link}`;
+        const fbPost = await createPagePost(fbEnv as never, {
+          message: fallbackCaption,
+          link: resp.link,
+        });
+        fbResult = { posted: true, fb_post_id: fbPost.id };
+      }
+    } catch (fbErr) {
+      console.warn("FB cross-post failed (non-fatal):", fbErr);
+      fbResult = { posted: false, error: fbErr instanceof Error ? fbErr.message : "unknown" };
+    }
+
+    return c.json({ success: true, link: resp.link, status: resp.status, facebook: fbResult });
   } catch (err) {
     console.error("Blog publish failed:", err);
     return c.json(
