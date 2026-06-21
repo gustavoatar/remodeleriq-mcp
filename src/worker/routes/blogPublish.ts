@@ -636,12 +636,33 @@ app.post("/:contentDraftId/publish", async (c) => {
     try {
       const fbEnv = c.env as unknown as Record<string, string | undefined>;
       if (fbEnv.FACEBOOK_PAGE_ID && fbEnv.FACEBOOK_PAGE_ACCESS_TOKEN) {
-        // Brief caption — full Gemini caption gen happens via /from-blog/:id manual trigger
-        const fallbackCaption = `New on the RemodelerIQ blog.\n\n${resp.link}`;
-        const fbPost = await createPagePost(fbEnv as never, {
-          message: fallbackCaption,
-          link: resp.link,
-        });
+        // Pull the article's title + featured image so the share shows the REAL
+        // hero image (not the site logo that FB pulls as the og:image on a bare
+        // link). Post as a photo with an emoji caption + the link in the body.
+        let imageUrl: string | undefined;
+        let title = "";
+        try {
+          const wpRes = await fetch(
+            `https://intelligence.remodeleriq.com/wp-json/wp/v2/posts/${row.wp_post_id}?_fields=title&_embed=wp:featuredmedia`,
+            { headers: { "User-Agent": "Mozilla/5.0", Accept: "application/json" } }
+          );
+          if (wpRes.ok) {
+            const wp = (await wpRes.json()) as {
+              title?: { rendered?: string };
+              _embedded?: { "wp:featuredmedia"?: Array<{ source_url?: string }> };
+            };
+            title = (wp.title?.rendered || "")
+              .replace(/&amp;/g, "&").replace(/&#8217;|&#039;|&rsquo;/g, "'").replace(/&#8211;|&ndash;/g, "–");
+            imageUrl = wp._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
+          }
+        } catch { /* fall back to a plain link share */ }
+
+        const hook = title ? `📐 ${title}` : "📐 New on the RemodelerIQ blog";
+        const caption = `${hook}\n\nThe full breakdown — with the real numbers — is on the blog 👇\n${resp.link}`;
+        const fbPost = await createPagePost(
+          fbEnv as never,
+          imageUrl ? { message: caption, image_url: imageUrl } : { message: caption, link: resp.link }
+        );
         fbResult = { posted: true, fb_post_id: fbPost.id };
       }
     } catch (fbErr) {
