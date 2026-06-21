@@ -15,7 +15,7 @@ import redditAuthRoutes from './routes/redditAuth';
 import stripeRoutes from './routes/stripe';
 import magicLinkRoutes from './routes/magicLink';
 import contentDraftsRoutes from './routes/contentDrafts';
-import contentSwarmRoutes, { runScout, runCycle, trackEngagement, sendMorningDigest, autoPublishApproved } from './routes/contentSwarm';
+import contentSwarmRoutes, { trackEngagement, sendMorningDigest, autoPublishApproved } from './routes/contentSwarm';
 import inboxRoutes from './routes/inbox';
 import blogPublishRoutes, {
   claimBlogDraftRow,
@@ -6470,7 +6470,7 @@ app.notFound(async (c) => {
 async function scheduledHandler(
   event: ScheduledEvent,
   env: Env,
-  ctx: ExecutionContext
+  _ctx: ExecutionContext
 ): Promise<void> {
   // Multiplex cron schedule by event.cron
   // - "0 */6 * * *"  → Reddit Scout (every 6h)
@@ -6482,24 +6482,8 @@ async function scheduledHandler(
 
   const envForRoutes = env as unknown as { DB: D1Database; RESEND_API_KEY?: string; GEMINI_API_KEY?: string };
 
-  if (cron === "0 */6 * * *") {
-    // Reddit Scout — fetch new posts, queue them, then run a cycle on what was queued
-    try {
-      const scoutRes = await runScout(envForRoutes as never);
-      const scoutJson = await scoutRes.json() as { queued?: number };
-      console.log(`Scout queued ${scoutJson.queued || 0} posts`);
-      // If anything was queued, immediately run a cycle to draft them
-      if ((scoutJson.queued || 0) > 0) {
-        ctx.waitUntil((async () => {
-          const cycleRes = await runCycle(envForRoutes as never, "cron");
-          const cycleJson = await cycleRes.json() as { drafted?: number };
-          console.log(`Cron cycle drafted ${cycleJson.drafted || 0}`);
-        })());
-      }
-    } catch (err) {
-      console.error("Scout cron failed:", err);
-    }
-  }
+  // NOTE: the old "0 */6 * * *" Reddit-scout cron was removed — Reddit closed its
+  // public JSON API, so scouting is dead. Reddit is now a manual paste workflow.
 
   if (cron === "0 11 * * *") {
     // Morning digest 7am ET

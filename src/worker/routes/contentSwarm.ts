@@ -452,115 +452,23 @@ function voiceBriefFor(persona: Persona): string {
 // ====================================================================
 // SCOUT — fetches new Reddit posts and queues them as 'queued' source rows
 // ====================================================================
-const SUBREDDITS = [
-  "HomeImprovement",
-  "Renovations",
-  "HomeRenovations",
-];
-
-const BID_QUESTION_PATTERNS = [
-  /is\s+this\s+(quote|bid|estimate)\s+(fair|reasonable|normal|too\s+high|too\s+low)/i,
-  /how\s+much\s+(should|would)\s+(this|a|an|my)/i,
-  /what\s+would\s+(this|a|you|reasonable)/i,
-  /got\s+a\s+(quote|bid|estimate)/i,
-  /contractor\s+(quoted|wants|charging|asking)/i,
-  /(red\s+flag|too\s+good\s+to\s+be\s+true)/i,
-  /(deposit|down\s+payment|upfront)/i,
-  /(change\s+order|scope\s+creep)/i,
-  /\$\d[\d,]*\s+for\s+(a|the|my|kitchen|bath|basement|deck|roof)/i,
-];
-
-interface RedditPost {
-  url: string;
-  title: string;
-  selftext: string;
-  author: string;
-  subreddit: string;
-  created_utc: number;
-  ups: number;
-  num_comments: number;
-  id: string;
-}
-
-async function fetchRedditNew(subreddit: string, limit = 25): Promise<RedditPost[]> {
-  try {
-    const url = `https://www.reddit.com/r/${subreddit}/new.json?limit=${limit}`;
-    const res = await fetch(url, {
-      headers: { "User-Agent": "RemodelerIQ Scout/1.0 (homeowner advocacy)" },
-    });
-    if (!res.ok) return [];
-    const json = (await res.json()) as { data: { children: { data: RedditPost }[] } };
-    return (json.data?.children || []).map((c) => c.data);
-  } catch (err) {
-    console.error(`Reddit fetch failed for r/${subreddit}:`, err);
-    return [];
-  }
-}
-
-function looksLikeBidQuestion(post: RedditPost): boolean {
-  const text = `${post.title}\n${post.selftext || ""}`;
-  return BID_QUESTION_PATTERNS.some((p) => p.test(text));
-}
+// (Reddit scout helpers removed — Reddit closed its public JSON API. See runScout
+// stub below. Reddit is now a manual paste workflow per the warmup playbook.)
 
 // Run the Scout — fetches Reddit, filters, queues
 app.post("/scout", async (c) => {
   return await runScout(c.env);
 });
 
-export async function runScout(env: AppEnv["Bindings"]): Promise<Response> {
-  const allPosts: RedditPost[] = [];
-  for (const sub of SUBREDDITS) {
-    const posts = await fetchRedditNew(sub, 25);
-    allPosts.push(...posts);
-  }
-
-  // Filter — keep only bid-question-shaped posts under 24h old
-  const cutoff = Math.floor(Date.now() / 1000) - 24 * 3600;
-  const candidates = allPosts.filter(
-    (p) => p.created_utc > cutoff && looksLikeBidQuestion(p) && (p.selftext || "").length > 80
-  );
-
-  // Dedupe against existing rows (by source_url)
-  const existing = await env.DB.prepare(
-    "SELECT source_url FROM content_drafts WHERE source_url LIKE 'https://www.reddit.com/%' OR source_url LIKE 'https://reddit.com/%'"
-  ).all<{ source_url: string }>();
-  const existingUrls = new Set((existing.results || []).map((r) => r.source_url));
-
-  const fresh = candidates.filter((p) => {
-    const fullUrl = `https://www.reddit.com${p.url || ""}`;
-    return !existingUrls.has(fullUrl) && !existingUrls.has(p.url);
-  });
-
-  // Cap to 15 per scout run so we don't flood
-  const toQueue = fresh.slice(0, 15);
-
-  const cycleId = `scout-${Date.now()}`;
-  let queued = 0;
-  for (const p of toQueue) {
-    const fullUrl = `https://www.reddit.com${p.url}`;
-    const excerpt = (p.selftext || p.title).slice(0, 1200);
-    try {
-      await env.DB.prepare(
-        `INSERT INTO content_drafts
-         (cycle_id, platform, source_url, source_excerpt, source_author,
-          source_subreddit_or_hood, status)
-         VALUES (?, 'reddit', ?, ?, ?, ?, 'queued')`
-      )
-        .bind(cycleId, fullUrl, `${p.title}\n\n${excerpt}`, `u/${p.author}`, `r/${p.subreddit}`)
-        .run();
-      queued++;
-    } catch (err) {
-      console.error("Scout insert failed:", err);
-    }
-  }
-
-  return Response.json({
-    success: true,
-    scanned: allPosts.length,
-    candidates: candidates.length,
-    queued,
-    cycleId,
-  });
+// DISABLED 2026-06: Reddit closed its public JSON API (the `.json` endpoints now
+// serve the web app HTML, not data), so unauthenticated server-side scouting is
+// no longer possible — and OAuth posting from a promotional account is one mod
+// report from a sitewide ban. Reddit is now a MANUAL workflow: drafts are written
+// by hand (see the warmup playbook) and pasted from a human-warmed account. This
+// stub stays so existing callers don't break; it queues nothing.
+export async function runScout(_env: AppEnv["Bindings"]): Promise<Response> {
+  console.log("runScout: skipped — Reddit public API is closed; Reddit is manual-only now.");
+  return Response.json({ success: true, disabled: true, scanned: 0, candidates: 0, queued: 0 });
 }
 
 // ====================================================================
