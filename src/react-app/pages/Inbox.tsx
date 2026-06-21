@@ -232,6 +232,9 @@ export default function Inbox() {
                 </button>
               </>
             )}
+            <button onClick={() => navigate("/admin/reddit")} className="text-sm font-medium text-slate-600 hover:text-slate-900 ml-2">
+              Reddit
+            </button>
             <button onClick={() => navigate("/admin/content")} className="text-sm font-medium text-slate-600 hover:text-slate-900 ml-2">
               Drafts page →
             </button>

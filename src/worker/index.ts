@@ -17,6 +17,7 @@ import magicLinkRoutes from './routes/magicLink';
 import contentDraftsRoutes from './routes/contentDrafts';
 import contentSwarmRoutes, { trackEngagement, sendMorningDigest, autoPublishApproved } from './routes/contentSwarm';
 import inboxRoutes from './routes/inbox';
+import redditDraftsRoutes from './routes/redditDrafts';
 import blogPublishRoutes, {
   claimBlogDraftRow,
   processBlogDraftMessage,
@@ -368,6 +369,7 @@ app.route('/api', magicLinkRoutes);
 app.route('/api/admin/content', contentDraftsRoutes);
 app.route('/api/admin/content', contentSwarmRoutes);
 app.route('/api/admin/inbox', inboxRoutes);
+app.route('/api/admin/reddit', redditDraftsRoutes);
 app.route('/api/admin/blog', blogPublishRoutes);
 app.route('/api/webhooks', inboundEmailRoutes);
 app.route('/api/webhooks', facebookWebhookRoutes);
