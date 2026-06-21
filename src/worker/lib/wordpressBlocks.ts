@@ -105,6 +105,41 @@ function esc(s: string): string {
   return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+// Robust edge-to-edge full-bleed: breaks a block out of the centered content
+// column to the full viewport width. Uses the calc(50% - 50vw) margin technique
+// (works regardless of column width as long as the column is centered) with
+// !important so block-theme margin rules can't override it. The `alignfull`
+// class is also added on elements so themes that natively support it cooperate.
+const FULLBLEED =
+  "width:100vw;max-width:100vw;margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;box-sizing:border-box;";
+
+// Sanitize inline body text: Gemini sometimes wraps phrases in stray inline HTML
+// (e.g. <span class="riq-cursive-accent">Red flag alert:</span>) which then shows
+// as a LITERAL tag when escaped. Keep a small allowlist of safe inline tags
+// (a/strong/em/b/i/br) and DROP every other tag while preserving its inner text.
+// Anchors are href-validated to http(s)/relative. Loose < and & are then escaped.
+function sanitizeInline(s: string): string {
+  if (!s) return "";
+  // 1. Strip disallowed tags, keep inner text. Keep allowlisted tags verbatim.
+  let out = s.replace(/<\/?([a-zA-Z0-9]+)([^>]*)>/g, (full, tag: string, attrs: string) => {
+    const t = tag.toLowerCase();
+    if (t === "strong" || t === "em" || t === "b" || t === "i" || t === "br") {
+      return full.startsWith("</") ? `</${t}>` : `<${t}>`; // drop any attrs
+    }
+    if (t === "a") {
+      if (full.startsWith("</")) return "</a>";
+      const href = (attrs.match(/href\s*=\s*["']([^"']*)["']/i) || [])[1] || "";
+      if (/^(https?:\/\/|\/)/i.test(href)) return `<a href="${href.replace(/"/g, "%22")}">`;
+      return ""; // unsafe/relative-less anchor → unwrap
+    }
+    return ""; // disallowed tag → strip, keep surrounding text
+  });
+  // 2. Escape stray ampersands and any remaining lone angle brackets that are NOT
+  // part of an allowlisted tag, so malformed snippets never break layout.
+  out = out.replace(/&(?!(amp|lt|gt|#\d+|quot);)/g, "&amp;");
+  return out;
+}
+
 // Strong-consonant words that look great as a giant cursive drop cap.
 // If Bella opens the snippet with an article ("The", "A", "An"), we promote
 // the first real noun/verb to the start by reshuffling — or detect & note.
@@ -200,7 +235,7 @@ function renderH3(b: Extract<BlogBlock, { type: "h3" }>): string {
 
 function renderParagraph(b: Extract<BlogBlock, { type: "paragraph" }>): string {
   return `<!-- wp:paragraph -->
-<p style="font-size:1.05rem;line-height:1.8;color:#1e293b;margin:24px 0;max-width:68ch;">${esc(b.text)}</p>
+<p style="font-size:1.05rem;line-height:1.8;color:#1e293b;margin:24px 0;max-width:68ch;">${sanitizeInline(b.text)}</p>
 <!-- /wp:paragraph -->`;
 }
 
@@ -302,10 +337,10 @@ function renderSectionCover(b: Extract<BlogBlock, { type: "section_cover" }>): s
   };
   const t = themes[b.theme || "dark"] || themes.dark;
   return `<!-- wp:html -->
-<section class="riq-section-band" style="position:relative;left:50%;right:50%;width:100vw;margin:88px -50vw;background:${t.bg};padding:104px 24px;">
+<section class="riq-section-band alignfull" style="${FULLBLEED}margin-top:88px;margin-bottom:88px;background:${t.bg};padding:104px 24px;">
   <div style="max-width:760px;margin:0 auto;text-align:center;">
     <h2 style="color:${t.title};font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:2.6rem;font-weight:700;letter-spacing:-0.02em;line-height:1.15;margin:0 0 18px;">${esc(b.title)}</h2>
-    <p style="color:${t.body};font-size:1.2rem;line-height:1.65;margin:0;">${esc(b.body)}</p>
+    <p style="color:${t.body};font-size:1.2rem;line-height:1.65;margin:0;">${sanitizeInline(b.body)}</p>
   </div>
 </section>
 <!-- /wp:html -->`;
@@ -412,8 +447,8 @@ function renderImageBlock(
       ? `<div style="max-width:720px;margin:0 auto;padding:0 24px;"><p style="font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:1.6rem;line-height:1.45;color:#0f172a;font-weight:500;text-align:center;margin:40px auto 0;letter-spacing:-0.01em;">${esc(b.body)}</p></div>`
       : "";
   return `<!-- wp:html -->
-<figure class="riq-fullbleed-image" style="position:relative;left:50%;right:50%;width:100vw;margin:80px -50vw;padding:0;">
-  <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" loading="lazy" style="width:100vw;max-width:100vw;height:54vh;min-height:360px;object-fit:cover;display:block;margin:0;"${cls}/>
+<figure class="riq-fullbleed-image alignfull" style="${FULLBLEED}margin-top:80px;margin-bottom:80px;padding:0;">
+  <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" loading="lazy" style="width:100%;height:54vh;min-height:360px;object-fit:cover;display:block;margin:0;"${cls}/>
   ${lead}
 </figure>
 <!-- /wp:html -->`;
@@ -592,7 +627,7 @@ function renderGallery(
     .join("\n");
 
   return `<!-- wp:html -->
-<div class="riq-gallery" style="position:relative;left:50%;right:50%;width:100vw;margin:80px -50vw;display:grid;grid-template-columns:repeat(${cols},1fr);gap:6px;">
+<div class="riq-gallery alignfull" style="${FULLBLEED}margin-top:80px;margin-bottom:80px;display:grid;grid-template-columns:repeat(${cols},1fr);gap:6px;">
 ${cells}
 </div>
 <!-- /wp:html -->`;
