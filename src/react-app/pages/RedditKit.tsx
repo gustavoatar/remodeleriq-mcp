@@ -22,6 +22,12 @@ interface RedditDraft {
   posted_url: string | null;
   created_at: string;
   posted_at: string | null;
+  // Scout fields (source='scout' = a real post we found)
+  post_url: string | null;
+  post_title: string | null;
+  post_excerpt: string | null;
+  source: string | null;
+  found_at: string | null;
 }
 
 export default function RedditKit() {
@@ -30,6 +36,8 @@ export default function RedditKit() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [scouting, setScouting] = useState(false);
+  const [scoutMsg, setScoutMsg] = useState<string | null>(null);
   const [filter, setFilter] = useState<StatusFilter>("all");
 
   const fetchData = useCallback(async (showSpinner = false) => {
@@ -55,6 +63,26 @@ export default function RedditKit() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const runScout = async () => {
+    setScouting(true);
+    setScoutMsg(null);
+    try {
+      const res = await fetch("/api/admin/reddit/scout", { method: "POST" });
+      const data = await res.json();
+      setScoutMsg(
+        data.drafted > 0
+          ? `Found ${data.drafted} new post${data.drafted === 1 ? "" : "s"} with ready replies.`
+          : "No new posts right now — Reddit may be rate-limiting; try again in a bit."
+      );
+      await fetchData();
+    } catch {
+      setScoutMsg("Scout failed — try again.");
+    } finally {
+      setScouting(false);
+      setTimeout(() => setScoutMsg(null), 5000);
+    }
+  };
 
   const setStatus = async (id: number, status: RedditDraft["status"]) => {
     // Optimistic update
@@ -121,6 +149,15 @@ export default function RedditKit() {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={runScout}
+              disabled={scouting}
+              className="text-sm font-semibold px-3 py-2 rounded-lg text-white hover:opacity-90 flex items-center gap-2 disabled:opacity-50 min-h-[40px]"
+              style={{ backgroundColor: "#ff4500" }}
+            >
+              {scouting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+              {scouting ? "Finding…" : "Find new posts"}
+            </button>
+            <button
               onClick={() => fetchData(true)}
               disabled={refreshing}
               className="text-sm font-medium px-3 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-2 disabled:opacity-50"
@@ -142,6 +179,12 @@ export default function RedditKit() {
           <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
           <p>2–3/day max from a fresh account · no links / no brand for the first few weeks · just be helpful.</p>
         </div>
+
+        {scoutMsg && (
+          <div className="mb-4 bg-orange-50 border border-orange-200 rounded-lg p-3 text-sm text-orange-900">
+            {scoutMsg}
+          </div>
+        )}
 
         {/* Filter */}
         <div className="flex gap-1 border-b border-slate-200 mb-4 overflow-x-auto">
@@ -199,30 +242,44 @@ function DraftCard({
       ? "bg-slate-100 border-slate-200 opacity-70"
       : "bg-white border-slate-200";
 
+  const isScout = draft.source === "scout" && !!draft.post_url;
+
   return (
     <div className={`rounded-lg p-4 border ${tint}`}>
       <div className="flex items-start gap-2 mb-2">
         {draft.status === "posted" && <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-1" />}
-        <div className="min-w-0">
-          <h2 className={`text-sm font-bold text-slate-900 ${draft.status === "skipped" ? "line-through" : ""}`}>
-            {draft.scenario}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            {isScout && (
+              <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: "#ff4500" }}>
+                ✨ Found post
+              </span>
+            )}
+            {draft.target_subs && <span className="text-xs text-slate-500">{draft.target_subs}</span>}
+          </div>
+          <h2 className={`text-sm font-bold text-slate-900 mt-1 ${draft.status === "skipped" ? "line-through" : ""}`}>
+            {draft.post_title || draft.scenario}
           </h2>
-          {draft.target_subs && (
-            <p className="text-xs text-slate-500 mt-0.5">{draft.target_subs}</p>
-          )}
         </div>
       </div>
 
-      {/* Find a post */}
+      {/* For scouted posts: show the homeowner's actual question */}
+      {isScout && draft.post_excerpt && (
+        <blockquote className="text-xs text-slate-600 bg-slate-50 border-l-2 border-slate-300 pl-3 py-2 mb-3 rounded-r line-clamp-4">
+          “{draft.post_excerpt}”
+        </blockquote>
+      )}
+
+      {/* Link: direct to the real post (scout) OR a search (manual template) */}
       <a
-        href={draft.search_url}
+        href={isScout ? draft.post_url! : draft.search_url}
         target="_blank"
         rel="noopener"
         className="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg text-white hover:opacity-90 min-h-[40px] mb-3"
         style={{ backgroundColor: "#ff4500" }}
       >
         <Search className="w-4 h-4" />
-        🔎 Find a live post on Reddit →
+        {isScout ? "Open this post & reply →" : "🔎 Find a live post on Reddit →"}
       </a>
 
       {/* Comment */}

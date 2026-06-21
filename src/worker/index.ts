@@ -28,6 +28,7 @@ import inboundEmailRoutes from './routes/inboundEmail';
 import facebookWebhookRoutes from './routes/facebookWebhook';
 import facebookPublishRoutes from './routes/facebookPublish';
 import { generateAndScheduleFbBatch } from './lib/fbContentGenerator';
+import { scoutRedditRss } from './lib/redditScout';
 import { authMiddleware } from './middleware/auth';
 import { type UserProfile as UserProfileType } from './types';
 import { getAllOewsData } from "@/shared/lazyData/oewsData";
@@ -6504,6 +6505,17 @@ async function scheduledHandler(
       } catch (err) {
         console.error("BLS refresh failed:", err);
       }
+    }
+  }
+
+  if (cron === "0 13 * * *") {
+    // Daily 9am ET — scout Reddit (RSS) for fresh bid questions + draft tailored
+    // replies into reddit_drafts for the /admin/reddit dashboard.
+    try {
+      const r = await scoutRedditRss(env as never, new Date().toISOString(), 6);
+      console.log(`Reddit scout: scanned=${r.scanned} candidates=${r.candidates} drafted=${r.drafted}`);
+    } catch (err) {
+      console.error("Reddit scout cron failed:", err);
     }
   }
 

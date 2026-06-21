@@ -7,6 +7,7 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { type AppEnv, SESSION_COOKIE_NAME } from "../types";
+import { scoutRedditRss } from "../lib/redditScout";
 
 const app = new Hono<AppEnv>();
 
@@ -42,9 +43,12 @@ app.use("*", async (c, next) => {
 app.get("/", async (c) => {
   const drafts = await c.env.DB.prepare(
     `SELECT id, scenario, comment, keywords, target_subs, search_url,
-            status, posted_url, created_at, posted_at
+            status, posted_url, created_at, posted_at,
+            post_url, post_title, post_excerpt, source, found_at
      FROM reddit_drafts
-     ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'posted' THEN 1 ELSE 2 END, id`
+     ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'posted' THEN 1 ELSE 2 END,
+              CASE source WHEN 'scout' THEN 0 ELSE 1 END,
+              COALESCE(found_at, '') DESC, id`
   ).all();
 
   return c.json({ drafts: drafts.results || [] });
@@ -88,10 +92,16 @@ app.post("/:id/status", async (c) => {
 });
 
 // ====================================================================
-// GENERATE — stub. Content is seeded separately by the orchestrator.
+// SCOUT — find fresh real Reddit bid-question posts via RSS + draft a tailored
+// reply for each (runs daily via cron; this endpoint triggers it on demand).
 // ====================================================================
-app.post("/generate", async (c) => {
-  return c.json({ error: "not implemented" }, 501);
+app.post("/scout", async (c) => {
+  try {
+    const result = await scoutRedditRss(c.env, new Date().toISOString(), 6);
+    return c.json({ success: true, ...result });
+  } catch (err) {
+    return c.json({ error: err instanceof Error ? err.message : "scout failed" }, 500);
+  }
 });
 
 export default app;
