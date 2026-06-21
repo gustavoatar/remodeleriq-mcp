@@ -59,10 +59,10 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
 // Candidate model names — Gemini's "nano banana" image generator has shipped under
 // several names. Try each in order until one works.
 const IMAGE_MODEL_CANDIDATES = [
-  "gemini-2.5-flash-image-preview",
+  "gemini-3.1-flash-image-preview",
   "gemini-2.5-flash-image",
+  "gemini-3-pro-image",
   "gemini-2.0-flash-exp-image-generation",
-  "gemini-2.0-flash-preview-image-generation",
 ];
 
 // Generate a hero image via Gemini's native image generation.

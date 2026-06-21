@@ -26,6 +26,7 @@ import blogPublishRoutes, {
 import inboundEmailRoutes from './routes/inboundEmail';
 import facebookWebhookRoutes from './routes/facebookWebhook';
 import facebookPublishRoutes from './routes/facebookPublish';
+import { generateAndScheduleFbBatch } from './lib/fbContentGenerator';
 import { authMiddleware } from './middleware/auth';
 import { type UserProfile as UserProfileType } from './types';
 import { getAllOewsData } from "@/shared/lazyData/oewsData";
@@ -6603,6 +6604,16 @@ async function scheduledHandler(
       }
     } catch (err) {
       console.error("Weekly blog cron failed:", err);
+    }
+
+    // Same weekly slot — generate + schedule a batch of brand-voice Facebook Page
+    // posts with branded images (every-other-day across the coming ~week). Folded
+    // into the Sunday cron because Cloudflare caps the worker at 5 cron triggers.
+    try {
+      const fb = await generateAndScheduleFbBatch(env as never, Math.floor(Date.now() / 1000), 4);
+      console.log(`Weekly FB batch: scheduled=${fb.scheduled} failed=${fb.failed}`);
+    } catch (err) {
+      console.error("Weekly FB batch failed:", err);
     }
   }
 }

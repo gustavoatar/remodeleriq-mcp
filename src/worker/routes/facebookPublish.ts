@@ -6,6 +6,7 @@ import { getCookie } from "hono/cookie";
 import { GoogleGenAI } from "@google/genai";
 import { type AppEnv, SESSION_COOKIE_NAME } from "../types";
 import { createPagePost, verifyToken, replyToComment } from "../lib/facebookClient";
+import { generateAndScheduleFbBatch } from "../lib/fbContentGenerator";
 
 const app = new Hono<AppEnv>();
 
@@ -139,6 +140,20 @@ app.post("/custom", async (c) => {
     return c.json({ success: true, fb_post_id: post.id, scheduled_unix: scheduled });
   } catch (err) {
     return c.json({ error: err instanceof Error ? err.message : "Page post failed" }, 500);
+  }
+});
+
+// POST /generate-batch — generate a weekly batch of brand-voice posts with branded
+// images and schedule them out (+2/+4/+6/+8 days). Body: { count?: number } (default 4).
+app.post("/generate-batch", async (c) => {
+  const body = await c.req.json<{ count?: number }>().catch(() => ({} as { count?: number }));
+  const count = body.count && body.count > 0 ? body.count : 4;
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  try {
+    const summary = await generateAndScheduleFbBatch(c.env as never, nowSeconds, count);
+    return c.json(summary);
+  } catch (err) {
+    return c.json({ error: err instanceof Error ? err.message : "Batch generation failed" }, 500);
   }
 });
 
