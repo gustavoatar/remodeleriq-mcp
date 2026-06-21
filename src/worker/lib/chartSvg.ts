@@ -73,18 +73,26 @@ const PALETTE = {
 export function renderBarChartSvg(data: BarChartData): string {
   const theme = data.theme || "light";
   const W = 800;
-  const padding = { top: 80, right: 80, bottom: 60, left: 200 };
-  const rowH = 38;
-  const rowGap = 8;
+  // Labels sit ABOVE each bar (left-aligned) so arbitrarily long category names
+  // (e.g. "San Francisco-Oakland-Hayward, CA") never overflow a fixed left gutter
+  // and get clipped. Right padding leaves room for the value label after the bar.
+  const padLeft = 28;
+  const padRight = 100;
+  const padTop = 78;
+  const padBottom = 56;
+  const labelH = 24; // vertical space for the category label above each bar
+  const barH = 34;
+  const rowGap = 18;
+  const rowH = labelH + barH;
   // Normalize rows — Gemini sometimes emits rows without value
   const rows = (data.rows || []).map((r) => ({
     ...r,
     value: typeof r.value === "number" && isFinite(r.value) ? r.value : 0,
   }));
   const sorted = [...rows].sort((a, b) => b.value - a.value);
-  const H = padding.top + sorted.length * (rowH + rowGap) + padding.bottom;
-  const max = Math.max(...sorted.map((r) => r.value));
-  const chartWidth = W - padding.left - padding.right;
+  const H = padTop + sorted.length * (rowH + rowGap) + padBottom;
+  const max = Math.max(...sorted.map((r) => r.value), 1);
+  const chartWidth = W - padLeft - padRight;
 
   const bgColor = theme === "dark" ? PALETTE.bg_dark : PALETTE.bg_card;
   const titleColor = theme === "dark" ? PALETTE.text_light : PALETTE.text_dark;
@@ -93,14 +101,15 @@ export function renderBarChartSvg(data: BarChartData): string {
 
   const bars = sorted
     .map((row, i) => {
-      const y = padding.top + i * (rowH + rowGap);
+      const rowY = padTop + i * (rowH + rowGap);
+      const barY = rowY + labelH;
       const barWidth = max > 0 ? (row.value / max) * chartWidth : 0;
       const fill = row.highlight ? PALETTE.accent : PALETTE.primary;
       const valueLabel = `${fmt(row.value, data.format)}${data.unit || ""}`;
       return `
-  <text x="${padding.left - 12}" y="${y + rowH / 2 + 5}" text-anchor="end" font-size="14" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(row.label)}</text>
-  <rect x="${padding.left}" y="${y}" width="${barWidth}" height="${rowH}" fill="${fill}" rx="4"/>
-  <text x="${padding.left + barWidth + 8}" y="${y + rowH / 2 + 5}" font-size="14" font-weight="700" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(valueLabel)}</text>`;
+  <text x="${padLeft}" y="${rowY + 16}" text-anchor="start" font-size="14" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(row.label)}</text>
+  <rect x="${padLeft}" y="${barY}" width="${barWidth}" height="${barH}" fill="${fill}" rx="4"/>
+  <text x="${padLeft + barWidth + 10}" y="${barY + barH / 2 + 5}" text-anchor="start" font-size="14" font-weight="700" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(valueLabel)}</text>`;
     })
     .join("");
 
@@ -108,7 +117,7 @@ export function renderBarChartSvg(data: BarChartData): string {
   <text x="${W / 2}" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="${titleColor}" font-family="Inter, system-ui, sans-serif">${esc(data.title)}</text>
   ${data.subtitle ? `<text x="${W / 2}" y="58" text-anchor="middle" font-size="13" fill="${subColor}" font-family="Inter, system-ui, sans-serif">${esc(data.subtitle)}</text>` : ""}
   ${bars}
-  <text x="${W - padding.right}" y="${H - 20}" text-anchor="end" font-size="11" fill="${subColor}" font-family="Inter, system-ui, sans-serif" font-style="italic">Source: ${esc(data.source)}</text>
+  <text x="${W - padRight}" y="${H - 20}" text-anchor="end" font-size="11" fill="${subColor}" font-family="Inter, system-ui, sans-serif" font-style="italic">Source: ${esc(data.source)}</text>
 </svg>`;
 }
 
@@ -118,9 +127,14 @@ export function renderBarChartSvg(data: BarChartData): string {
 export function renderComparisonBarsSvg(data: ComparisonBarsData): string {
   const theme = data.theme || "light";
   const W = 800;
-  const padding = { top: 100, right: 60, bottom: 80, left: 180 };
-  const rowH = 32;
-  const rowGap = 14;
+  // Labels above each pair of bars (left-aligned) — no fixed left gutter to clip.
+  const padLeft = 28;
+  const padRight = 96;
+  const padTop = 100;
+  const padBottom = 80;
+  const labelH = 24;
+  const barH = 28;
+  const barGap = 5;
   // Normalize rows — Gemini sometimes emits rows without left/right OR uses
   // different field names. Fall back to 0 for missing values.
   const rows = (data.rows || []).map((r) => {
@@ -137,13 +151,15 @@ export function renderComparisonBarsSvg(data: ComparisonBarsData): string {
       : 0;
     return { label: r.label || "—", left, right };
   });
-  const H = padding.top + rows.length * (rowH * 2 + rowGap) + padding.bottom;
+  const rowBlockH = labelH + barH * 2 + barGap;
+  const rowGap = 20;
+  const H = padTop + rows.length * (rowBlockH + rowGap) + padBottom;
   const allVals = rows.flatMap((r) => [r.left, r.right]);
   const max = Math.max(...allVals, 1);
   // Coerce labels to non-undefined
   const leftLabel = data.left_label || "Fair";
   const rightLabel = data.right_label || "Padded";
-  const chartWidth = W - padding.left - padding.right;
+  const chartWidth = W - padLeft - padRight;
 
   const bgColor = theme === "dark" ? PALETTE.bg_dark : PALETTE.bg_card;
   const titleColor = theme === "dark" ? PALETTE.text_light : PALETTE.text_dark;
@@ -152,15 +168,17 @@ export function renderComparisonBarsSvg(data: ComparisonBarsData): string {
 
   const renderedRows = rows
     .map((row, i) => {
-      const y = padding.top + i * (rowH * 2 + rowGap);
+      const rowY = padTop + i * (rowBlockH + rowGap);
+      const leftY = rowY + labelH;
+      const rightY = leftY + barH + barGap;
       const leftW = max > 0 ? (row.left / max) * chartWidth : 0;
       const rightW = max > 0 ? (row.right / max) * chartWidth : 0;
       return `
-  <text x="${padding.left - 12}" y="${y + rowH + 6}" text-anchor="end" font-size="14" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(row.label)}</text>
-  <rect x="${padding.left}" y="${y}" width="${leftW}" height="${rowH - 2}" fill="${PALETTE.primary}" rx="3"/>
-  <text x="${padding.left + leftW + 8}" y="${y + (rowH - 2) / 2 + 5}" font-size="13" font-weight="700" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(fmt(row.left, data.format))}</text>
-  <rect x="${padding.left}" y="${y + rowH}" width="${rightW}" height="${rowH - 2}" fill="#ef4444" rx="3"/>
-  <text x="${padding.left + rightW + 8}" y="${y + rowH + (rowH - 2) / 2 + 5}" font-size="13" font-weight="700" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(fmt(row.right, data.format))}</text>`;
+  <text x="${padLeft}" y="${rowY + 16}" text-anchor="start" font-size="14" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(row.label)}</text>
+  <rect x="${padLeft}" y="${leftY}" width="${leftW}" height="${barH}" fill="${PALETTE.primary}" rx="3"/>
+  <text x="${padLeft + leftW + 8}" y="${leftY + barH / 2 + 5}" text-anchor="start" font-size="13" font-weight="700" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(fmt(row.left, data.format))}</text>
+  <rect x="${padLeft}" y="${rightY}" width="${rightW}" height="${barH}" fill="#ef4444" rx="3"/>
+  <text x="${padLeft + rightW + 8}" y="${rightY + barH / 2 + 5}" text-anchor="start" font-size="13" font-weight="700" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(fmt(row.right, data.format))}</text>`;
     })
     .join("");
 
@@ -168,13 +186,13 @@ export function renderComparisonBarsSvg(data: ComparisonBarsData): string {
   <text x="${W / 2}" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="${titleColor}" font-family="Inter, system-ui, sans-serif">${esc(data.title)}</text>
   ${data.subtitle ? `<text x="${W / 2}" y="58" text-anchor="middle" font-size="13" fill="${subColor}" font-family="Inter, system-ui, sans-serif">${esc(data.subtitle)}</text>` : ""}
 
-  <rect x="${padding.left}" y="70" width="14" height="14" fill="${PALETTE.primary}" rx="2"/>
-  <text x="${padding.left + 22}" y="82" font-size="13" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(leftLabel)}</text>
-  <rect x="${padding.left + 200}" y="70" width="14" height="14" fill="#dc2626" rx="2"/>
-  <text x="${padding.left + 222}" y="82" font-size="13" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(rightLabel)}</text>
+  <rect x="${padLeft}" y="70" width="14" height="14" fill="${PALETTE.primary}" rx="2"/>
+  <text x="${padLeft + 22}" y="82" font-size="13" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(leftLabel)}</text>
+  <rect x="${padLeft + 200}" y="70" width="14" height="14" fill="#dc2626" rx="2"/>
+  <text x="${padLeft + 222}" y="82" font-size="13" font-weight="600" fill="${labelColor}" font-family="Inter, system-ui, sans-serif">${esc(rightLabel)}</text>
 
   ${renderedRows}
-  <text x="${W - padding.right}" y="${H - 20}" text-anchor="end" font-size="11" fill="${subColor}" font-family="Inter, system-ui, sans-serif" font-style="italic">Source: ${esc(data.source)}</text>
+  <text x="${W - padRight}" y="${H - 20}" text-anchor="end" font-size="11" fill="${subColor}" font-family="Inter, system-ui, sans-serif" font-style="italic">Source: ${esc(data.source)}</text>
 </svg>`;
 }
 
