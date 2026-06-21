@@ -201,8 +201,11 @@ export async function generateBlogDraft(
   }
 ): Promise<BlogDraft> {
   const pillar = options?.forcePillar ?? classifyPillar(brief);
-  const persona = options?.forcePersona ?? pickBlogPersona(pillar);
   const format = options?.format ?? "spoke";
+  // Pillar HUBS are cornerstone reference guides — always Bella's authoritative
+  // third-person voice, never Gustavo's first-person (a hub titled "How I..."
+  // reads off-brand). Spokes/comparisons/data-reports still draw by pillar ratio.
+  const persona = options?.forcePersona ?? (format === "hub" ? "bella" : pickBlogPersona(pillar));
   const template = options?.template ?? pickTemplate(format, persona, brief);
   const voiceBrief = persona === "bella" ? VOICE_BRIEF_BELLA_LONGFORM : VOICE_BRIEF_GUSTAVO_LONGFORM;
 
