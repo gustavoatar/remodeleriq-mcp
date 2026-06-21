@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
+import AdminTabs from "@/react-app/components/AdminTabs";
 import {
   Layout, Clipboard, Check, X, Edit3, ExternalLink,
   MessageSquare, Home, Loader2, AlertCircle, Send, Hash, RefreshCw, Sparkles
@@ -195,6 +196,7 @@ export default function ContentDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+      <AdminTabs />
       {/* Header */}
       <div className="max-w-[1600px] mx-auto mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex items-center gap-3">

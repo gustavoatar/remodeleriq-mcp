@@ -8,6 +8,7 @@ import {
   MessageSquare, AlertCircle, Loader2, Check, X, RefreshCw,
   Copy, Search, RotateCcw, Info,
 } from "lucide-react";
+import AdminTabs from "@/react-app/components/AdminTabs";
 
 type StatusFilter = "all" | "pending" | "posted";
 
@@ -133,6 +134,7 @@ export default function RedditKit() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       <div className="max-w-[900px] mx-auto">
+        <AdminTabs />
         {/* Header */}
         <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -164,12 +166,6 @@ export default function RedditKit() {
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
               Refresh
-            </button>
-            <button onClick={() => navigate("/admin/inbox")} className="text-sm font-medium text-slate-600 hover:text-slate-900">
-              Inbox →
-            </button>
-            <button onClick={() => navigate("/admin/content")} className="text-sm font-medium text-slate-600 hover:text-slate-900">
-              Drafts →
             </button>
           </div>
         </div>

@@ -185,6 +185,7 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
+        <AdminTabs />
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <BarChart3 className="w-8 h-8 text-emerald-600" />
@@ -496,3 +497,4 @@ export default function Admin() {
     </div>
   );
 }
+import AdminTabs from "@/react-app/components/AdminTabs";

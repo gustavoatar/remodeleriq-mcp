@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
+import AdminTabs from "@/react-app/components/AdminTabs";
 import {
   Inbox as InboxIcon, Mail, MessageSquare, Home as HomeIcon,
   AlertCircle, Loader2, Check, X, Archive, ExternalLink,
@@ -186,6 +187,7 @@ export default function Inbox() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       <div className="max-w-[1400px] mx-auto">
+        <AdminTabs />
         {/* Header */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="flex items-center gap-3">
