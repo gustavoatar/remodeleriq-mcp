@@ -177,6 +177,27 @@ export async function getWpPost(
   return (await res.json()) as WpPostResponse;
 }
 
+// Update an existing post's content in place (used to surgically clean already-
+// published posts without regenerating them — preserves URL, images, FB links).
+export async function updateWpPostContent(
+  env: WpEnv,
+  persona: Persona,
+  postId: number,
+  content: string
+): Promise<void> {
+  const creds = credsFor(persona, env);
+  if (!creds) throw new Error(`WordPress credentials missing for persona=${persona}`);
+  const res = await fetch(`${WP_BASE}/posts/${postId}`, {
+    method: "POST",
+    headers: { ...WP_FETCH_HEADERS_BASE, Authorization: basicAuth(creds), "Content-Type": "application/json" },
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`WP content update failed: ${res.status} ${text.slice(0, 300)}`);
+  }
+}
+
 // Look up category/tag IDs by slug — caches via a simple in-memory map per request.
 export async function findCategoryIdBySlug(
   env: WpEnv,

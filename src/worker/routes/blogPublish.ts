@@ -27,6 +27,8 @@ import {
   createWpDraft,
   publishWpDraft,
   findCategoryIdBySlug,
+  getWpPost,
+  updateWpPostContent,
 } from "../lib/wordpressClient";
 import { createPagePost } from "../lib/facebookClient";
 import {
@@ -643,6 +645,43 @@ app.get("/recent", async (c) => {
      ORDER BY blog_drafted_at DESC LIMIT 50`
   ).all();
   return c.json({ posts: rows.results || [] });
+});
+
+// ====================================================================
+// POST /:wpPostId/strip-spans — surgically remove leaked escaped <span> markup
+// from an ALREADY-PUBLISHED post's stored content, in place. Keeps the inner
+// text, URL, images, and FB cross-post intact (no regeneration).
+// ====================================================================
+app.post("/:wpPostId/strip-spans", async (c) => {
+  const wpPostId = parseInt(c.req.param("wpPostId"));
+  if (!wpPostId) return c.json({ error: "bad wpPostId" }, 400);
+
+  // Persona drives which WP credentials can edit the post.
+  const row = await c.env.DB.prepare(
+    "SELECT persona FROM content_drafts WHERE wp_post_id = ? LIMIT 1"
+  ).bind(wpPostId).first<{ persona: string | null }>();
+  const persona = (row?.persona || "bella") as "bella" | "gustavo";
+
+  try {
+    const post = await getWpPost(c.env as never, persona, wpPostId);
+    const pc = (post as unknown as { content?: { raw?: string; rendered?: string } }).content;
+    const raw = pc?.raw ?? pc?.rendered ?? "";
+    if (!raw) return c.json({ error: "no content" }, 404);
+
+    // Strip ONLY escaped span markers (Gemini leaks). Raw renderer spans
+    // (dropcap, inline-styled) are untouched. Handles single + double escaping.
+    const before = (raw.match(/&(?:amp;)?lt;\/?span/gi) || []).length;
+    const cleaned = raw
+      .replace(/&(?:amp;)?lt;span\b[^&]*?&(?:amp;)?gt;/gi, "")
+      .replace(/&(?:amp;)?lt;\/span&(?:amp;)?gt;/gi, "");
+
+    if (before === 0) return c.json({ success: true, stripped: 0, note: "already clean" });
+
+    await updateWpPostContent(c.env as never, persona, wpPostId, cleaned);
+    return c.json({ success: true, stripped: before, persona });
+  } catch (err) {
+    return c.json({ error: err instanceof Error ? err.message : "strip failed" }, 500);
+  }
 });
 
 export default app;
