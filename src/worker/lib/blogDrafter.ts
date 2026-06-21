@@ -54,30 +54,51 @@ const FORMAT_DIRECTIVES: Record<ContentFormat, string> = {
 // Each post is assigned ONE of these layout templates so posts stop coming out
 // in one identical skeleton. The template dictates the block SEQUENCE + density
 // + feel; it's injected into the user prompt so Gemini follows it for THIS post.
-export type LayoutTemplate = "data_dashboard" | "narrative_editorial" | "scannable_listicle" | "head_to_head";
+export type LayoutTemplate = "data_dashboard" | "narrative_editorial" | "scannable_listicle" | "head_to_head" | "visual_story";
 
 const LAYOUT_TEMPLATES: Record<LayoutTemplate, string> = {
-  data_dashboard: `TEMPLATE: DATA DASHBOARD — feel: a research briefing you could screenshot. Numbers wall-to-wall, minimal prose. NO image blocks anywhere.
-Block sequence (follow this order and density): hero → verdict_callout → h2 → paragraph → stat_callout → stat_callout → stat_callout → chart → h2 → comparison_table → h2 → three_column (stat cards) → section_cover (theme: "dark") → h2 → paragraph → comparison_table → talk_track → faq → cta_banner.
+  data_dashboard: `TEMPLATE: DATA DASHBOARD — feel: a research briefing you could screenshot. Numbers wall-to-wall, minimal prose, but with two visual breaths.
+Block sequence (follow this order and density): hero → verdict_callout → image (establishing shot) → h2 → paragraph → stat_callout → stat_callout → stat_callout → chart → h2 → comparison_table → image → h2 → three_column (stat cards) → section_cover (theme: "dark") → h2 → paragraph → comparison_table → talk_track → faq → cta_banner.
+Include at least 2 image blocks for visual rhythm.
 Use ONLY these block types; this template defines your sequence and density — do not fall back to a generic skeleton.`,
   narrative_editorial: `TEMPLATE: NARRATIVE EDITORIAL — feel: a first-person essay with a few visual breaths. The story carries it; data plays a supporting role.
 Block sequence (follow this order and density): hero → h2 → paragraph → paragraph → pull_quote → h2 → paragraph → image (with "body" for a magazine split) → h2 → paragraph → stat_callout → talk_track → h2 → paragraph → pull_quote → image → faq → cta_button_group.
+Include at least 2 image blocks for visual rhythm.
 End with a SOFT CTA (cta_button_group), NOT the loud cta_banner — this fits Gustavo's no-hard-CTA rule.
 Use ONLY these block types; this template defines your sequence and density — do not fall back to a generic skeleton.`,
   scannable_listicle: `TEMPLATE: SCANNABLE LISTICLE — feel: skimmable, repeating titled cards ("N red flags", "N traps", "N moves").
-Block sequence (follow this order and density): hero → verdict_callout → h2 → paragraph → three_column (3 cards) → section_cover (theme: "amber") → red_flag_callout → red_flag_callout → red_flag_callout → stat_callout → h2 → two_column (do-this / not-that) → pull_quote → cta_button_group.
+Block sequence (follow this order and density): hero → verdict_callout → image (establishing shot) → h2 → paragraph → three_column (3 cards) → section_cover (theme: "amber") → red_flag_callout → red_flag_callout → red_flag_callout → stat_callout → image → h2 → two_column (do-this / not-that) → pull_quote → cta_button_group.
+Include at least 2 image blocks for visual rhythm.
 Use ONLY these block types; this template defines your sequence and density — do not fall back to a generic skeleton.`,
   head_to_head: `TEMPLATE: HEAD TO HEAD — feel: a verdict plus a scorecard. One big table IS the hero.
-Block sequence (follow this order and density): hero → verdict_callout → h2 (the verdict) → paragraph → comparison_table (the centerpiece) → chart (chart_type: "comparison_bars") → h2 → two_column (Option A vs Option B) → stat_callout → red_flag_callout → pull_quote → h2 → paragraph → faq → cta_banner.
+Block sequence (follow this order and density): hero → verdict_callout → image (establishing shot) → h2 (the verdict) → paragraph → comparison_table (the centerpiece) → chart (chart_type: "comparison_bars") → h2 → two_column (Option A vs Option B) → image → stat_callout → red_flag_callout → pull_quote → h2 → paragraph → faq → cta_banner.
+Include at least 2 image blocks for visual rhythm.
+Use ONLY these block types; this template defines your sequence and density — do not fall back to a generic skeleton.`,
+  visual_story: `TEMPLATE: VISUAL STORY — feel: a premium photo-led editorial feature (think Apple Newsroom). Big full-bleed imagery is the lead; prose is the connective tissue between visual moments. Maximum breathing room, alternating dark and light color bands.
+Block sequence — the rhythm is TEXT → BIG IMAGE → TEXT → COLOR BAND → BIG IMAGE → TEXT:
+hero → paragraph (warm 2-3 sentence intro) → image (large full-bleed establishing shot) → h2 → paragraph → image (full-bleed) → section_cover (theme: "dark") → h2 → paragraph → image (full-bleed) → stat_callout → pull_quote → section_cover (theme: "gray") → image (full-bleed) → faq → cta_button_group.
+RULES:
+- Use 4-6 \`image\` blocks total — NO \`gallery\` blocks. Each image is its own big full-bleed moment; do NOT cluster images.
+- EVERY image must have a DISTINCT imagen_prompt — never describe the same shot twice (no repeated imagery on the page).
+- Do NOT write image captions (leave caption empty) — the image speaks for itself.
+- Alternate at least one "dark" and one "gray" section_cover band for immersive color breaks.
+- Keep paragraphs short (2-4 sentences) between images. Use pull_quote + stat_callout as typographic beats.
 Use ONLY these block types; this template defines your sequence and density — do not fall back to a generic skeleton.`,
 };
 
 /**
  * Assign a layout template for a post. First match wins.
  */
+// Photo-led topics — trends, styles, inspiration, makeovers — get the Apple-
+// Newsroom "visual story" treatment (repeating galleries, max whitespace).
+export const VISUAL_STORY_PATTERN =
+  /\b(trend|trends|style|styles|aesthetic|inspiration|lookbook|look ?book|makeover|before[- ]and[- ]after|showcase|design ideas|design trends?)\b/i;
+
 export function pickTemplate(format: ContentFormat, persona: Persona, brief: string): LayoutTemplate {
   if (format === "data_report") return "data_dashboard";
   if (format === "comparison") return "head_to_head";
+  // Trend/style/inspiration content is photo-led — beats persona + red-flag routing.
+  if (VISUAL_STORY_PATTERN.test(brief)) return "visual_story";
   if (persona === "gustavo") return "narrative_editorial";
   if (/red flag|traps?|mistakes?|\bways\b|\bthings\b|\btips\b|\d+\s+(red|ways|things|traps|signs|reasons|steps)/i.test(brief)) {
     return "scannable_listicle";
@@ -193,6 +214,17 @@ export async function generateBlogDraft(
     linkDirective = `\n\nINTERNAL LINK: In one early paragraph, link to this pillar's complete guide using this exact URL: ${options.hubUrl} — anchor it on natural text like "our complete guide to ${PILLAR_TO_WP_CATEGORY[pillar].toLowerCase()}". Use a real <a href> in the paragraph block.`;
   }
 
+  // Trend/style/design posts get an extra gallery directive — a 5-image grid
+  // showcases "the looks" far better than a single inline image. Skip this when
+  // the post already routed to the visual_story template, which has its OWN
+  // repeating galleries (otherwise we'd over-stack galleries).
+  const isTrendStylePost =
+    template !== "visual_story" &&
+    /\b(trend|trends|style|styles|design|designs|aesthetic|look|looks|inspiration|ideas|modern|2026 (kitchen|bath|design))\b/i.test(brief);
+  const galleryDirective = isTrendStylePost
+    ? `\n\nTREND/STYLE POST: include exactly ONE \`gallery\` block with 5 images (each with a distinct imagen_prompt) placed near the middle of the article to showcase the looks.`
+    : "";
+
   const userPrompt = `BLOG BRIEF:
 ${brief}
 
@@ -202,7 +234,7 @@ TARGET DATE for "last_updated": ${new Date().toISOString().slice(0, 10)}
 ${FORMAT_DIRECTIVES[format]}${linkDirective}
 
 LAYOUT TEMPLATE:
-${LAYOUT_TEMPLATES[template]}
+${LAYOUT_TEMPLATES[template]}${galleryDirective}
 
 TASK: Write a long-form blog post matching the brief above and the CONTENT FORMAT rules. Apply the voice and structure rules from the system prompt. Set the "category" field to "${PILLAR_TO_WP_CATEGORY[pillar]}". Return ONLY the JSON object — no preamble, no markdown wrapping.`;
 

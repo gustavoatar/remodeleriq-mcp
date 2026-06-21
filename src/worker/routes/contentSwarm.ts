@@ -305,6 +305,7 @@ BLOCK VOCABULARY — the devices you may use (the template tells you WHICH and h
 - verdict_callout — the "short version" box holding your 40-60 word standalone answer. Shape: {"type": "verdict_callout", "label": "THE SHORT VERSION", "text": "the 40-60 word answer"} ("label" optional).
 - red_flag_callout — an amber/red warning card. Shape: {"type": "red_flag_callout", "tag": "⚠ RED FLAG", "title": "short bold warning", "body": "explanation paragraph"} ("tag" optional).
 - talk_track — numbered "ask your contractor this" script cards. Shape: {"type": "talk_track", "heading": "The Talk Track", "scripts": [{"prompt": "the exact question to ask", "why": "why it matters"}]} ("heading" and each "why" optional).
+- gallery — a breathing-room responsive grid of images (great for showcasing trends/styles/looks). Shape: {"type":"gallery","images":[{"imagen_prompt":"...","caption":"...","alt":"..."}],"columns":2} ("columns" optional, 2 or 3; "caption" optional per image).
 
 FEATURED IMAGE — the post hero (separate from inline blocks):
 - "featured_image_prompt" — describe the Imagen-3 prompt for the post's hero image.
@@ -345,6 +346,7 @@ OUTPUT FORMAT: Return ONLY valid JSON matching this schema:
     {"type": "talk_track", "heading": "The Talk Track", "scripts": [{"prompt": "the exact question to ask your contractor", "why": "why it matters"}]},
     {"type": "three_column", "items": [{"heading": "...", "body": "...", "icon_emoji": "🔨"}]},
     {"type": "image", "imagen_prompt": "...", "caption": "small-caps caption appears below image", "alt": "...", "kicker": "FIELD NOTE", "body": "OPTIONAL italic paragraph rendered beside the image in magazine 60/40 split"},
+    {"type": "gallery", "images": [{"imagen_prompt": "...", "caption": "...", "alt": "..."}], "columns": 2},
     {"type": "comparison_table", "headers": [...], "rows": [[...], [...]]},
     {"type": "pull_quote", "text": "...", "attribution": "Gustavo"},
     {"type": "cta_button_group", "heading": "Keep going", "buttons": [{"label": "Analyze your bid", "url": "https://remodeleriq.com", "style": "primary"}, {"label": "Read the glossary", "url": "https://remodeleriq.com/glossary", "style": "secondary"}]},
@@ -400,6 +402,7 @@ BLOCK SEQUENCE: Follow the LAYOUT TEMPLATE provided in the user prompt — it sp
     {"type": "verdict_callout", "label": "THE SHORT VERSION", "text": "the 40-60 word standalone answer"},
     {"type": "stat_callout", "big_number": "...", "label": "...", "source": "...", "date": "..."},
     {"type": "image", "imagen_prompt": "...", "caption": "...", "alt": "...", "kicker": "FIELD NOTE", "body": "OPTIONAL italic paragraph rendered beside the image in a magazine split"},
+    {"type": "gallery", "images": [{"imagen_prompt": "...", "caption": "...", "alt": "..."}], "columns": 2},
     {"type": "talk_track", "heading": "The Talk Track", "scripts": [{"prompt": "the exact question to ask your contractor", "why": "why it matters"}]},
     {"type": "red_flag_callout", "tag": "⚠ RED FLAG", "title": "short bold warning", "body": "explanation paragraph"},
     {"type": "pull_quote", "text": "...", "attribution": "Gustavo"},

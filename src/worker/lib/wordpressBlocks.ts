@@ -16,7 +16,7 @@ import {
 
 export type BlogBlock =
   | { type: "hero"; title: string; subtitle: string; snippet_paragraph: string }
-  | { type: "section_cover"; title: string; body: string; theme?: "dark" | "emerald" | "amber" }
+  | { type: "section_cover"; title: string; body: string; theme?: "dark" | "light" | "gray" | "emerald" | "amber" }
   | { type: "h2"; text: string }
   | { type: "h3"; text: string }
   | { type: "paragraph"; text: string }
@@ -89,6 +89,16 @@ export type BlogBlock =
       /** Section heading (defaults to "The Talk Track") */
       heading?: string;
       scripts: { prompt: string; why?: string }[];
+    }
+  | {
+      /** Breathing-room gallery — a responsive grid of images (great for trend/style
+       * posts). Each image resolves its src from an explicit `src` OR a generated
+       * Imagen prompt (via the imageResolutions map). Images that resolve to nothing
+       * are skipped so the page never shows a broken image. */
+      type: "gallery";
+      images: { imagen_prompt?: string; src?: string; caption?: string; alt?: string }[];
+      /** Desktop column count (default 2). */
+      columns?: 2 | 3;
     };
 
 function esc(s: string): string {
@@ -158,7 +168,7 @@ function renderHero(b: Extract<BlogBlock, { type: "hero" }>): string {
 <!-- /wp:html -->
 
 <!-- wp:cover {"customOverlayColor":"#0f172a","minHeight":380,"className":"riq-hero"} -->
-<div class="wp-block-cover riq-hero" style="background-color:#0f172a;min-height:380px;padding:56px 32px;">
+<div class="wp-block-cover riq-hero" style="background-color:#0f172a;min-height:380px;padding:88px 32px;">
   <span aria-hidden="true" class="wp-block-cover__background has-background-dim-0" style="background-color:#0f172a"></span>
   <div class="wp-block-cover__inner-container">
     <!-- wp:heading {"level":1,"textColor":"white","className":"riq-hero-title"} -->
@@ -172,40 +182,42 @@ function renderHero(b: Extract<BlogBlock, { type: "hero" }>): string {
 <!-- /wp:cover -->
 
 <!-- wp:paragraph {"className":"riq-snippet"} -->
-<p class="riq-snippet" style="font-size:1.2rem;line-height:1.8;color:#0f172a;margin:56px 0 40px;font-weight:400;"><span class="riq-dropcap-letter">${esc(firstLetter)}</span><span class="riq-dropcap-word-tail">${esc(firstWordTail)}</span>${esc(rest)}</p>
+<p class="riq-snippet" style="font-size:1.2rem;line-height:1.8;color:#0f172a;margin:72px 0 48px;font-weight:400;"><span class="riq-dropcap-letter">${esc(firstLetter)}</span><span class="riq-dropcap-word-tail">${esc(firstWordTail)}</span>${esc(rest)}</p>
 <!-- /wp:paragraph -->`;
 }
 
 function renderH2(b: Extract<BlogBlock, { type: "h2" }>): string {
   return `<!-- wp:heading {"level":2,"className":"riq-h2"} -->
-<h2 class="riq-h2" style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;margin:48px 0 16px;line-height:1.2;">${esc(b.text)}</h2>
+<h2 class="riq-h2" style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;margin:64px 0 20px;line-height:1.2;">${esc(b.text)}</h2>
 <!-- /wp:heading -->`;
 }
 
 function renderH3(b: Extract<BlogBlock, { type: "h3" }>): string {
   return `<!-- wp:heading {"level":3,"className":"riq-h3"} -->
-<h3 class="riq-h3" style="font-size:1.4rem;font-weight:700;color:#0f172a;margin:32px 0 12px;line-height:1.3;">${esc(b.text)}</h3>
+<h3 class="riq-h3" style="font-size:1.4rem;font-weight:700;color:#0f172a;margin:40px 0 14px;line-height:1.3;">${esc(b.text)}</h3>
 <!-- /wp:heading -->`;
 }
 
 function renderParagraph(b: Extract<BlogBlock, { type: "paragraph" }>): string {
   return `<!-- wp:paragraph -->
-<p style="font-size:1.05rem;line-height:1.7;color:#1e293b;margin:0 0 18px;">${esc(b.text)}</p>
+<p style="font-size:1.05rem;line-height:1.8;color:#1e293b;margin:24px 0;max-width:68ch;">${esc(b.text)}</p>
 <!-- /wp:paragraph -->`;
 }
 
 function renderStatCallout(b: Extract<BlogBlock, { type: "stat_callout" }>): string {
+  // No filled box — just a huge brand-green number as a typographic moment,
+  // label + source beneath in dark/muted. Reads like an Apple stat band.
   const dateSuffix = b.date ? ` (${esc(b.date)})` : "";
   return `<!-- wp:group {"className":"riq-stat-callout"} -->
-<div class="wp-block-group riq-stat-callout" style="background-color:#1F9C4C;color:#ffffff;padding:32px 28px;border-radius:12px;margin:32px 0;text-align:center;">
+<div class="wp-block-group riq-stat-callout" style="text-align:center;margin:72px auto;padding:0;max-width:620px;">
   <!-- wp:heading {"level":3,"className":"riq-stat-number"} -->
-  <h3 class="riq-stat-number" style="color:#ffffff;font-size:3rem;font-weight:800;letter-spacing:-0.02em;line-height:1;margin:0 0 8px;">${esc(b.big_number)}</h3>
+  <h3 class="riq-stat-number" style="color:#1F9C4C;font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:5.5rem;font-weight:800;letter-spacing:-0.04em;line-height:0.92;margin:0 0 14px;">${esc(b.big_number)}</h3>
   <!-- /wp:heading -->
   <!-- wp:paragraph {"className":"riq-stat-label"} -->
-  <p class="riq-stat-label" style="color:#ffffff;font-size:1.05rem;font-weight:600;margin:0 0 6px;line-height:1.4;">${esc(b.label)}</p>
+  <p class="riq-stat-label" style="color:#0f172a;font-size:1.3rem;font-weight:600;margin:0 auto 10px;line-height:1.4;max-width:520px;">${esc(b.label)}</p>
   <!-- /wp:paragraph -->
   <!-- wp:paragraph {"className":"riq-stat-source"} -->
-  <p class="riq-stat-source" style="color:#d1fae5;font-size:0.8rem;margin:0;font-style:italic;">Source: ${esc(b.source)}${dateSuffix}</p>
+  <p class="riq-stat-source" style="color:#94a3b8;font-size:0.82rem;margin:0;font-style:italic;">Source: ${esc(b.source)}${dateSuffix}</p>
   <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->`;
@@ -229,7 +241,7 @@ function renderComparisonTable(b: Extract<BlogBlock, { type: "comparison_table" 
     .join("\n");
 
   return `<!-- wp:html -->
-<figure class="wp-block-table riq-comparison-table" style="margin:32px 0;overflow:hidden;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(15,23,42,0.04);">
+<figure class="wp-block-table riq-comparison-table" style="margin:48px 0;overflow:hidden;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(15,23,42,0.04);">
   <table style="border-collapse:collapse;width:100%;font-family:'Inter',sans-serif;background:#ffffff;">
     <thead>
       <tr>${headers}</tr>
@@ -268,38 +280,35 @@ function renderFaq(b: Extract<BlogBlock, { type: "faq" }>): string {
     .join("\n\n");
 
   return `<!-- wp:heading {"level":2,"className":"riq-faq-heading"} -->
-<h2 class="riq-faq-heading" style="font-size:2rem;font-weight:800;color:#0f172a;margin:48px 0 16px;letter-spacing:-0.02em;">Frequently Asked Questions</h2>
+<h2 class="riq-faq-heading" style="font-size:2rem;font-weight:800;color:#0f172a;margin:64px 0 20px;letter-spacing:-0.02em;">Frequently Asked Questions</h2>
 <!-- /wp:heading -->
 
 <!-- wp:group {"className":"riq-faq-block"} -->
-<div class="wp-block-group riq-faq-block" style="background:#f8fafc;padding:32px;border-radius:12px;margin:16px 0 32px;">
+<div class="wp-block-group riq-faq-block" style="background:#f8fafc;padding:40px;border-radius:12px;margin:20px 0 48px;">
 ${items}
 </div>
 <!-- /wp:group -->`;
 }
 
 function renderSectionCover(b: Extract<BlogBlock, { type: "section_cover" }>): string {
-  // Themes use explicit inline backgrounds and #ffffff text (NOT theme color
-  // presets) so we don't depend on the WP theme defining "emerald" etc.
-  const themes: Record<string, { bg: string }> = {
-    dark: { bg: "#0f172a" },
-    emerald: { bg: "#1F9C4C" }, // brand green
-    amber: { bg: "#b45309" },
+  // Full-bleed color band (breaks out of the content column to 100vw) — an
+  // immersive Apple-style "moment". Themes: dark / gray / light / brand / amber.
+  const themes: Record<string, { bg: string; title: string; body: string }> = {
+    dark: { bg: "#0f172a", title: "#ffffff", body: "#cbd5e1" },
+    light: { bg: "#ffffff", title: "#0f172a", body: "#475569" },
+    gray: { bg: "#f1f5f9", title: "#0f172a", body: "#475569" },
+    emerald: { bg: "#1F9C4C", title: "#ffffff", body: "#ecfdf5" },
+    amber: { bg: "#b45309", title: "#ffffff", body: "#fef3c7" },
   };
-  const t = themes[b.theme || "dark"];
-  return `<!-- wp:cover {"customOverlayColor":"${t.bg}","minHeight":260,"className":"riq-section-cover"} -->
-<div class="wp-block-cover riq-section-cover" style="background-color:${t.bg};min-height:260px;padding:48px 32px;margin:40px 0;border-radius:12px;overflow:hidden;">
-  <span aria-hidden="true" class="wp-block-cover__background has-background-dim-0" style="background-color:${t.bg}"></span>
-  <div class="wp-block-cover__inner-container">
-    <!-- wp:heading {"level":2,"className":"riq-section-cover-title"} -->
-    <h2 class="riq-section-cover-title" style="color:#ffffff;font-size:2rem;font-weight:800;letter-spacing:-0.02em;line-height:1.2;margin:0 0 14px;">${esc(b.title)}</h2>
-    <!-- /wp:heading -->
-    <!-- wp:paragraph {"className":"riq-section-cover-body"} -->
-    <p class="riq-section-cover-body" style="color:#e2e8f0;font-size:1.1rem;line-height:1.55;margin:0;">${esc(b.body)}</p>
-    <!-- /wp:paragraph -->
+  const t = themes[b.theme || "dark"] || themes.dark;
+  return `<!-- wp:html -->
+<section class="riq-section-band" style="position:relative;left:50%;right:50%;width:100vw;margin:88px -50vw;background:${t.bg};padding:104px 24px;">
+  <div style="max-width:760px;margin:0 auto;text-align:center;">
+    <h2 style="color:${t.title};font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:2.6rem;font-weight:700;letter-spacing:-0.02em;line-height:1.15;margin:0 0 18px;">${esc(b.title)}</h2>
+    <p style="color:${t.body};font-size:1.2rem;line-height:1.65;margin:0;">${esc(b.body)}</p>
   </div>
-</div>
-<!-- /wp:cover -->`;
+</section>
+<!-- /wp:html -->`;
 }
 
 // Strip HTML-looking content that Gemini sometimes embeds in body strings,
@@ -341,7 +350,7 @@ function renderTwoColumn(b: Extract<BlogBlock, { type: "two_column" }>): string 
     <p style="font-size:1rem;line-height:1.6;color:#1e293b;margin:0;">${esc(side.text)}</p>
     <!-- /wp:paragraph -->`;
     return `  <!-- wp:column -->
-  <div class="wp-block-column" style="background:${themeBg(theme)};border-left:4px solid ${themeBorder(theme)};padding:24px;border-radius:0 8px 8px 0;">
+  <div class="wp-block-column" style="background:${themeBg(theme)};border-left:4px solid ${themeBorder(theme)};padding:30px;border-radius:0 8px 8px 0;">
     <!-- wp:heading {"level":3,"className":"riq-col-heading"} -->
     <h3 class="riq-col-heading" style="margin:0 0 14px;font-weight:700;font-size:1.25rem;color:#0f172a;letter-spacing:-0.01em;">${esc(heading)}</h3>
     <!-- /wp:heading -->
@@ -351,7 +360,7 @@ function renderTwoColumn(b: Extract<BlogBlock, { type: "two_column" }>): string 
   };
 
   return `<!-- wp:columns {"className":"riq-two-column"} -->
-<div class="wp-block-columns riq-two-column" style="gap:16px;margin:32px 0;">
+<div class="wp-block-columns riq-two-column" style="gap:16px;margin:48px 0;">
 ${renderSide(b.left_heading, left, b.left_theme)}
 
 ${renderSide(b.right_heading, right, b.right_theme)}
@@ -363,7 +372,7 @@ function renderThreeColumn(b: Extract<BlogBlock, { type: "three_column" }>): str
   const cols = b.items
     .map(
       (item) => `  <!-- wp:column -->
-  <div class="wp-block-column" style="background:#f8fafc;padding:28px 20px;border-radius:10px;text-align:center;border:1px solid #e2e8f0;">
+  <div class="wp-block-column" style="background:#f8fafc;padding:34px 26px;border-radius:10px;text-align:center;border:1px solid #e2e8f0;">
     ${item.icon_emoji ? `<!-- wp:paragraph {"className":"riq-col-icon"} --><p class="riq-col-icon" style="font-size:1.75rem;line-height:1;margin:0 auto 14px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:#ffffff;border:1px solid #d1fae5;border-radius:50%;">${esc(item.icon_emoji)}</p><!-- /wp:paragraph -->` : ""}
     <!-- wp:heading {"level":3,"className":"riq-col-heading"} -->
     <h3 class="riq-col-heading" style="margin:0 0 8px;font-weight:700;font-size:1.05rem;color:#0f172a;letter-spacing:-0.01em;">${esc(item.heading)}</h3>
@@ -376,7 +385,7 @@ function renderThreeColumn(b: Extract<BlogBlock, { type: "three_column" }>): str
     )
     .join("\n");
   return `<!-- wp:columns {"className":"riq-three-column"} -->
-<div class="wp-block-columns riq-three-column" style="gap:16px;margin:32px 0;">
+<div class="wp-block-columns riq-three-column" style="gap:16px;margin:48px 0;">
 ${cols}
 </div>
 <!-- /wp:columns -->`;
@@ -391,53 +400,23 @@ function renderImageBlock(
   resolvedSrc?: string,
   resolvedMediaId?: number
 ): string {
-  // Metadata-style caption block — kicker rendered as small all-caps brand-green
-  // label, caption text below in tight small-caps slate. Mirrors the
-  // editorial "LOCATION — COORDINATES" treatment.
-  const renderMetaBlock = (extraStyle: string = "") => `
-    <div class="riq-image-meta" style="display:flex;align-items:baseline;gap:14px;border-top:1px solid #e2e8f0;padding-top:10px;margin-top:14px;${extraStyle}">
-      ${b.kicker ? `<span style="font-family:'Inter',sans-serif;font-size:0.7rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#1F9C4C;flex-shrink:0;">${esc(b.kicker)}</span>` : ""}
-      <span class="riq-magazine-caption" style="font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin:0;line-height:1.4;">${esc(b.caption)}</span>
-    </div>`;
+  // No resolved src — render NOTHING rather than a broken/placeholder figure.
+  if (!resolvedSrc) return "";
 
-  // Body-side magazine layout — 55/45 tight pairing. Image gets dramatic
-  // dark border-radius, body sits in serif italic with tight measure.
-  if (b.body && b.body.trim().length > 0 && resolvedSrc) {
-    return `<!-- wp:columns {"className":"riq-image-magazine","verticalAlignment":"top"} -->
-<div class="wp-block-columns riq-image-magazine" style="gap:40px;margin:56px 0;align-items:flex-start;">
-  <!-- wp:column {"width":"55%"} -->
-  <div class="wp-block-column" style="flex-basis:55%;">
-    <figure class="wp-block-image" style="margin:0;">
-      <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" style="width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 12px 40px rgba(15,23,42,0.18);"${resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : ""}/>
-    </figure>
-    ${renderMetaBlock()}
-  </div>
-  <!-- /wp:column -->
-  <!-- wp:column {"width":"45%"} -->
-  <div class="wp-block-column" style="flex-basis:45%;padding-top:16px;">
-    <p style="font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:1.5rem;line-height:1.4;color:#0f172a;font-style:normal;font-weight:500;margin:0;letter-spacing:-0.01em;">${esc(b.body)}</p>
-  </div>
-  <!-- /wp:column -->
-</div>
-<!-- /wp:columns -->`;
-  }
-
-  // Standalone image — large dramatic with caption metadata block below
-  if (!resolvedSrc) {
-    return `<!-- wp:html -->
-<figure style="margin:56px 0;">
-  <!-- IMAGE_PLACEHOLDER: ${esc(b.imagen_prompt)} -->
-  ${renderMetaBlock()}
+  // Full-bleed editorial image — edge-to-edge (100vw), ~half-viewport tall,
+  // NO caption. The image IS the moment (Apple Newsroom style). An optional
+  // `body` becomes a centered serif lead BELOW the image, re-constrained.
+  const cls = resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : "";
+  const lead =
+    b.body && b.body.trim().length > 0
+      ? `<div style="max-width:720px;margin:0 auto;padding:0 24px;"><p style="font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:1.6rem;line-height:1.45;color:#0f172a;font-weight:500;text-align:center;margin:40px auto 0;letter-spacing:-0.01em;">${esc(b.body)}</p></div>`
+      : "";
+  return `<!-- wp:html -->
+<figure class="riq-fullbleed-image" style="position:relative;left:50%;right:50%;width:100vw;margin:80px -50vw;padding:0;">
+  <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" loading="lazy" style="width:100vw;max-width:100vw;height:54vh;min-height:360px;object-fit:cover;display:block;margin:0;"${cls}/>
+  ${lead}
 </figure>
 <!-- /wp:html -->`;
-  }
-
-  return `<!-- wp:image {"id":${resolvedMediaId || 0},"sizeSlug":"large","className":"riq-magazine-image"} -->
-<figure class="wp-block-image size-large riq-magazine-image" style="margin:56px 0;">
-  <img src="${esc(resolvedSrc)}" alt="${esc(b.alt)}" style="width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 12px 40px rgba(15,23,42,0.18);"${resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : ""}/>
-  ${renderMetaBlock()}
-</figure>
-<!-- /wp:image -->`;
 }
 
 function renderChartBlock(b: Extract<BlogBlock, { type: "chart" }>): string {
@@ -449,7 +428,7 @@ function renderChartBlock(b: Extract<BlogBlock, { type: "chart" }>): string {
 
   // Wrap in a WP HTML block so Gutenberg leaves the SVG alone
   return `<!-- wp:html -->
-<div class="riq-chart-wrap" style="margin:32px 0;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
+<div class="riq-chart-wrap" style="margin:48px 0;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
 ${svg}
 </div>
 <!-- /wp:html -->`;
@@ -504,7 +483,7 @@ function renderCtaButtonGroup(b: Extract<BlogBlock, { type: "cta_button_group" }
   return `${b.heading ? `<!-- wp:heading {"level":3,"className":"riq-cta-group-heading"} -->
 <h3 class="riq-cta-group-heading" style="text-align:center;margin:40px 0 16px;font-size:1.4rem;font-weight:700;color:#0f172a;">${esc(b.heading)}</h3>
 <!-- /wp:heading -->\n\n` : ""}<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"className":"riq-cta-group"} -->
-<div class="wp-block-buttons riq-cta-group" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0 32px;">
+<div class="wp-block-buttons riq-cta-group" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:24px 0 48px;">
 ${buttons}
 </div>
 <!-- /wp:buttons -->`;
@@ -544,7 +523,7 @@ function renderCtaBanner(b: Extract<BlogBlock, { type: "cta_banner" }>): string 
 function renderVerdictCallout(b: Extract<BlogBlock, { type: "verdict_callout" }>): string {
   const label = b.label || "THE SHORT VERSION";
   return `<!-- wp:html -->
-<div class="riq-verdict-callout" style="background:#ecfdf5;border-left:6px solid #1F9C4C;padding:32px 32px 34px;margin:40px 0;border-radius:0 12px 12px 0;">
+<div class="riq-verdict-callout" style="background:#ecfdf5;border-left:6px solid #1F9C4C;padding:40px 40px 42px;margin:56px 0;border-radius:0 12px 12px 0;">
   <span style="display:block;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#1F9C4C;margin:0 0 14px;">${esc(label)}</span>
   <p style="font-family:'Inter',sans-serif;font-size:1.45rem;line-height:1.5;font-weight:600;color:#0f172a;margin:0;letter-spacing:-0.01em;">${esc(b.text)}</p>
 </div>
@@ -554,7 +533,7 @@ function renderVerdictCallout(b: Extract<BlogBlock, { type: "verdict_callout" }>
 function renderRedFlagCallout(b: Extract<BlogBlock, { type: "red_flag_callout" }>): string {
   const tag = b.tag || "⚠ RED FLAG";
   return `<!-- wp:html -->
-<div class="riq-red-flag-callout" style="background:#fef2f2;border:1px solid #fecaca;border-left:6px solid #dc2626;padding:28px 28px 30px;margin:32px 0;border-radius:0 12px 12px 0;">
+<div class="riq-red-flag-callout" style="background:#fef2f2;border:1px solid #fecaca;border-left:6px solid #dc2626;padding:34px 34px 36px;margin:48px 0;border-radius:0 12px 12px 0;">
   <span style="display:inline-block;background:#dc2626;color:#ffffff;font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:6px 16px;border-radius:999px;margin:0 0 16px;">${esc(tag)}</span>
   <h3 class="riq-red-flag-title" style="font-family:'Inter',sans-serif;font-size:1.3rem;font-weight:700;color:#0f172a;letter-spacing:-0.01em;line-height:1.3;margin:0 0 10px;">${esc(b.title)}</h3>
   <p style="font-family:'Inter',sans-serif;font-size:1.02rem;line-height:1.65;color:#1e293b;margin:0;">${esc(b.body)}</p>
@@ -566,7 +545,7 @@ function renderTalkTrack(b: Extract<BlogBlock, { type: "talk_track" }>): string 
   const heading = b.heading || "The Talk Track";
   const cards = (b.scripts || [])
     .map(
-      (s, idx) => `  <div class="riq-talk-track-card" style="display:flex;gap:18px;align-items:flex-start;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:22px 24px;margin:0 0 14px;">
+      (s, idx) => `  <div class="riq-talk-track-card" style="display:flex;gap:18px;align-items:flex-start;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:28px 30px;margin:0 0 16px;">
     <span style="flex-shrink:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1F9C4C;color:#ffffff;font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:800;border-radius:50%;line-height:1;">${idx + 1}</span>
     <div style="flex:1;">
       <p style="font-family:'Inter',sans-serif;font-size:1.12rem;line-height:1.45;font-weight:700;color:#0f172a;margin:0;letter-spacing:-0.01em;">&ldquo;${esc(s.prompt)}&rdquo;</p>
@@ -577,9 +556,44 @@ function renderTalkTrack(b: Extract<BlogBlock, { type: "talk_track" }>): string 
     .join("\n");
 
   return `<!-- wp:html -->
-<div class="riq-talk-track" style="margin:40px 0;">
+<div class="riq-talk-track" style="margin:56px 0;">
   <h3 class="riq-talk-track-heading" style="font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;margin:0 0 18px;">${esc(heading)}</h3>
 ${cards}
+</div>
+<!-- /wp:html -->`;
+}
+
+// Breathing-room gallery — a responsive CSS grid of images. This is an airy,
+// magazine-style block: generous gap + margin, rounded corners, consistent 4/3
+// crop. Image sources resolve from explicit `src` OR a generated Imagen prompt;
+// any image that resolves to nothing is skipped so the page never shows a broken
+// <img>. If zero images resolve, the whole block renders nothing.
+function renderGallery(
+  b: Extract<BlogBlock, { type: "gallery" }>,
+  imageResolutions?: Map<string, ImageResolution>
+): string {
+  const srcs = (b.images || [])
+    .map((img) => {
+      let src = img.src;
+      if (!src && img.imagen_prompt) src = imageResolutions?.get(img.imagen_prompt)?.src;
+      return src;
+    })
+    .filter((s): s is string => Boolean(s));
+
+  if (srcs.length === 0) return "";
+
+  // Full-bleed mosaic — large edge-to-edge tiles, NO captions, tight seams.
+  const cols = Math.min(srcs.length, b.columns || 2);
+  const cells = srcs
+    .map(
+      (src) =>
+        `  <img src="${esc(src)}" alt="" loading="lazy" style="width:100%;height:46vh;min-height:300px;object-fit:cover;display:block;margin:0;"/>`
+    )
+    .join("\n");
+
+  return `<!-- wp:html -->
+<div class="riq-gallery" style="position:relative;left:50%;right:50%;width:100vw;margin:80px -50vw;display:grid;grid-template-columns:repeat(${cols},1fr);gap:6px;">
+${cells}
 </div>
 <!-- /wp:html -->`;
 }
@@ -617,6 +631,7 @@ export function renderBlocks(
         case "verdict_callout": return renderVerdictCallout(b);
         case "red_flag_callout": return renderRedFlagCallout(b);
         case "talk_track": return renderTalkTrack(b);
+        case "gallery": return renderGallery(b, imageResolutions);
         default: return "";
       }
     })
@@ -627,9 +642,17 @@ export function renderBlocks(
 // Helper: extract all imagen_prompt strings from image blocks so the publisher
 // can resolve them in parallel before render.
 export function extractImagenPrompts(blocks: BlogBlock[]): string[] {
-  return blocks
-    .filter((b): b is Extract<BlogBlock, { type: "image" }> => b.type === "image")
-    .map((b) => b.imagen_prompt);
+  const prompts: string[] = [];
+  for (const b of blocks) {
+    if (b.type === "image") {
+      prompts.push(b.imagen_prompt);
+    } else if (b.type === "gallery") {
+      for (const img of b.images || []) {
+        if (img.imagen_prompt) prompts.push(img.imagen_prompt);
+      }
+    }
+  }
+  return prompts;
 }
 
 // Build the FAQPage JSON-LD schema from the FAQ block (injected separately into <head>)
