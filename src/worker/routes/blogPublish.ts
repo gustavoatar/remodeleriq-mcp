@@ -31,7 +31,7 @@ import {
   getWpPost,
   updateWpPostContent,
 } from "../lib/wordpressClient";
-import { PILLAR_TO_WP_CATEGORY } from "../lib/blogDrafter";
+import { PILLAR_TO_WP_CATEGORY, VISUAL_STORY_PATTERN } from "../lib/blogDrafter";
 import { createPagePost } from "../lib/facebookClient";
 import {
   generateFeaturedImage,
@@ -208,12 +208,16 @@ async function publishDraftToWp(
   // ===== In-place REFRESH path — update an existing published post's content
   // (and hero image) with freshly-rendered HTML using current renderers. Keeps
   // the URL; does NOT create a new post / content_drafts row / inbox row.
+  // Trend/style posts (visual_story) live in the reader-facing "Trends" category;
+  // everything else lands in its pillar category.
+  const categoryName = draft.template === "visual_story" ? "Trends" : draft.category;
+
   if (replaceWpPostId) {
     const contentWithSchema = schemaInjection ? `${blockHtml}\n\n${schemaInjection}` : blockHtml;
     await updateWpPostContent(env as never, draft.persona, replaceWpPostId, contentWithSchema, featuredMediaId);
     // Keep the category correct on refresh too (never leave it Uncategorized).
     try {
-      const catId = await findOrCreateCategory(env as never, draft.persona, draft.category);
+      const catId = await findOrCreateCategory(env as never, draft.persona, categoryName);
       if (catId) await setPostCategories(env as never, draft.persona, replaceWpPostId, [catId]);
     } catch (err) {
       console.error("Refresh category assignment failed (non-fatal):", err);
@@ -225,7 +229,7 @@ async function publishDraftToWp(
   }
 
   // Resolve WP category by name, creating it if missing (never Uncategorized).
-  const categoryId = await findOrCreateCategory(env as never, draft.persona, draft.category);
+  const categoryId = await findOrCreateCategory(env as never, draft.persona, categoryName);
 
   const wpResp = await createWpDraft(env as never, {
     persona: draft.persona,
@@ -756,13 +760,15 @@ app.post("/:wpPostId/fix-category", async (c) => {
   if (!wpPostId) return c.json({ error: "bad wpPostId" }, 400);
 
   const row = await c.env.DB.prepare(
-    "SELECT persona, wp_pillar FROM content_drafts WHERE wp_post_id = ? LIMIT 1"
-  ).bind(wpPostId).first<{ persona: string | null; wp_pillar: string | null }>();
+    "SELECT persona, wp_pillar, content_format, blog_brief FROM content_drafts WHERE wp_post_id = ? LIMIT 1"
+  ).bind(wpPostId).first<{ persona: string | null; wp_pillar: string | null; content_format: string | null; blog_brief: string | null }>();
   if (!row) return c.json({ error: "post not tracked" }, 404);
 
   const persona = (row.persona || "bella") as "bella" | "gustavo";
   const pillar = (row.wp_pillar || "scope_negotiation") as keyof typeof PILLAR_TO_WP_CATEGORY;
-  const categoryName = PILLAR_TO_WP_CATEGORY[pillar] || "Remodeling Guide";
+  // Trend/style posts → "Trends"; otherwise the pillar category.
+  const isTrend = VISUAL_STORY_PATTERN.test(row.blog_brief || "");
+  const categoryName = isTrend ? "Trends" : (PILLAR_TO_WP_CATEGORY[pillar] || "Remodeling Guide");
 
   try {
     const catId = await findOrCreateCategory(c.env as never, persona, categoryName);
