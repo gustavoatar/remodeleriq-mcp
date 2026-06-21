@@ -26,10 +26,12 @@ import {
 import {
   createWpDraft,
   publishWpDraft,
-  findCategoryIdBySlug,
+  findOrCreateCategory,
+  setPostCategories,
   getWpPost,
   updateWpPostContent,
 } from "../lib/wordpressClient";
+import { PILLAR_TO_WP_CATEGORY } from "../lib/blogDrafter";
 import { createPagePost } from "../lib/facebookClient";
 import {
   generateFeaturedImage,
@@ -209,19 +211,21 @@ async function publishDraftToWp(
   if (replaceWpPostId) {
     const contentWithSchema = schemaInjection ? `${blockHtml}\n\n${schemaInjection}` : blockHtml;
     await updateWpPostContent(env as never, draft.persona, replaceWpPostId, contentWithSchema, featuredMediaId);
+    // Keep the category correct on refresh too (never leave it Uncategorized).
+    try {
+      const catId = await findOrCreateCategory(env as never, draft.persona, draft.category);
+      if (catId) await setPostCategories(env as never, draft.persona, replaceWpPostId, [catId]);
+    } catch (err) {
+      console.error("Refresh category assignment failed (non-fatal):", err);
+    }
     await env.DB.prepare(
       "UPDATE content_drafts SET updated_at = datetime('now') WHERE wp_post_id = ?"
     ).bind(replaceWpPostId).run();
     return { wpPostId: replaceWpPostId, wpLink: "", featuredMediaId };
   }
 
-  // Resolve WP category ID by category name
-  const categorySlug = draft.category.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const categoryId = await findCategoryIdBySlug(
-    env as never,
-    draft.persona,
-    categorySlug
-  );
+  // Resolve WP category by name, creating it if missing (never Uncategorized).
+  const categoryId = await findOrCreateCategory(env as never, draft.persona, draft.category);
 
   const wpResp = await createWpDraft(env as never, {
     persona: draft.persona,
@@ -740,6 +744,34 @@ app.post("/:wpPostId/refresh", async (c) => {
     { status: "refreshing", wpPostId, message: "Regenerating content in place with current renderers." },
     202
   );
+});
+
+// ====================================================================
+// POST /:wpPostId/fix-category — assign the correct pillar category to an
+// already-published post (creating the category if needed). Lightweight: no
+// regeneration, just moves it out of Uncategorized.
+// ====================================================================
+app.post("/:wpPostId/fix-category", async (c) => {
+  const wpPostId = parseInt(c.req.param("wpPostId"));
+  if (!wpPostId) return c.json({ error: "bad wpPostId" }, 400);
+
+  const row = await c.env.DB.prepare(
+    "SELECT persona, wp_pillar FROM content_drafts WHERE wp_post_id = ? LIMIT 1"
+  ).bind(wpPostId).first<{ persona: string | null; wp_pillar: string | null }>();
+  if (!row) return c.json({ error: "post not tracked" }, 404);
+
+  const persona = (row.persona || "bella") as "bella" | "gustavo";
+  const pillar = (row.wp_pillar || "scope_negotiation") as keyof typeof PILLAR_TO_WP_CATEGORY;
+  const categoryName = PILLAR_TO_WP_CATEGORY[pillar] || "Remodeling Guide";
+
+  try {
+    const catId = await findOrCreateCategory(c.env as never, persona, categoryName);
+    if (!catId) return c.json({ error: "could not resolve/create category" }, 500);
+    await setPostCategories(c.env as never, persona, wpPostId, [catId]);
+    return c.json({ success: true, wpPostId, category: categoryName, categoryId: catId });
+  } catch (err) {
+    return c.json({ error: err instanceof Error ? err.message : "fix-category failed" }, 500);
+  }
 });
 
 export default app;

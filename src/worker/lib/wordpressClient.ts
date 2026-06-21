@@ -223,3 +223,60 @@ export async function findCategoryIdBySlug(
     return null;
   }
 }
+
+// Look up a category by display name; CREATE it if it doesn't exist. Returns the
+// category id (so posts never silently fall into Uncategorized). Best-effort:
+// returns null only if creds are missing or both lookup + create fail.
+export async function findOrCreateCategory(
+  env: WpEnv,
+  persona: Persona,
+  name: string
+): Promise<number | null> {
+  const creds = credsFor(persona, env);
+  if (!creds) return null;
+  const slug = name.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const existing = await findCategoryIdBySlug(env, persona, slug);
+  if (existing) return existing;
+  try {
+    const { res, text } = await wpFetch(
+      `${WP_BASE}/categories`,
+      {
+        method: "POST",
+        headers: { Authorization: basicAuth(creds), "Content-Type": "application/json" },
+        body: JSON.stringify({ name, slug }),
+      },
+      WP_FETCH_HEADERS_BASE
+    );
+    if (res.ok) {
+      const json = JSON.parse(text) as { id?: number };
+      if (json.id) return json.id;
+    }
+    // term_exists race → re-lookup
+    return await findCategoryIdBySlug(env, persona, slug);
+  } catch {
+    return null;
+  }
+}
+
+// Set a post's categories (replaces existing). Used to backfill Uncategorized posts.
+export async function setPostCategories(
+  env: WpEnv,
+  persona: Persona,
+  postId: number,
+  categoryIds: number[]
+): Promise<void> {
+  const creds = credsFor(persona, env);
+  if (!creds) throw new Error(`WordPress credentials missing for persona=${persona}`);
+  const { res, text } = await wpFetch(
+    `${WP_BASE}/posts/${postId}`,
+    {
+      method: "POST",
+      headers: { Authorization: basicAuth(creds), "Content-Type": "application/json" },
+      body: JSON.stringify({ categories: categoryIds }),
+    },
+    WP_FETCH_HEADERS_BASE
+  );
+  if (!res.ok || looksLikeSgCaptcha(res.headers.get("content-type"), text)) {
+    throw new Error(`WP set categories failed: ${res.status} ${text.slice(0, 200)}`);
+  }
+}

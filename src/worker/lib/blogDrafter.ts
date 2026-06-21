@@ -161,11 +161,13 @@ export function pickBlogPersona(pillar: Pillar): Persona {
   return Math.random() < PILLAR_BELLA_RATIOS[pillar] ? "bella" : "gustavo";
 }
 
-const PILLAR_TO_WP_CATEGORY: Record<Pillar, string> = {
-  cost_data: "Cost Data",
-  contract_risk: "Contract Risk",
+// Reader-facing WordPress category names per pillar. Exported so the publisher
+// and the backfill endpoint resolve/create the same categories.
+export const PILLAR_TO_WP_CATEGORY: Record<Pillar, string> = {
+  cost_data: "Remodeling Costs",
+  contract_risk: "Contract Red Flags",
   scope_negotiation: "Scope & Negotiation",
-  regional: "Regional",
+  regional: "Regional Guides",
 };
 
 export interface BlogDraft {
