@@ -156,7 +156,8 @@ async function lookupHubUrl(
 async function publishDraftToWp(
   env: AppEnv["Bindings"],
   draft: BlogDraft,
-  contentDraftId: number | null
+  contentDraftId: number | null,
+  replaceWpPostId?: number
 ): Promise<{ wpPostId: number; wpLink: string; featuredMediaId: number | null }> {
   const blocks = draft.blocks as BlogBlock[];
 
@@ -201,6 +202,18 @@ async function publishDraftToWp(
   });
   const faqSchema = buildFaqJsonLd(blocks);
   const schemaInjection = [articleSchema, faqSchema].filter(Boolean).join("\n");
+
+  // ===== In-place REFRESH path — update an existing published post's content
+  // (and hero image) with freshly-rendered HTML using current renderers. Keeps
+  // the URL; does NOT create a new post / content_drafts row / inbox row.
+  if (replaceWpPostId) {
+    const contentWithSchema = schemaInjection ? `${blockHtml}\n\n${schemaInjection}` : blockHtml;
+    await updateWpPostContent(env as never, draft.persona, replaceWpPostId, contentWithSchema, featuredMediaId);
+    await env.DB.prepare(
+      "UPDATE content_drafts SET updated_at = datetime('now') WHERE wp_post_id = ?"
+    ).bind(replaceWpPostId).run();
+    return { wpPostId: replaceWpPostId, wpLink: "", featuredMediaId };
+  }
 
   // Resolve WP category ID by category name
   const categorySlug = draft.category.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -297,6 +310,8 @@ export interface BlogDraftJobMessage {
   contentDraftId: number | null;
   /** Status to restore if the job fails (only used when contentDraftId is set). */
   priorStatus?: string | null;
+  /** When set, refresh this existing WP post's content in place (no new post). */
+  replaceWpPostId?: number;
 }
 
 // Full text + image pipeline as one call: classify/generate the draft via Gemini,
@@ -311,6 +326,8 @@ export async function generateAndPublishBlog(
     forcePersona?: "bella" | "gustavo";
     forcePillar?: Pillar;
     contentDraftId: number | null;
+    /** When set, update this existing WP post in place instead of creating a new one. */
+    replaceWpPostId?: number;
   }
 ): Promise<{
   wpPostId: number;
@@ -326,7 +343,7 @@ export async function generateAndPublishBlog(
     format: opts.format,
     hubUrl: opts.hubUrl,
   });
-  const result = await publishDraftToWp(env, draft, opts.contentDraftId);
+  const result = await publishDraftToWp(env, draft, opts.contentDraftId, opts.replaceWpPostId);
   return {
     wpPostId: result.wpPostId,
     wpLink: result.wpLink,
@@ -354,6 +371,8 @@ export async function runBlogDraftJob(
     contentDraftId: number | null;
     /** Status to restore if the job fails (only used when contentDraftId is set). */
     priorStatus?: string | null;
+    /** When set, refresh this existing WP post in place (no new post). */
+    replaceWpPostId?: number;
   }
 ): Promise<void> {
   try {
@@ -682,6 +701,45 @@ app.post("/:wpPostId/strip-spans", async (c) => {
   } catch (err) {
     return c.json({ error: err instanceof Error ? err.message : "strip failed" }, 500);
   }
+});
+
+// ====================================================================
+// POST /:wpPostId/refresh — regenerate an existing published post's content
+// with the CURRENT renderers (fixes chart clipping, span leaks, layout, etc.)
+// and update it IN PLACE — same URL, no duplicate. Heavy work runs via the queue.
+// ====================================================================
+app.post("/:wpPostId/refresh", async (c) => {
+  const wpPostId = parseInt(c.req.param("wpPostId"));
+  if (!wpPostId) return c.json({ error: "bad wpPostId" }, 400);
+
+  const row = await c.env.DB.prepare(
+    `SELECT blog_brief, wp_pillar, persona, content_format
+     FROM content_drafts WHERE wp_post_id = ? LIMIT 1`
+  ).bind(wpPostId).first<{
+    blog_brief: string | null;
+    wp_pillar: string | null;
+    persona: string | null;
+    content_format: string | null;
+  }>();
+  if (!row?.blog_brief) return c.json({ error: "no brief tracked for this post" }, 404);
+
+  const fmt = (row.content_format || "spoke") as ContentFormat;
+  const hubUrl = fmt === "spoke" ? await lookupHubUrl(c.env, row.wp_pillar) : undefined;
+
+  await c.env.BLOG_QUEUE.send({
+    brief: row.blog_brief,
+    format: fmt,
+    hubUrl,
+    forcePersona: (row.persona as "bella" | "gustavo" | null) || undefined,
+    forcePillar: (row.wp_pillar as Pillar | null) || undefined,
+    contentDraftId: null, // null → skips the "already has wp_post_id" idempotency guard
+    replaceWpPostId: wpPostId,
+  } satisfies BlogDraftJobMessage);
+
+  return c.json(
+    { status: "refreshing", wpPostId, message: "Regenerating content in place with current renderers." },
+    202
+  );
 });
 
 export default app;

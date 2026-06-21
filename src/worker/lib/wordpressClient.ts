@@ -183,18 +183,24 @@ export async function updateWpPostContent(
   env: WpEnv,
   persona: Persona,
   postId: number,
-  content: string
+  content: string,
+  featuredMedia?: number | null
 ): Promise<void> {
   const creds = credsFor(persona, env);
   if (!creds) throw new Error(`WordPress credentials missing for persona=${persona}`);
-  const res = await fetch(`${WP_BASE}/posts/${postId}`, {
-    method: "POST",
-    headers: { ...WP_FETCH_HEADERS_BASE, Authorization: basicAuth(creds), "Content-Type": "application/json" },
-    body: JSON.stringify({ content }),
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`WP content update failed: ${res.status} ${text.slice(0, 300)}`);
+  const body: Record<string, unknown> = { content };
+  if (featuredMedia) body.featured_media = featuredMedia;
+  const { res, text } = await wpFetch(
+    `${WP_BASE}/posts/${postId}`,
+    {
+      method: "POST",
+      headers: { Authorization: basicAuth(creds), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    },
+    WP_FETCH_HEADERS_BASE
+  );
+  if (!res.ok || looksLikeSgCaptcha(res.headers.get("content-type"), text)) {
+    throw new Error(`WP content update failed: ${res.status} ${text.slice(0, 200)}`);
   }
 }
 
