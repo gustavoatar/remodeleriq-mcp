@@ -1,12 +1,13 @@
 // Unified admin navigation — a single sticky tab bar shared across every admin
 // page (Overview / Content / Reddit / Inbox) so they feel like one dashboard.
 import { useNavigate, useLocation } from "react-router";
-import { BarChart3, FileText, MessageSquare, Inbox } from "lucide-react";
+import { BarChart3, FileText, MessageSquare, Inbox, Home } from "lucide-react";
 
 const TABS = [
   { label: "Overview", path: "/admin", icon: BarChart3 },
   { label: "Content", path: "/admin/content", icon: FileText },
   { label: "Reddit", path: "/admin/reddit", icon: MessageSquare },
+  { label: "Nextdoor", path: "/admin/nextdoor", icon: Home },
   { label: "Inbox", path: "/admin/inbox", icon: Inbox },
 ];
 

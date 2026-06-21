@@ -25,6 +25,7 @@ import AdminPage from "@/react-app/pages/Admin";
 import ContentDashboardPage from "@/react-app/pages/ContentDashboard";
 import InboxPage from "@/react-app/pages/Inbox";
 import RedditKitPage from "@/react-app/pages/RedditKit";
+import NextdoorKitPage from "@/react-app/pages/NextdoorKit";
 import FeedbackModal from "@/react-app/components/FeedbackModal";
 import ScrollToTop from "@/react-app/components/ScrollToTop";
 import { ErrorBoundary } from "@/react-app/components/ErrorBoundary";
@@ -118,6 +119,7 @@ export default function App() {
           <Route path="/admin/content" element={<ContentDashboardPage />} />
           <Route path="/admin/inbox" element={<InboxPage />} />
           <Route path="/admin/reddit" element={<RedditKitPage />} />
+          <Route path="/admin/nextdoor" element={<NextdoorKitPage />} />
         </Routes>
         <FeedbackButton onClick={() => setFeedbackOpen(true)} />
       </Router>
