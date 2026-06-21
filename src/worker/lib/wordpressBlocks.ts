@@ -120,23 +120,35 @@ const FULLBLEED =
 // Anchors are href-validated to http(s)/relative. Loose < and & are then escaped.
 function sanitizeInline(s: string): string {
   if (!s) return "";
-  // 1. Strip disallowed tags, keep inner text. Keep allowlisted tags verbatim.
+  // STRIP disallowed inline tags entirely (keep their inner text) so stray markup
+  // like <span class="riq-cursive-accent">honest truth</span> becomes just
+  // "honest truth" — never a literal tag. A tiny allowlist (a/strong/em/b/i/br) is
+  // protected via private-use placeholders, the rest of the text is escaped, then
+  // the allowlisted tags are restored.
+  const keep: string[] = [];
+  const L = String.fromCharCode(0xe000);
+  const R = String.fromCharCode(0xe001);
   let out = s.replace(/<\/?([a-zA-Z0-9]+)([^>]*)>/g, (full, tag: string, attrs: string) => {
     const t = tag.toLowerCase();
+    const closing = full.startsWith("</");
+    let rebuilt = "";
     if (t === "strong" || t === "em" || t === "b" || t === "i" || t === "br") {
-      return full.startsWith("</") ? `</${t}>` : `<${t}>`; // drop any attrs
+      rebuilt = closing ? `</${t}>` : `<${t}>`;
+    } else if (t === "a") {
+      if (closing) rebuilt = "</a>";
+      else {
+        const href = (attrs.match(/href\s*=\s*["']([^"']*)["']/i) || [])[1] || "";
+        rebuilt = /^(https?:\/\/|\/)/i.test(href) ? `<a href="${href.replace(/"/g, "&quot;")}">` : "";
+      }
+    } else {
+      return ""; // disallowed tag -> strip, keep surrounding text
     }
-    if (t === "a") {
-      if (full.startsWith("</")) return "</a>";
-      const href = (attrs.match(/href\s*=\s*["']([^"']*)["']/i) || [])[1] || "";
-      if (/^(https?:\/\/|\/)/i.test(href)) return `<a href="${href.replace(/"/g, "%22")}">`;
-      return ""; // unsafe/relative-less anchor → unwrap
-    }
-    return ""; // disallowed tag → strip, keep surrounding text
+    if (!rebuilt) return "";
+    keep.push(rebuilt);
+    return L + (keep.length - 1) + R;
   });
-  // 2. Escape stray ampersands and any remaining lone angle brackets that are NOT
-  // part of an allowlisted tag, so malformed snippets never break layout.
-  out = out.replace(/&(?!(amp|lt|gt|#\d+|quot);)/g, "&amp;");
+  out = out.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  out = out.replace(new RegExp(L + "(\\d+)" + R, "g"), (_m: string, i: string) => keep[Number(i)] || "");
   return out;
 }
 
@@ -207,29 +219,29 @@ function renderHero(b: Extract<BlogBlock, { type: "hero" }>): string {
   <span aria-hidden="true" class="wp-block-cover__background has-background-dim-0" style="background-color:#0f172a"></span>
   <div class="wp-block-cover__inner-container">
     <!-- wp:heading {"level":1,"textColor":"white","className":"riq-hero-title"} -->
-    <h1 class="riq-hero-title has-white-color has-text-color" style="color:#ffffff;font-size:3rem;font-weight:800;letter-spacing:-0.025em;line-height:1.1;margin:0 0 16px;">${esc(b.title)}</h1>
+    <h1 class="riq-hero-title has-white-color has-text-color" style="color:#ffffff;font-size:3rem;font-weight:800;letter-spacing:-0.025em;line-height:1.1;margin:0 0 16px;">${sanitizeInline(b.title)}</h1>
     <!-- /wp:heading -->
     <!-- wp:paragraph {"textColor":"white","className":"riq-hero-subtitle"} -->
-    <p class="riq-hero-subtitle has-white-color has-text-color" style="color:#e2e8f0;font-size:1.25rem;line-height:1.5;margin:0;">${esc(b.subtitle)}</p>
+    <p class="riq-hero-subtitle has-white-color has-text-color" style="color:#e2e8f0;font-size:1.25rem;line-height:1.5;margin:0;">${sanitizeInline(b.subtitle)}</p>
     <!-- /wp:paragraph -->
   </div>
 </div>
 <!-- /wp:cover -->
 
 <!-- wp:paragraph {"className":"riq-snippet"} -->
-<p class="riq-snippet" style="font-size:1.2rem;line-height:1.8;color:#0f172a;margin:72px 0 48px;font-weight:400;"><span class="riq-dropcap-letter">${esc(firstLetter)}</span><span class="riq-dropcap-word-tail">${esc(firstWordTail)}</span>${esc(rest)}</p>
+<p class="riq-snippet" style="font-size:1.2rem;line-height:1.8;color:#0f172a;margin:72px 0 48px;font-weight:400;"><span class="riq-dropcap-letter">${esc(firstLetter)}</span><span class="riq-dropcap-word-tail">${sanitizeInline(firstWordTail)}</span>${sanitizeInline(rest)}</p>
 <!-- /wp:paragraph -->`;
 }
 
 function renderH2(b: Extract<BlogBlock, { type: "h2" }>): string {
   return `<!-- wp:heading {"level":2,"className":"riq-h2"} -->
-<h2 class="riq-h2" style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;margin:64px 0 20px;line-height:1.2;">${esc(b.text)}</h2>
+<h2 class="riq-h2" style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;margin:64px 0 20px;line-height:1.2;">${sanitizeInline(b.text)}</h2>
 <!-- /wp:heading -->`;
 }
 
 function renderH3(b: Extract<BlogBlock, { type: "h3" }>): string {
   return `<!-- wp:heading {"level":3,"className":"riq-h3"} -->
-<h3 class="riq-h3" style="font-size:1.4rem;font-weight:700;color:#0f172a;margin:40px 0 14px;line-height:1.3;">${esc(b.text)}</h3>
+<h3 class="riq-h3" style="font-size:1.4rem;font-weight:700;color:#0f172a;margin:40px 0 14px;line-height:1.3;">${sanitizeInline(b.text)}</h3>
 <!-- /wp:heading -->`;
 }
 
@@ -249,7 +261,7 @@ function renderStatCallout(b: Extract<BlogBlock, { type: "stat_callout" }>): str
   <h3 class="riq-stat-number" style="color:#1F9C4C;font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:5.5rem;font-weight:800;letter-spacing:-0.04em;line-height:0.92;margin:0 0 14px;">${esc(b.big_number)}</h3>
   <!-- /wp:heading -->
   <!-- wp:paragraph {"className":"riq-stat-label"} -->
-  <p class="riq-stat-label" style="color:#0f172a;font-size:1.3rem;font-weight:600;margin:0 auto 10px;line-height:1.4;max-width:520px;">${esc(b.label)}</p>
+  <p class="riq-stat-label" style="color:#0f172a;font-size:1.3rem;font-weight:600;margin:0 auto 10px;line-height:1.4;max-width:520px;">${sanitizeInline(b.label)}</p>
   <!-- /wp:paragraph -->
   <!-- wp:paragraph {"className":"riq-stat-source"} -->
   <p class="riq-stat-source" style="color:#94a3b8;font-size:0.82rem;margin:0;font-style:italic;">Source: ${esc(b.source)}${dateSuffix}</p>
@@ -263,13 +275,13 @@ function renderComparisonTable(b: Extract<BlogBlock, { type: "comparison_table" 
   const bodyCellStyle = "padding:14px 16px;text-align:left;font-family:'Inter',sans-serif;font-size:0.98rem;font-weight:400;color:#1e293b;line-height:1.5;border-bottom:1px solid #e2e8f0;vertical-align:top;";
   const firstColStyle = "font-weight:700;color:#0f172a;";
 
-  const headers = b.headers.map((h) => `<th style="${headerCellStyle}">${esc(h)}</th>`).join("");
+  const headers = b.headers.map((h) => `<th style="${headerCellStyle}">${sanitizeInline(h)}</th>`).join("");
   const body = (b.rows || [])
     .map((row, rowIdx) => {
       const zebra = rowIdx % 2 === 1 ? "background:#f8fafc;" : "background:#ffffff;";
       const cells = row.map((c, colIdx) => {
         const extra = colIdx === 0 ? firstColStyle : "";
-        return `<td style="${bodyCellStyle}${extra}">${esc(c)}</td>`;
+        return `<td style="${bodyCellStyle}${extra}">${sanitizeInline(c)}</td>`;
       }).join("");
       return `      <tr style="${zebra}">${cells}</tr>`;
     })
@@ -298,7 +310,7 @@ function renderPullQuote(b: Extract<BlogBlock, { type: "pull_quote" }>): string 
   return `<!-- wp:quote {"className":"riq-pull-quote"} -->
 <blockquote class="wp-block-quote riq-pull-quote" style="border:none;background:transparent;padding:0;margin:64px 0;position:relative;">
   <span aria-hidden="true" style="position:absolute;left:-8px;top:-32px;font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:8rem;line-height:1;color:#1F9C4C;font-weight:900;opacity:0.18;">&ldquo;</span>
-  <p style="font-family:'Fraunces','Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:2.1rem;font-weight:600;color:#0f172a;line-height:1.25;margin:0;letter-spacing:-0.02em;font-style:normal;padding-left:8px;border-left:4px solid #1F9C4C;padding:0 0 0 24px;">${esc(b.text)}</p>
+  <p style="font-family:'Fraunces','Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:2.1rem;font-weight:600;color:#0f172a;line-height:1.25;margin:0;letter-spacing:-0.02em;font-style:normal;padding-left:8px;border-left:4px solid #1F9C4C;padding:0 0 0 24px;">${sanitizeInline(b.text)}</p>
 </blockquote>
 <!-- /wp:quote -->`;
 }
@@ -306,11 +318,11 @@ function renderPullQuote(b: Extract<BlogBlock, { type: "pull_quote" }>): string 
 function renderFaq(b: Extract<BlogBlock, { type: "faq" }>): string {
   const items = b.items
     .map((item) => `<!-- wp:heading {"level":3,"className":"riq-faq-q"} -->
-<h3 class="riq-faq-q" style="font-size:1.2rem;font-weight:700;color:#0f172a;margin:24px 0 8px;line-height:1.35;">${esc(item.q)}</h3>
+<h3 class="riq-faq-q" style="font-size:1.2rem;font-weight:700;color:#0f172a;margin:24px 0 8px;line-height:1.35;">${sanitizeInline(item.q)}</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"riq-faq-a"} -->
-<p class="riq-faq-a" style="font-size:1rem;line-height:1.65;color:#334155;margin:0 0 12px;">${esc(item.a)}</p>
+<p class="riq-faq-a" style="font-size:1rem;line-height:1.65;color:#334155;margin:0 0 12px;">${sanitizeInline(item.a)}</p>
 <!-- /wp:paragraph -->`)
     .join("\n\n");
 
@@ -339,7 +351,7 @@ function renderSectionCover(b: Extract<BlogBlock, { type: "section_cover" }>): s
   return `<!-- wp:html -->
 <section class="riq-section-band alignfull" style="${FULLBLEED}margin-top:88px;margin-bottom:88px;background:${t.bg};padding:104px 24px;">
   <div style="max-width:760px;margin:0 auto;text-align:center;">
-    <h2 style="color:${t.title};font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:2.6rem;font-weight:700;letter-spacing:-0.02em;line-height:1.15;margin:0 0 18px;">${esc(b.title)}</h2>
+    <h2 style="color:${t.title};font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:2.6rem;font-weight:700;letter-spacing:-0.02em;line-height:1.15;margin:0 0 18px;">${sanitizeInline(b.title)}</h2>
     <p style="color:${t.body};font-size:1.2rem;line-height:1.65;margin:0;">${sanitizeInline(b.body)}</p>
   </div>
 </section>
@@ -379,15 +391,15 @@ function renderTwoColumn(b: Extract<BlogBlock, { type: "two_column" }>): string 
   const renderSide = (heading: string, side: { text: string; items: string[] }, theme: "ok" | "warning" | undefined) => {
     const bodyOrList = side.items.length > 0
       ? `<!-- wp:list -->
-    <ul style="padding-left:20px;margin:0;font-size:0.98rem;line-height:1.6;color:#1e293b;">${side.items.map((it) => `<li style="margin-bottom:8px;">${esc(it)}</li>`).join("")}</ul>
+    <ul style="padding-left:20px;margin:0;font-size:0.98rem;line-height:1.6;color:#1e293b;">${side.items.map((it) => `<li style="margin-bottom:8px;">${sanitizeInline(it)}</li>`).join("")}</ul>
     <!-- /wp:list -->`
       : `<!-- wp:paragraph -->
-    <p style="font-size:1rem;line-height:1.6;color:#1e293b;margin:0;">${esc(side.text)}</p>
+    <p style="font-size:1rem;line-height:1.6;color:#1e293b;margin:0;">${sanitizeInline(side.text)}</p>
     <!-- /wp:paragraph -->`;
     return `  <!-- wp:column -->
   <div class="wp-block-column" style="background:${themeBg(theme)};border-left:4px solid ${themeBorder(theme)};padding:30px;border-radius:0 8px 8px 0;">
     <!-- wp:heading {"level":3,"className":"riq-col-heading"} -->
-    <h3 class="riq-col-heading" style="margin:0 0 14px;font-weight:700;font-size:1.25rem;color:#0f172a;letter-spacing:-0.01em;">${esc(heading)}</h3>
+    <h3 class="riq-col-heading" style="margin:0 0 14px;font-weight:700;font-size:1.25rem;color:#0f172a;letter-spacing:-0.01em;">${sanitizeInline(heading)}</h3>
     <!-- /wp:heading -->
     ${bodyOrList}
   </div>
@@ -410,10 +422,10 @@ function renderThreeColumn(b: Extract<BlogBlock, { type: "three_column" }>): str
   <div class="wp-block-column" style="background:#f8fafc;padding:34px 26px;border-radius:10px;text-align:center;border:1px solid #e2e8f0;">
     ${item.icon_emoji ? `<!-- wp:paragraph {"className":"riq-col-icon"} --><p class="riq-col-icon" style="font-size:1.75rem;line-height:1;margin:0 auto 14px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:#ffffff;border:1px solid #d1fae5;border-radius:50%;">${esc(item.icon_emoji)}</p><!-- /wp:paragraph -->` : ""}
     <!-- wp:heading {"level":3,"className":"riq-col-heading"} -->
-    <h3 class="riq-col-heading" style="margin:0 0 8px;font-weight:700;font-size:1.05rem;color:#0f172a;letter-spacing:-0.01em;">${esc(item.heading)}</h3>
+    <h3 class="riq-col-heading" style="margin:0 0 8px;font-weight:700;font-size:1.05rem;color:#0f172a;letter-spacing:-0.01em;">${sanitizeInline(item.heading)}</h3>
     <!-- /wp:heading -->
     <!-- wp:paragraph -->
-    <p style="font-size:0.95rem;line-height:1.55;color:#475569;margin:0;">${esc(item.body)}</p>
+    <p style="font-size:0.95rem;line-height:1.55;color:#475569;margin:0;">${sanitizeInline(item.body)}</p>
     <!-- /wp:paragraph -->
   </div>
   <!-- /wp:column -->`
@@ -444,7 +456,7 @@ function renderImageBlock(
   const cls = resolvedMediaId ? ` class="wp-image-${resolvedMediaId}"` : "";
   const lead =
     b.body && b.body.trim().length > 0
-      ? `<div style="max-width:720px;margin:0 auto;padding:0 24px;"><p style="font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:1.6rem;line-height:1.45;color:#0f172a;font-weight:500;text-align:center;margin:40px auto 0;letter-spacing:-0.01em;">${esc(b.body)}</p></div>`
+      ? `<div style="max-width:720px;margin:0 auto;padding:0 24px;"><p style="font-family:'Fraunces','Cormorant Garamond',Georgia,serif;font-size:1.6rem;line-height:1.45;color:#0f172a;font-weight:500;text-align:center;margin:40px auto 0;letter-spacing:-0.01em;">${sanitizeInline(b.body)}</p></div>`
       : "";
   return `<!-- wp:html -->
 <figure class="riq-fullbleed-image alignfull" style="${FULLBLEED}margin-top:80px;margin-bottom:80px;padding:0;">
@@ -508,7 +520,7 @@ function renderCtaButtonGroup(b: Extract<BlogBlock, { type: "cta_button_group" }
           : "background:#1F9C4C;color:#ffffff;padding:14px 28px;border-radius:8px;font-weight:600;text-decoration:none;font-size:1rem;display:inline-block;border:2px solid #1F9C4C;";
         return `  <!-- wp:button {"className":"riq-cta-btn-${style}"} -->
   <div class="wp-block-button riq-cta-btn-${style}" style="margin:6px;">
-    <a class="wp-block-button__link" href="${esc(url)}" style="${buttonStyles}">${esc(btn.label)}</a>
+    <a class="wp-block-button__link" href="${esc(url)}" style="${buttonStyles}">${sanitizeInline(btn.label)}</a>
   </div>
   <!-- /wp:button -->`;
       }
@@ -516,7 +528,7 @@ function renderCtaButtonGroup(b: Extract<BlogBlock, { type: "cta_button_group" }
     .join("\n");
 
   return `${b.heading ? `<!-- wp:heading {"level":3,"className":"riq-cta-group-heading"} -->
-<h3 class="riq-cta-group-heading" style="text-align:center;margin:40px 0 16px;font-size:1.4rem;font-weight:700;color:#0f172a;">${esc(b.heading)}</h3>
+<h3 class="riq-cta-group-heading" style="text-align:center;margin:40px 0 16px;font-size:1.4rem;font-weight:700;color:#0f172a;">${sanitizeInline(b.heading)}</h3>
 <!-- /wp:heading -->\n\n` : ""}<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"className":"riq-cta-group"} -->
 <div class="wp-block-buttons riq-cta-group" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:24px 0 48px;">
 ${buttons}
@@ -527,7 +539,7 @@ ${buttons}
 function renderCtaBanner(b: Extract<BlogBlock, { type: "cta_banner" }>): string {
   const url = sanitizeUrl(b.button_url);
   // Body text supports {brand} placeholder — renders as bold underlined inline link to RemodelerIQ
-  const bodyText = (b.text || "").replace(
+  const bodyText = sanitizeInline(b.text || "").replace(
     /\{brand\}/g,
     `<a href="https://remodeleriq.com" style="color:#1F9C4C;font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;">RemodelerIQ</a>`
   );
@@ -537,11 +549,11 @@ function renderCtaBanner(b: Extract<BlogBlock, { type: "cta_banner" }>): string 
   return `<!-- wp:group {"className":"riq-cta-banner"} -->
 <div class="wp-block-group riq-cta-banner" style="background:#ffffff;padding:64px 32px 72px;margin:64px 0 32px;text-align:center;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;">
   <!-- wp:html -->
-  <span class="riq-cta-kicker" style="display:inline-block;background:#dcfce7;color:#1F9C4C;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;padding:8px 22px;border-radius:999px;margin-bottom:24px;">${esc(kicker)}</span>
+  <span class="riq-cta-kicker" style="display:inline-block;background:#dcfce7;color:#1F9C4C;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;padding:8px 22px;border-radius:999px;margin-bottom:24px;">${sanitizeInline(kicker)}</span>
   <!-- /wp:html -->
 
   <!-- wp:heading {"level":2,"className":"riq-cta-headline"} -->
-  <h2 class="riq-cta-headline" style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:3.5rem;font-weight:900;color:#0f172a;letter-spacing:-0.035em;line-height:1.05;margin:0 auto 24px;max-width:780px;">${esc(headline)}</h2>
+  <h2 class="riq-cta-headline" style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:3.5rem;font-weight:900;color:#0f172a;letter-spacing:-0.035em;line-height:1.05;margin:0 auto 24px;max-width:780px;">${sanitizeInline(headline)}</h2>
   <!-- /wp:heading -->
 
   <!-- wp:paragraph {"className":"riq-cta-body"} -->
@@ -549,7 +561,7 @@ function renderCtaBanner(b: Extract<BlogBlock, { type: "cta_banner" }>): string 
   <!-- /wp:paragraph -->
 
   <!-- wp:html -->
-  <p style="margin:0;"><a href="${esc(url)}" class="riq-cta-mega-btn" style="display:inline-flex;align-items:center;gap:14px;background:#1F9C4C;color:#ffffff;padding:22px 44px;border-radius:999px;font-family:'Inter',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;box-shadow:0 6px 16px rgba(31,156,76,0.25);transition:transform 0.15s ease;">${esc(b.button_label)} <span style="display:inline-block;font-size:1.3rem;font-weight:400;">&rarr;</span></a></p>
+  <p style="margin:0;"><a href="${esc(url)}" class="riq-cta-mega-btn" style="display:inline-flex;align-items:center;gap:14px;background:#1F9C4C;color:#ffffff;padding:22px 44px;border-radius:999px;font-family:'Inter',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;box-shadow:0 6px 16px rgba(31,156,76,0.25);transition:transform 0.15s ease;">${sanitizeInline(b.button_label)} <span style="display:inline-block;font-size:1.3rem;font-weight:400;">&rarr;</span></a></p>
   <!-- /wp:html -->
 </div>
 <!-- /wp:group -->`;
@@ -559,8 +571,8 @@ function renderVerdictCallout(b: Extract<BlogBlock, { type: "verdict_callout" }>
   const label = b.label || "THE SHORT VERSION";
   return `<!-- wp:html -->
 <div class="riq-verdict-callout" style="background:#ecfdf5;border-left:6px solid #1F9C4C;padding:40px 40px 42px;margin:56px 0;border-radius:0 12px 12px 0;">
-  <span style="display:block;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#1F9C4C;margin:0 0 14px;">${esc(label)}</span>
-  <p style="font-family:'Inter',sans-serif;font-size:1.45rem;line-height:1.5;font-weight:600;color:#0f172a;margin:0;letter-spacing:-0.01em;">${esc(b.text)}</p>
+  <span style="display:block;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#1F9C4C;margin:0 0 14px;">${sanitizeInline(label)}</span>
+  <p style="font-family:'Inter',sans-serif;font-size:1.45rem;line-height:1.5;font-weight:600;color:#0f172a;margin:0;letter-spacing:-0.01em;">${sanitizeInline(b.text)}</p>
 </div>
 <!-- /wp:html -->`;
 }
@@ -569,9 +581,9 @@ function renderRedFlagCallout(b: Extract<BlogBlock, { type: "red_flag_callout" }
   const tag = b.tag || "⚠ RED FLAG";
   return `<!-- wp:html -->
 <div class="riq-red-flag-callout" style="background:#fef2f2;border:1px solid #fecaca;border-left:6px solid #dc2626;padding:34px 34px 36px;margin:48px 0;border-radius:0 12px 12px 0;">
-  <span style="display:inline-block;background:#dc2626;color:#ffffff;font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:6px 16px;border-radius:999px;margin:0 0 16px;">${esc(tag)}</span>
-  <h3 class="riq-red-flag-title" style="font-family:'Inter',sans-serif;font-size:1.3rem;font-weight:700;color:#0f172a;letter-spacing:-0.01em;line-height:1.3;margin:0 0 10px;">${esc(b.title)}</h3>
-  <p style="font-family:'Inter',sans-serif;font-size:1.02rem;line-height:1.65;color:#1e293b;margin:0;">${esc(b.body)}</p>
+  <span style="display:inline-block;background:#dc2626;color:#ffffff;font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:6px 16px;border-radius:999px;margin:0 0 16px;">${sanitizeInline(tag)}</span>
+  <h3 class="riq-red-flag-title" style="font-family:'Inter',sans-serif;font-size:1.3rem;font-weight:700;color:#0f172a;letter-spacing:-0.01em;line-height:1.3;margin:0 0 10px;">${sanitizeInline(b.title)}</h3>
+  <p style="font-family:'Inter',sans-serif;font-size:1.02rem;line-height:1.65;color:#1e293b;margin:0;">${sanitizeInline(b.body)}</p>
 </div>
 <!-- /wp:html -->`;
 }
@@ -583,8 +595,8 @@ function renderTalkTrack(b: Extract<BlogBlock, { type: "talk_track" }>): string 
       (s, idx) => `  <div class="riq-talk-track-card" style="display:flex;gap:18px;align-items:flex-start;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:28px 30px;margin:0 0 16px;">
     <span style="flex-shrink:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#1F9C4C;color:#ffffff;font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:800;border-radius:50%;line-height:1;">${idx + 1}</span>
     <div style="flex:1;">
-      <p style="font-family:'Inter',sans-serif;font-size:1.12rem;line-height:1.45;font-weight:700;color:#0f172a;margin:0;letter-spacing:-0.01em;">&ldquo;${esc(s.prompt)}&rdquo;</p>
-      ${s.why ? `<p style="font-family:'Inter',sans-serif;font-size:0.92rem;line-height:1.55;color:#475569;margin:10px 0 0;"><span style="font-weight:700;color:#1F9C4C;">Why:</span> ${esc(s.why)}</p>` : ""}
+      <p style="font-family:'Inter',sans-serif;font-size:1.12rem;line-height:1.45;font-weight:700;color:#0f172a;margin:0;letter-spacing:-0.01em;">&ldquo;${sanitizeInline(s.prompt)}&rdquo;</p>
+      ${s.why ? `<p style="font-family:'Inter',sans-serif;font-size:0.92rem;line-height:1.55;color:#475569;margin:10px 0 0;"><span style="font-weight:700;color:#1F9C4C;">Why:</span> ${sanitizeInline(s.why)}</p>` : ""}
     </div>
   </div>`
     )
@@ -592,7 +604,7 @@ function renderTalkTrack(b: Extract<BlogBlock, { type: "talk_track" }>): string 
 
   return `<!-- wp:html -->
 <div class="riq-talk-track" style="margin:56px 0;">
-  <h3 class="riq-talk-track-heading" style="font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;margin:0 0 18px;">${esc(heading)}</h3>
+  <h3 class="riq-talk-track-heading" style="font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;margin:0 0 18px;">${sanitizeInline(heading)}</h3>
 ${cards}
 </div>
 <!-- /wp:html -->`;
