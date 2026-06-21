@@ -17,13 +17,15 @@ import magicLinkRoutes from './routes/magicLink';
 import contentDraftsRoutes from './routes/contentDrafts';
 import contentSwarmRoutes, { runScout, runCycle, trackEngagement, sendMorningDigest, autoPublishApproved } from './routes/contentSwarm';
 import inboxRoutes from './routes/inbox';
-import blogPublishRoutes from './routes/blogPublish';
+import blogPublishRoutes, {
+  claimBlogDraftRow,
+  processBlogDraftMessage,
+  BLOG_DRAFTING_STATUS,
+  type BlogDraftJobMessage,
+} from './routes/blogPublish';
 import inboundEmailRoutes from './routes/inboundEmail';
 import facebookWebhookRoutes from './routes/facebookWebhook';
 import facebookPublishRoutes from './routes/facebookPublish';
-import { generateBlogDraft } from './lib/blogDrafter';
-import { renderBlocks, buildFaqJsonLd, buildArticleJsonLd } from './lib/wordpressBlocks';
-import { createWpDraft } from './lib/wordpressClient';
 import { authMiddleware } from './middleware/auth';
 import { type UserProfile as UserProfileType } from './types';
 import { getAllOewsData } from "@/shared/lazyData/oewsData";
@@ -6548,18 +6550,20 @@ async function scheduledHandler(
       } else {
         // Phase 7-Pillars — draft HUBS first (so spokes have a hub to link to),
         // then data reports, then comparisons, then spokes; oldest within a tier.
+        // Skip rows already claimed by a manual /from-queue run mid-flight.
         const row = await env.DB.prepare(
-          `SELECT id, blog_brief, content_format, wp_pillar FROM content_drafts
+          `SELECT id, blog_brief, content_format, wp_pillar, status FROM content_drafts
            WHERE blog_brief IS NOT NULL
              AND length(blog_brief) > 30
              AND wp_post_id IS NULL
+             AND (status IS NULL OR status != ?)
            ORDER BY
              CASE content_format
                WHEN 'hub' THEN 0 WHEN 'data_report' THEN 1
                WHEN 'comparison' THEN 2 ELSE 3 END,
              id ASC
            LIMIT 1`
-        ).first<{ id: number; blog_brief: string; content_format: string | null; wp_pillar: string | null }>();
+        ).bind(BLOG_DRAFTING_STATUS).first<{ id: number; blog_brief: string; content_format: string | null; wp_pillar: string | null; status: string | null }>();
 
         if (!row) {
           console.log('Weekly blog cron: no queued briefs');
@@ -6576,59 +6580,25 @@ async function scheduledHandler(
             ).bind(row.wp_pillar).first<{ published_url: string }>();
             hubUrl = hub?.published_url || undefined;
           }
-          const draft = await generateBlogDraft(apiKey, row.blog_brief, {
-            format: fmt,
-            hubUrl,
-            forcePillar: (row.wp_pillar as 'cost_data' | 'contract_risk' | 'scope_negotiation' | 'regional' | null) || undefined,
-          });
-          const blockHtml = renderBlocks(draft.blocks);
-          const now = new Date().toISOString();
-          const articleSchema = buildArticleJsonLd({
-            title: draft.title,
-            description: draft.meta_description,
-            url: "",
-            author: draft.persona,
-            datePublished: now,
-            dateModified: now,
-          });
-          const faqSchema = buildFaqJsonLd(draft.blocks);
-          const schemaInjection = [articleSchema, faqSchema].filter(Boolean).join("\n");
 
-          const wpResp = await createWpDraft(env as never, {
-            persona: draft.persona,
-            title: draft.title,
-            content: blockHtml,
-            excerpt: draft.meta_description,
-            status: "draft",
-            jsonLdHtmlInjection: schemaInjection,
-          });
-
-          await env.DB.prepare(
-            `UPDATE content_drafts SET
-               wp_post_id = ?, wp_pillar = ?, persona = ?,
-               blog_drafted_at = datetime('now'), updated_at = datetime('now')
-             WHERE id = ?`
-          )
-            .bind(wpResp.id, draft.pillar, draft.persona, row.id)
-            .run();
-
-          await env.DB.prepare(
-            `INSERT INTO unified_inbox
-               (source, external_id, from_handle, subject, body, related_draft_id,
-                tag, status, proposed_persona)
-             VALUES ('draft_pending', ?, ?, ?, ?, ?, 'approval', 'new', ?)`
-          )
-            .bind(
-              `wp-${wpResp.id}`,
-              draft.persona,
-              `[BLOG DRAFT] ${draft.title}`,
-              `Pillar: ${draft.category}\nPreview: ${wpResp.link}?preview=true\nMeta: ${draft.meta_description}`,
-              row.id,
-              draft.persona
-            )
-            .run();
-
-          console.log(`Weekly blog drafted: ${draft.persona} / ${draft.pillar} / WP #${wpResp.id}`);
+          // Claim the row, then enqueue it onto the SAME queue the manual endpoints
+          // use — so weekly cron posts now get hero + inline images (Phase 7C v2),
+          // and the heavy Gemini + Imagen work runs in a queue consumer with a full
+          // budget instead of racing the scheduled handler's lifetime.
+          const claimed = await claimBlogDraftRow(env as never, row.id);
+          if (!claimed) {
+            console.log(`Weekly blog cron: row ${row.id} already claimed, skipping`);
+          } else {
+            await env.BLOG_QUEUE.send({
+              brief: row.blog_brief,
+              format: fmt,
+              hubUrl,
+              forcePillar: (row.wp_pillar as 'cost_data' | 'contract_risk' | 'scope_negotiation' | 'regional' | null) || undefined,
+              contentDraftId: row.id,
+              priorStatus: row.status ?? 'blog_brief',
+            } satisfies BlogDraftJobMessage);
+            console.log(`Weekly blog drafting enqueued for content_draft ${row.id} (${fmt})`);
+          }
         }
       }
     } catch (err) {
@@ -6637,7 +6607,36 @@ async function scheduledHandler(
   }
 }
 
+// Queue consumer — runs the heavy blog draft + image pipeline offloaded by the
+// HTTP endpoints and the Sunday cron. Each message is its own invocation with a
+// full budget (the job is I/O-bound, ~35-45s wall / <1s CPU), so it completes
+// where a request handler's ~30s ctx.waitUntil() would be cancelled.
+async function queueHandler(
+  batch: MessageBatch<BlogDraftJobMessage>,
+  env: Env,
+  _ctx: ExecutionContext
+): Promise<void> {
+  const apiKey = (env as unknown as Record<string, unknown>).GEMINI_API_KEY as string | undefined;
+  for (const msg of batch.messages) {
+    if (!apiKey) {
+      console.error("Blog queue: GEMINI_API_KEY missing — acking without drafting");
+      msg.ack();
+      continue;
+    }
+    try {
+      await processBlogDraftMessage(env as never, apiKey, msg.body);
+      msg.ack();
+    } catch (err) {
+      // processBlogDraftMessage normally handles its own errors; this only fires
+      // on an unexpected throw (e.g. the row lookup). Retry once per queue config.
+      console.error("Blog queue message failed:", err);
+      msg.retry();
+    }
+  }
+}
+
 export default {
   fetch: app.fetch,
-  scheduled: scheduledHandler
+  scheduled: scheduledHandler,
+  queue: queueHandler
 };

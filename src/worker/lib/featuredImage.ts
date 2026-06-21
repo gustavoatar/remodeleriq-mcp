@@ -12,6 +12,7 @@
 //   - NO contractors looking villainous, NO over-stressed homeowners — empathetic, not preachy
 
 import { GoogleGenAI } from "@google/genai";
+import { wpFetch, looksLikeSgCaptcha } from "./sgcaptcha";
 
 export type Persona = "bella" | "gustavo";
 
@@ -131,25 +132,44 @@ export async function uploadFeaturedImage(
 
   const auth = "Basic " + btoa(`${creds.user}:${creds.pass}`);
 
-  // First upload — POST raw bytes with Content-Disposition naming the file
-  const uploadRes = await fetch(WP_MEDIA_URL, {
-    method: "POST",
-    headers: {
-      ...WP_BROWSER_HEADERS,
-      Authorization: auth,
-      "Content-Type": mimeType,
-      "Content-Disposition": `attachment; filename="${filename}"`,
+  // First upload — POST raw bytes with Content-Disposition naming the file.
+  // wpFetch transparently clears a passive SiteGround sgcaptcha challenge + replays.
+  const { res: uploadRes, text: uploadText } = await wpFetch(
+    WP_MEDIA_URL,
+    {
+      method: "POST",
+      headers: {
+        Authorization: auth,
+        "Content-Type": mimeType,
+        "Content-Disposition": `attachment; filename="${filename}"`,
+      },
+      body: imageBytes,
     },
-    body: imageBytes,
-  });
+    WP_BROWSER_HEADERS
+  );
 
+  if (looksLikeSgCaptcha(uploadRes.headers.get("content-type"), uploadText)) {
+    console.error("WP media upload blocked by SiteGround sgcaptcha (could not clear) — skipping image");
+    return null;
+  }
   if (!uploadRes.ok) {
-    const text = await uploadRes.text();
-    console.error(`WP media upload failed: ${uploadRes.status} ${text.slice(0, 300)}`);
+    console.error(`WP media upload failed: ${uploadRes.status} ${uploadText.slice(0, 300)}`);
     return null;
   }
 
-  const mediaJson = (await uploadRes.json()) as { id: number; source_url?: string };
+  // The WP media endpoint normally returns JSON, but shared hosting / WAF layers
+  // occasionally answer a binary POST with an HTML page (block page, PHP error,
+  // "just a moment" challenge) carrying a 200. Guard the parse so a flaky upload
+  // degrades to "no image" instead of throwing and killing the whole blog draft.
+  let mediaJson: { id?: number; source_url?: string };
+  try {
+    mediaJson = JSON.parse(uploadText) as { id?: number; source_url?: string };
+  } catch {
+    console.error(
+      `WP media upload returned non-JSON (content-type=${uploadRes.headers.get("content-type")}). First 200 chars: ${uploadText.slice(0, 200)}`
+    );
+    return null;
+  }
   const mediaId = mediaJson.id;
   if (!mediaId) return null;
 

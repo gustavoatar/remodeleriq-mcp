@@ -5,6 +5,8 @@
 // The persona on the draft picks which user authors the post (WP's `author` field
 // resolves automatically from the authenticated user).
 
+import { wpFetch, looksLikeSgCaptcha } from "./sgcaptcha";
+
 const WP_BASE = "https://intelligence.remodeleriq.com/wp-json/wp/v2";
 
 export type Persona = "bella" | "gustavo";
@@ -94,27 +96,40 @@ export async function createWpDraft(
   if (params.featured_media) body.featured_media = params.featured_media;
   if (params.meta) body.meta = params.meta;
 
-  const res = await fetch(`${WP_BASE}/posts`, {
-    method: "POST",
-    headers: {
-      ...WP_FETCH_HEADERS_BASE,
-      Authorization: basicAuth(creds),
-      "Content-Type": "application/json",
+  // wpFetch transparently clears a passive SiteGround sgcaptcha challenge (follow
+  // the /.well-known/sgcaptcha/ handshake → clearance cookie → replay).
+  const { res, text } = await wpFetch(
+    `${WP_BASE}/posts`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth(creds),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
     },
-    body: JSON.stringify(body),
-  });
+    WP_FETCH_HEADERS_BASE
+  );
 
-  const responseText = await res.text();
+  const contentType = res.headers.get("content-type");
 
-  if (!res.ok) {
-    throw new Error(`WP draft create failed: ${res.status} ${responseText.slice(0, 300)}`);
-  }
-
-  try {
-    return JSON.parse(responseText) as WpPostResponse;
-  } catch (err) {
+  if (looksLikeSgCaptcha(contentType, text)) {
+    // Surface the challenge token — it embeds the egress IP + epoch SiteGround
+    // logged (e.g. y=ipc:<ip>:<epoch>), which their support needs to correlate.
+    const token = text.match(/y=ip[a-z]:[^"'&\s]+/i)?.[0] || text.slice(0, 200).replace(/\s+/g, " ");
     throw new Error(
-      `WP returned 200 but body is not JSON. content-type=${res.headers.get("content-type")}. First 300 chars: ${responseText.slice(0, 300)}`
+      `WP draft create blocked by SiteGround anti-bot — sgcaptcha challenge could not be cleared. ` +
+        `Challenge token: ${token}. Exclude /wp-json/ from Anti-Bot AI in SiteGround Site Tools.`
+    );
+  }
+  if (!res.ok) {
+    throw new Error(`WP draft create failed: ${res.status} ${text.slice(0, 300)}`);
+  }
+  try {
+    return JSON.parse(text) as WpPostResponse;
+  } catch {
+    throw new Error(
+      `WP returned 200 but body is not JSON. content-type=${contentType}. First 300 chars: ${text.slice(0, 300)}`
     );
   }
 }

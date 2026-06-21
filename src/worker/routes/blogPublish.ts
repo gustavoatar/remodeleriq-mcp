@@ -61,9 +61,12 @@ app.use("*", async (c, next) => {
   await next();
 });
 
-// Resolve inline image blocks. Caps at 1 image to stay within Workers' 30s wall-time
-// limit when combined with the featured image. Extra images are dropped — Bella can
-// always request another generation pass post-creation if desired.
+// Max inline images generated per post. Runs inside the queue consumer (15-min
+// wall time), so we can afford the full visual_story spread. Generated
+// SEQUENTIALLY — not Promise.all — so we never burst WordPress with parallel
+// media uploads (which can re-trip SiteGround Anti-Bot even with sgcaptcha).
+const MAX_INLINE_IMAGES = 6;
+
 async function resolveInlineImages(
   env: AppEnv["Bindings"],
   persona: "bella" | "gustavo",
@@ -73,62 +76,58 @@ async function resolveInlineImages(
   const resolutions = new Map<string, ImageResolution>();
   if (prompts.length === 0) return resolutions;
 
-  // Cap to 1 inline image per draft to keep total Worker wall time bounded
-  const capped = prompts.slice(0, 1);
+  // De-dupe identical prompts (never generate/place the same image twice on a
+  // page), then cap. Distinct prompts → distinct images.
+  const uniquePrompts = Array.from(new Set(prompts)).slice(0, MAX_INLINE_IMAGES);
+  const slug = postTitle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
 
-  await Promise.all(
-    capped.map(async (prompt, idx) => {
+  let idx = 0;
+  for (const prompt of uniquePrompts) {
+    idx++;
+    try {
+      const generated = await generateFeaturedImage(env as never, prompt);
+      if (!generated) continue;
+      const ext = generated.mimeType === "image/jpeg" ? "jpg" : "png";
+      const filename = `${slug}-inline-${idx}-${Date.now()}.${ext}`;
+      const mediaId = await uploadFeaturedImage(
+        env as never,
+        persona,
+        generated.bytes,
+        generated.mimeType,
+        filename,
+        prompt.slice(0, 100)
+      );
+      if (!mediaId) continue;
+      const src = `https://intelligence.remodeleriq.com/wp-json/wp/v2/media/${mediaId}`;
+      // Fetch the media to get the real source_url
       try {
-        const generated = await generateFeaturedImage(env as never, prompt);
-        if (!generated) return;
-        const slug = postTitle
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "")
-          .slice(0, 40);
-        const ext = generated.mimeType === "image/jpeg" ? "jpg" : "png";
-        const filename = `${slug}-inline-${idx + 1}-${Date.now()}.${ext}`;
-        const mediaId = await uploadFeaturedImage(
-          env as never,
-          persona,
-          generated.bytes,
-          generated.mimeType,
-          filename,
-          prompt.slice(0, 100)
-        );
-        if (!mediaId) return;
-        // Build the WP CDN URL the renderer can <img src> to
-        const src = `https://intelligence.remodeleriq.com/wp-json/wp/v2/media/${mediaId}`;
-        // Fetch the media to get the real source_url
-        try {
-          const auth =
-            "Basic " +
-            btoa(
-              `${persona === "bella" ? (env as unknown as Record<string, string>).WORDPRESS_USER_BELLA : (env as unknown as Record<string, string>).WORDPRESS_USER_GUSTAVO}:${persona === "bella" ? (env as unknown as Record<string, string>).WORDPRESS_PASS_BELLA : (env as unknown as Record<string, string>).WORDPRESS_PASS_GUSTAVO}`
-            );
-          const mediaRes = await fetch(src, {
-            headers: {
-              Authorization: auth,
-              "User-Agent": "Mozilla/5.0",
-              Accept: "application/json",
-            },
-          });
-          if (mediaRes.ok) {
-            const mediaJson = (await mediaRes.json()) as { source_url?: string };
-            if (mediaJson.source_url) {
-              resolutions.set(prompt, { src: mediaJson.source_url, mediaId });
-              return;
-            }
+        const auth =
+          "Basic " +
+          btoa(
+            `${persona === "bella" ? (env as unknown as Record<string, string>).WORDPRESS_USER_BELLA : (env as unknown as Record<string, string>).WORDPRESS_USER_GUSTAVO}:${persona === "bella" ? (env as unknown as Record<string, string>).WORDPRESS_PASS_BELLA : (env as unknown as Record<string, string>).WORDPRESS_PASS_GUSTAVO}`
+          );
+        const mediaRes = await fetch(src, {
+          headers: { Authorization: auth, "User-Agent": "Mozilla/5.0", Accept: "application/json" },
+        });
+        if (mediaRes.ok) {
+          const mediaJson = (await mediaRes.json()) as { source_url?: string };
+          if (mediaJson.source_url) {
+            resolutions.set(prompt, { src: mediaJson.source_url, mediaId });
+            continue;
           }
-        } catch (err) {
-          console.error(`Inline image source_url fetch failed:`, err);
         }
-        resolutions.set(prompt, { src, mediaId });
       } catch (err) {
-        console.error(`Inline image gen failed for prompt "${prompt.slice(0, 50)}":`, err);
+        console.error(`Inline image source_url fetch failed:`, err);
       }
-    })
-  );
+      resolutions.set(prompt, { src, mediaId });
+    } catch (err) {
+      console.error(`Inline image gen failed for prompt "${prompt.slice(0, 50)}":`, err);
+    }
+  }
 
   return resolutions;
 }
@@ -160,19 +159,30 @@ async function publishDraftToWp(
   const blocks = draft.blocks as BlogBlock[];
 
   // ===== Phase 7C v2 — visual upgrade =====
-  // Generate inline + featured (hero) images CONCURRENTLY. Each underlying Imagen
-  // call already carries its own 18s per-model timeout (see featuredImage.ts), and
-  // inline images are capped to 1, so running both legs in parallel keeps total
-  // image wall-time to a single ~18s window instead of stacking them. This whole
+  // Image generation is best-effort and must NEVER abort the draft. This whole
   // helper runs in a ctx.waitUntil() background task (see runBlogDraftJob), so it
-  // is no longer bound by the synchronous request budget either way.
+  // is no longer bound by the synchronous request budget — which means we don't
+  // need to race the two legs to beat a timeout. We run them SEQUENTIALLY so we
+  // never fire two concurrent binary uploads at the shared WordPress host (that
+  // tripped a WAF/HTML-block response). Each leg is independently guarded so a
+  // failure degrades to "no image" rather than killing the post.
   const imagenPrompts = extractImagenPrompts(blocks);
   const featuredPrompt = draft.featured_image_prompt || draft.featured_image_brief || draft.title;
   const featuredAlt = draft.featured_image_alt || draft.title;
-  const [imageResolutions, featuredMediaId] = await Promise.all([
-    resolveInlineImages(env, draft.persona, imagenPrompts, draft.title),
-    createFeaturedImage(env as never, draft.persona, featuredPrompt, featuredAlt),
-  ]);
+
+  let imageResolutions = new Map<string, ImageResolution>();
+  try {
+    imageResolutions = await resolveInlineImages(env, draft.persona, imagenPrompts, draft.title);
+  } catch (err) {
+    console.error("Inline image pipeline failed (continuing without inline images):", err);
+  }
+
+  let featuredMediaId: number | null = null;
+  try {
+    featuredMediaId = await createFeaturedImage(env as never, draft.persona, featuredPrompt, featuredAlt);
+  } catch (err) {
+    console.error("Featured image pipeline failed (continuing without hero image):", err);
+  }
 
   // Step 3: Render blocks with resolved image URLs
   const blockHtml = renderBlocks(blocks, imageResolutions);
@@ -268,6 +278,24 @@ async function publishDraftToWp(
 // the Sunday cron selector exclude rows in this state so a second trigger can't
 // pick up a brief that's already mid-flight.
 export const BLOG_DRAFTING_STATUS = "blog_drafting";
+
+// Queue message shape for offloading the heavy draft+image pipeline. The HTTP
+// endpoints and the Sunday cron are PRODUCERS (claim the row, enqueue, return);
+// the queue CONSUMER (see processBlogDraftMessage + the `queue` handler in
+// index.ts) runs the pipeline in its own invocation with a full budget. A
+// request handler's ctx.waitUntil() is capped at ~30s after the response is sent
+// — too short for a hub/data_report-length post (Gemini text gen + 2 Imagen
+// calls + WP create runs ~35-45s), which is exactly why we route through a queue.
+export interface BlogDraftJobMessage {
+  brief: string;
+  format: ContentFormat;
+  hubUrl?: string;
+  forcePersona?: "bella" | "gustavo";
+  forcePillar?: Pillar;
+  contentDraftId: number | null;
+  /** Status to restore if the job fails (only used when contentDraftId is set). */
+  priorStatus?: string | null;
+}
 
 // Full text + image pipeline as one call: classify/generate the draft via Gemini,
 // run the heavy image pipeline, push the WP draft, and drop the unified_inbox row.
@@ -367,6 +395,31 @@ export async function claimBlogDraftRow(
   return (res.meta.changes || 0) > 0;
 }
 
+// Queue consumer entry point — process one BlogDraftJobMessage. Idempotent on
+// redelivery: if the row already has a wp_post_id (a prior attempt succeeded), we
+// skip rather than create a duplicate WP draft. runBlogDraftJob handles its own
+// errors + claim release, so this never throws on a logical drafting failure.
+export async function processBlogDraftMessage(
+  env: AppEnv["Bindings"],
+  apiKey: string,
+  msg: BlogDraftJobMessage
+): Promise<void> {
+  if (msg.contentDraftId != null) {
+    const existing = await env.DB.prepare(
+      "SELECT wp_post_id FROM content_drafts WHERE id = ?"
+    )
+      .bind(msg.contentDraftId)
+      .first<{ wp_post_id: number | null }>();
+    if (existing?.wp_post_id) {
+      console.log(
+        `Blog draft message for content_draft ${msg.contentDraftId} skipped — wp_post_id ${existing.wp_post_id} already set`
+      );
+      return;
+    }
+  }
+  await runBlogDraftJob(env, apiKey, msg);
+}
+
 // ====================================================================
 // POST /draft — manual draft from a topic string
 // ====================================================================
@@ -403,20 +456,19 @@ app.post("/draft", async (c) => {
       await claimBlogDraftRow(c.env, contentDraftId);
     }
 
-    // Heavy work (Gemini text gen + Imagen pipeline + WP create) runs detached from
-    // the request so a hub/data_report-length post can't blow the request budget and
-    // drop the connection mid-flight. The WP draft + inbox row land when it finishes.
-    c.executionCtx.waitUntil(
-      runBlogDraftJob(c.env, apiKey, {
-        brief,
-        format: fmt,
-        hubUrl,
-        forcePersona,
-        forcePillar,
-        contentDraftId: contentDraftId || null,
-        priorStatus,
-      })
-    );
+    // Heavy work (Gemini text gen + Imagen pipeline + WP create) is offloaded to a
+    // queue consumer with a full invocation budget — a request handler's
+    // ctx.waitUntil() is capped at ~30s, too short for a hub-length post. The WP
+    // draft + inbox row land when the consumer finishes.
+    await c.env.BLOG_QUEUE.send({
+      brief,
+      format: fmt,
+      hubUrl,
+      forcePersona,
+      forcePillar,
+      contentDraftId: contentDraftId || null,
+      priorStatus,
+    } satisfies BlogDraftJobMessage);
 
     return c.json(
       {
@@ -447,42 +499,66 @@ app.post("/from-queue", async (c) => {
   // Find next brief — hubs first (so spokes have a hub to link to), then
   // data reports, comparisons, spokes; oldest within a tier.
   const row = await c.env.DB.prepare(
-    `SELECT id, blog_brief, persona, content_format, wp_pillar FROM content_drafts
+    `SELECT id, blog_brief, persona, content_format, wp_pillar, status FROM content_drafts
      WHERE blog_brief IS NOT NULL
        AND length(blog_brief) > 30
        AND wp_post_id IS NULL
+       AND (status IS NULL OR status != ?)
      ORDER BY
        CASE content_format
          WHEN 'hub' THEN 0 WHEN 'data_report' THEN 1
          WHEN 'comparison' THEN 2 ELSE 3 END,
        id ASC
      LIMIT 1`
-  ).first<{ id: number; blog_brief: string; persona: string | null; content_format: string | null; wp_pillar: string | null }>();
+  )
+    .bind(BLOG_DRAFTING_STATUS)
+    .first<{ id: number; blog_brief: string; persona: string | null; content_format: string | null; wp_pillar: string | null; status: string | null }>();
 
   if (!row) return c.json({ message: "No queued blog briefs" });
 
   try {
-    const fmt = (row.content_format || "spoke") as "hub" | "spoke" | "comparison" | "data_report";
+    // Claim the row before backgrounding so a second trigger (or the Sunday cron)
+    // can't pick up the same brief while it's mid-flight.
+    const claimed = await claimBlogDraftRow(c.env, row.id);
+    if (!claimed) {
+      // Lost the race — another trigger grabbed it between SELECT and UPDATE.
+      return c.json({ message: "Brief already being drafted", contentDraftId: row.id }, 409);
+    }
+
+    const fmt = (row.content_format || "spoke") as ContentFormat;
     const hubUrl = fmt === "spoke" ? await lookupHubUrl(c.env, row.wp_pillar) : undefined;
-    const draft = await generateBlogDraft(apiKey, row.blog_brief, {
+
+    // Offload the heavy text gen + image pipeline to the queue consumer — see /draft.
+    await c.env.BLOG_QUEUE.send({
+      brief: row.blog_brief,
       format: fmt,
       hubUrl,
-      forcePillar: (row.wp_pillar as "cost_data" | "contract_risk" | "scope_negotiation" | "regional" | null) || undefined,
-    });
-    const result = await publishDraftToWp(c.env, draft, row.id);
-    return c.json({
-      success: true,
+      forcePillar: (row.wp_pillar as Pillar | null) || undefined,
       contentDraftId: row.id,
-      persona: draft.persona,
-      pillar: draft.pillar,
-      format: draft.format,
-      linkedHub: hubUrl || null,
-      title: draft.title,
-      wpPostId: result.wpPostId,
-      wpDraftPreview: `${result.wpLink}?preview=true`,
-    });
+      priorStatus: row.status ?? "blog_brief",
+    } satisfies BlogDraftJobMessage);
+
+    return c.json(
+      {
+        status: "drafting",
+        contentDraftId: row.id,
+        linkedHub: hubUrl || null,
+        message:
+          "Draft + images are generating in the background. wp_post_id will be set on the content_drafts row and an inbox approval row created when complete.",
+      },
+      202
+    );
   } catch (err) {
     console.error("Blog from-queue failed:", err);
+    // Best-effort release of the claim so the brief isn't stuck.
+    try {
+      await c.env.DB.prepare(
+        `UPDATE content_drafts SET status = ?, updated_at = datetime('now')
+         WHERE id = ? AND status = ?`
+      )
+        .bind(row.status ?? "blog_brief", row.id, BLOG_DRAFTING_STATUS)
+        .run();
+    } catch { /* ignore */ }
     return c.json(
       { error: err instanceof Error ? err.message : "Blog from-queue failed" },
       500
