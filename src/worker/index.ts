@@ -28,6 +28,7 @@ import blogPublishRoutes, {
 import inboundEmailRoutes from './routes/inboundEmail';
 import facebookWebhookRoutes from './routes/facebookWebhook';
 import facebookPublishRoutes from './routes/facebookPublish';
+import { mcpFetch } from './routes/mcp';
 import { generateAndScheduleFbBatch } from './lib/fbContentGenerator';
 import { scoutRedditRss } from './lib/redditScout';
 import { authMiddleware } from './middleware/auth';
@@ -155,6 +156,17 @@ type AppEnv = {
 };
 
 const app = new Hono<AppEnv>();
+
+// MCP server: serve the mcp.remodeleriq.com subdomain at its root (the agentic
+// surface). Path-based remodeleriq.com/mcp is also mounted below. This runs
+// before the restrictive site CORS because the MCP route sets its own open CORS.
+app.use('*', async (c, next) => {
+  const host = (c.req.header('host') || '').toLowerCase();
+  if (host.startsWith('mcp.')) {
+    return mcpFetch(c.req.raw);
+  }
+  await next();
+});
 
 // CORS: restrict to known origins
 app.use('*', cors({
@@ -377,6 +389,8 @@ app.route('/api/admin/blog', blogPublishRoutes);
 app.route('/api/webhooks', inboundEmailRoutes);
 app.route('/api/webhooks', facebookWebhookRoutes);
 app.route('/api/admin/facebook', facebookPublishRoutes);
+app.all('/mcp', (c) => mcpFetch(c.req.raw));
+app.all('/mcp/*', (c) => mcpFetch(c.req.raw));
 
 // ============================================
 // AGENT DISCOVERY — RFC 9727 API catalog (application/linkset+json).
