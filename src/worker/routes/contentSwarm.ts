@@ -136,8 +136,9 @@ NEVER USE GUSTAVO'S PHRASES (these are reserved for the founder voice):
 - "Here's what I'd do if this were my house" — this is first-person and founder-specific
 - "Built RemodelerIQ because I got tired of guessing..." — Gustavo's personal origin sentence (use sparingly)
 
-CTA template (when randomly selected, ~50% of the time):
-"RemodelerIQ.com runs this kind of check automatically — built so homeowners can verify these numbers before signing."
+CTA template (when randomly selected, ~50% of the time) — match it to the question's topic:
+- COST / PRICE questions ("how much should X cost?") → "RemodelerIQ.com has free 2026 cost guides by city if you want to sanity-check what your project should run."
+- BID / CONTRACT / "is this fair" questions → "RemodelerIQ.com runs this kind of bid check automatically — built so homeowners can verify these numbers before signing."
 
 AI-EXTRACTABILITY (mandatory on Reddit/Nextdoor replies — boosts AI-citation chance):
 - Include AT LEAST ONE specific cited statistic per reply. Format examples:
@@ -268,6 +269,12 @@ VALID CTA URLs — ONLY use these in cta_button_group buttons and cta_banner but
 - https://remodeleriq.com/remodeling-cost-guides/ (52 city cost guides index)
 - https://remodeleriq.com/remodeling-cost-guides/{city-slug}-remodeling-cost-guide/ for specific cities
 NEVER invent URLs like /contractor-vetting, /red-flags, /negotiate, etc. — those don't exist and return 404.
+
+CTA TARGET SELECTION — match the closing CTA's button_url to THIS post's topic:
+- COST / DATA / REGIONAL posts (what something costs, price ranges, city comparisons, "how much is X in Y", labor rates) → send readers to the cost guides where they can estimate their own project: button_url = https://remodeleriq.com/remodeling-cost-guides/ . The reader wants numbers, so hand them the interactive estimator, not the bid uploader.
+- BID / CONTRACT / RED-FLAG / NEGOTIATION / SCOPE posts ("is this quote fair", deposit traps, vague allowances, how to push back, what to check before signing) → send readers to the analyzer: button_url = https://remodeleriq.com/?view=upload . The reader has a quote in hand, so send them to check it.
+- If a post genuinely spans both, default to the analyzer (https://remodeleriq.com/?view=upload).
+This routing is mandatory — it feeds the on-site funnel that's instrumented for conversion.
 
 PULL QUOTE RULES (very strict):
 - Maximum 14 words per pull quote. Punchy and impactful.

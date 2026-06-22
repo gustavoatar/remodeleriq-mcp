@@ -16,6 +16,9 @@ export default function Footer() {
             <Link to="/glossary" className="text-gray-400 hover:text-white transition-colors">
               Glossary
             </Link>
+            <Link to="/tools" className="text-gray-400 hover:text-white transition-colors">
+              Free Tools
+            </Link>
             <a href="/#how-it-works" className="text-gray-400 hover:text-white transition-colors">
               How It Works
             </a>
