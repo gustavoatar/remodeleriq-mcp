@@ -1,8 +1,33 @@
 [
   {
+    "city_slug": "akron-oh",
+    "city": "Akron",
+    "state_abbr": "OH"
+  },
+  {
+    "city_slug": "albany-ny",
+    "city": "Albany",
+    "state_abbr": "NY"
+  },
+  {
     "city_slug": "albuquerque-nm",
     "city": "Albuquerque",
     "state_abbr": "NM"
+  },
+  {
+    "city_slug": "allentown-pa",
+    "city": "Allentown",
+    "state_abbr": "PA"
+  },
+  {
+    "city_slug": "amarillo-tx",
+    "city": "Amarillo",
+    "state_abbr": "TX"
+  },
+  {
+    "city_slug": "ann-arbor-mi",
+    "city": "Ann Arbor",
+    "state_abbr": "MI"
   },
   {
     "city_slug": "appleton-wi",
@@ -10,8 +35,18 @@
     "state_abbr": "WI"
   },
   {
+    "city_slug": "asheville-nc",
+    "city": "Asheville",
+    "state_abbr": "NC"
+  },
+  {
     "city_slug": "atlanta-ga",
     "city": "Atlanta",
+    "state_abbr": "GA"
+  },
+  {
+    "city_slug": "augusta-ga",
+    "city": "Augusta",
     "state_abbr": "GA"
   },
   {
@@ -25,9 +60,34 @@
     "state_abbr": "MD"
   },
   {
+    "city_slug": "baton-rouge-la",
+    "city": "Baton Rouge",
+    "state_abbr": "LA"
+  },
+  {
+    "city_slug": "bellingham-wa",
+    "city": "Bellingham",
+    "state_abbr": "WA"
+  },
+  {
+    "city_slug": "bend-or",
+    "city": "Bend",
+    "state_abbr": "OR"
+  },
+  {
+    "city_slug": "billings-mt",
+    "city": "Billings",
+    "state_abbr": "MT"
+  },
+  {
     "city_slug": "birmingham-al",
     "city": "Birmingham",
     "state_abbr": "AL"
+  },
+  {
+    "city_slug": "boise-id",
+    "city": "Boise",
+    "state_abbr": "ID"
   },
   {
     "city_slug": "boston-ma",
@@ -35,9 +95,34 @@
     "state_abbr": "MA"
   },
   {
+    "city_slug": "boulder-co",
+    "city": "Boulder",
+    "state_abbr": "CO"
+  },
+  {
+    "city_slug": "bridgeport-ct",
+    "city": "Bridgeport",
+    "state_abbr": "CT"
+  },
+  {
     "city_slug": "buffalo-ny",
     "city": "Buffalo",
     "state_abbr": "NY"
+  },
+  {
+    "city_slug": "cape-coral-fl",
+    "city": "Cape Coral",
+    "state_abbr": "FL"
+  },
+  {
+    "city_slug": "cedar-rapids-ia",
+    "city": "Cedar Rapids",
+    "state_abbr": "IA"
+  },
+  {
+    "city_slug": "charleston-sc",
+    "city": "Charleston",
+    "state_abbr": "SC"
   },
   {
     "city_slug": "charlotte-nc",
@@ -45,9 +130,24 @@
     "state_abbr": "NC"
   },
   {
+    "city_slug": "charlottesville-va",
+    "city": "Charlottesville",
+    "state_abbr": "VA"
+  },
+  {
+    "city_slug": "chattanooga-tn",
+    "city": "Chattanooga",
+    "state_abbr": "TN"
+  },
+  {
     "city_slug": "chicago-il",
     "city": "Chicago",
     "state_abbr": "IL"
+  },
+  {
+    "city_slug": "cincinnati-oh",
+    "city": "Cincinnati",
+    "state_abbr": "OH"
   },
   {
     "city_slug": "cleveland-oh",
@@ -55,9 +155,24 @@
     "state_abbr": "OH"
   },
   {
+    "city_slug": "colorado-springs-co",
+    "city": "Colorado Springs",
+    "state_abbr": "CO"
+  },
+  {
+    "city_slug": "columbia-sc",
+    "city": "Columbia",
+    "state_abbr": "SC"
+  },
+  {
     "city_slug": "columbus-oh",
     "city": "Columbus",
     "state_abbr": "OH"
+  },
+  {
+    "city_slug": "corpus-christi-tx",
+    "city": "Corpus Christi",
+    "state_abbr": "TX"
   },
   {
     "city_slug": "dallas-tx",
@@ -65,9 +180,39 @@
     "state_abbr": "TX"
   },
   {
+    "city_slug": "dayton-oh",
+    "city": "Dayton",
+    "state_abbr": "OH"
+  },
+  {
+    "city_slug": "deltona-fl",
+    "city": "Deltona",
+    "state_abbr": "FL"
+  },
+  {
     "city_slug": "denver-co",
     "city": "Denver",
     "state_abbr": "CO"
+  },
+  {
+    "city_slug": "des-moines-ia",
+    "city": "Des Moines",
+    "state_abbr": "IA"
+  },
+  {
+    "city_slug": "detroit-mi",
+    "city": "Detroit",
+    "state_abbr": "MI"
+  },
+  {
+    "city_slug": "duluth-mn",
+    "city": "Duluth",
+    "state_abbr": "MN"
+  },
+  {
+    "city_slug": "durham-nc",
+    "city": "Durham",
+    "state_abbr": "NC"
   },
   {
     "city_slug": "el-paso-tx",
@@ -75,9 +220,59 @@
     "state_abbr": "TX"
   },
   {
+    "city_slug": "eugene-or",
+    "city": "Eugene",
+    "state_abbr": "OR"
+  },
+  {
+    "city_slug": "evansville-in",
+    "city": "Evansville",
+    "state_abbr": "IN"
+  },
+  {
+    "city_slug": "fairbanks-ak",
+    "city": "Fairbanks",
+    "state_abbr": "AK"
+  },
+  {
+    "city_slug": "fayetteville-ar",
+    "city": "Fayetteville",
+    "state_abbr": "AR"
+  },
+  {
+    "city_slug": "fayetteville-nc",
+    "city": "Fayetteville",
+    "state_abbr": "NC"
+  },
+  {
+    "city_slug": "fort-collins-co",
+    "city": "Fort Collins",
+    "state_abbr": "CO"
+  },
+  {
+    "city_slug": "fort-wayne-in",
+    "city": "Fort Wayne",
+    "state_abbr": "IN"
+  },
+  {
+    "city_slug": "fresno-ca",
+    "city": "Fresno",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "gainesville-fl",
+    "city": "Gainesville",
+    "state_abbr": "FL"
+  },
+  {
     "city_slug": "grand-rapids-mi",
     "city": "Grand Rapids",
     "state_abbr": "MI"
+  },
+  {
+    "city_slug": "green-bay-wi",
+    "city": "Green Bay",
+    "state_abbr": "WI"
   },
   {
     "city_slug": "greensboro-nc",
@@ -85,9 +280,24 @@
     "state_abbr": "NC"
   },
   {
+    "city_slug": "greenville-sc",
+    "city": "Greenville",
+    "state_abbr": "SC"
+  },
+  {
+    "city_slug": "harrisburg-pa",
+    "city": "Harrisburg",
+    "state_abbr": "PA"
+  },
+  {
     "city_slug": "hartford-ct",
     "city": "Hartford",
     "state_abbr": "CT"
+  },
+  {
+    "city_slug": "honolulu-hi",
+    "city": "Honolulu",
+    "state_abbr": "HI"
   },
   {
     "city_slug": "houston-tx",
@@ -95,9 +305,19 @@
     "state_abbr": "TX"
   },
   {
+    "city_slug": "huntsville-al",
+    "city": "Huntsville",
+    "state_abbr": "AL"
+  },
+  {
     "city_slug": "indianapolis-in",
     "city": "Indianapolis",
     "state_abbr": "IN"
+  },
+  {
+    "city_slug": "jackson-ms",
+    "city": "Jackson",
+    "state_abbr": "MS"
   },
   {
     "city_slug": "jacksonville-fl",
@@ -110,9 +330,49 @@
     "state_abbr": "MO"
   },
   {
+    "city_slug": "knoxville-tn",
+    "city": "Knoxville",
+    "state_abbr": "TN"
+  },
+  {
+    "city_slug": "lafayette-la",
+    "city": "Lafayette",
+    "state_abbr": "LA"
+  },
+  {
+    "city_slug": "lakeland-fl",
+    "city": "Lakeland",
+    "state_abbr": "FL"
+  },
+  {
+    "city_slug": "lancaster-pa",
+    "city": "Lancaster",
+    "state_abbr": "PA"
+  },
+  {
+    "city_slug": "lansing-mi",
+    "city": "Lansing",
+    "state_abbr": "MI"
+  },
+  {
     "city_slug": "las-vegas-nv",
     "city": "Las Vegas",
     "state_abbr": "NV"
+  },
+  {
+    "city_slug": "lexington-ky",
+    "city": "Lexington",
+    "state_abbr": "KY"
+  },
+  {
+    "city_slug": "lincoln-ne",
+    "city": "Lincoln",
+    "state_abbr": "NE"
+  },
+  {
+    "city_slug": "little-rock-ar",
+    "city": "Little Rock",
+    "state_abbr": "AR"
   },
   {
     "city_slug": "los-angeles-ca",
@@ -125,6 +385,21 @@
     "state_abbr": "KY"
   },
   {
+    "city_slug": "lubbock-tx",
+    "city": "Lubbock",
+    "state_abbr": "TX"
+  },
+  {
+    "city_slug": "madison-wi",
+    "city": "Madison",
+    "state_abbr": "WI"
+  },
+  {
+    "city_slug": "mcallen-tx",
+    "city": "McAllen",
+    "state_abbr": "TX"
+  },
+  {
     "city_slug": "memphis-tn",
     "city": "Memphis",
     "state_abbr": "TN"
@@ -135,14 +410,49 @@
     "state_abbr": "FL"
   },
   {
+    "city_slug": "milwaukee-wi",
+    "city": "Milwaukee",
+    "state_abbr": "WI"
+  },
+  {
     "city_slug": "minneapolis-mn",
     "city": "Minneapolis",
     "state_abbr": "MN"
   },
   {
+    "city_slug": "missoula-mt",
+    "city": "Missoula",
+    "state_abbr": "MT"
+  },
+  {
+    "city_slug": "mobile-al",
+    "city": "Mobile",
+    "state_abbr": "AL"
+  },
+  {
+    "city_slug": "modesto-ca",
+    "city": "Modesto",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "montgomery-al",
+    "city": "Montgomery",
+    "state_abbr": "AL"
+  },
+  {
+    "city_slug": "myrtle-beach-sc",
+    "city": "Myrtle Beach",
+    "state_abbr": "SC"
+  },
+  {
     "city_slug": "nashville-tn",
     "city": "Nashville",
     "state_abbr": "TN"
+  },
+  {
+    "city_slug": "new-haven-ct",
+    "city": "New Haven",
+    "state_abbr": "CT"
   },
   {
     "city_slug": "new-orleans-la",
@@ -160,13 +470,38 @@
     "state_abbr": "FL"
   },
   {
+    "city_slug": "ogden-ut",
+    "city": "Ogden",
+    "state_abbr": "UT"
+  },
+  {
     "city_slug": "oklahoma-city-ok",
     "city": "Oklahoma City",
     "state_abbr": "OK"
   },
   {
+    "city_slug": "olympia-wa",
+    "city": "Olympia",
+    "state_abbr": "WA"
+  },
+  {
+    "city_slug": "omaha-ne",
+    "city": "Omaha",
+    "state_abbr": "NE"
+  },
+  {
     "city_slug": "orlando-fl",
     "city": "Orlando",
+    "state_abbr": "FL"
+  },
+  {
+    "city_slug": "oxnard-ca",
+    "city": "Oxnard",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "pensacola-fl",
+    "city": "Pensacola",
     "state_abbr": "FL"
   },
   {
@@ -180,9 +515,19 @@
     "state_abbr": "AZ"
   },
   {
+    "city_slug": "pittsburgh-pa",
+    "city": "Pittsburgh",
+    "state_abbr": "PA"
+  },
+  {
     "city_slug": "portland-or",
     "city": "Portland",
     "state_abbr": "OR"
+  },
+  {
+    "city_slug": "poughkeepsie-ny",
+    "city": "Poughkeepsie",
+    "state_abbr": "NY"
   },
   {
     "city_slug": "providence-ri",
@@ -190,9 +535,19 @@
     "state_abbr": "RI"
   },
   {
+    "city_slug": "provo-ut",
+    "city": "Provo",
+    "state_abbr": "UT"
+  },
+  {
     "city_slug": "raleigh-nc",
     "city": "Raleigh",
     "state_abbr": "NC"
+  },
+  {
+    "city_slug": "reno-nv",
+    "city": "Reno",
+    "state_abbr": "NV"
   },
   {
     "city_slug": "richmond-va",
@@ -202,6 +557,36 @@
   {
     "city_slug": "riverside-ca",
     "city": "Riverside",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "roanoke-va",
+    "city": "Roanoke",
+    "state_abbr": "VA"
+  },
+  {
+    "city_slug": "rochester-mn",
+    "city": "Rochester",
+    "state_abbr": "MN"
+  },
+  {
+    "city_slug": "rochester-ny",
+    "city": "Rochester",
+    "state_abbr": "NY"
+  },
+  {
+    "city_slug": "sacramento-ca",
+    "city": "Sacramento",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "salem-or",
+    "city": "Salem",
+    "state_abbr": "OR"
+  },
+  {
+    "city_slug": "salinas-ca",
+    "city": "Salinas",
     "state_abbr": "CA"
   },
   {
@@ -225,9 +610,69 @@
     "state_abbr": "CA"
   },
   {
+    "city_slug": "san-jose-ca",
+    "city": "San Jose",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "santa-barbara-ca",
+    "city": "Santa Barbara",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "santa-cruz-ca",
+    "city": "Santa Cruz",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "santa-fe-nm",
+    "city": "Santa Fe",
+    "state_abbr": "NM"
+  },
+  {
+    "city_slug": "santa-rosa-ca",
+    "city": "Santa Rosa",
+    "state_abbr": "CA"
+  },
+  {
+    "city_slug": "savannah-ga",
+    "city": "Savannah",
+    "state_abbr": "GA"
+  },
+  {
+    "city_slug": "scranton-pa",
+    "city": "Scranton",
+    "state_abbr": "PA"
+  },
+  {
     "city_slug": "seattle-wa",
     "city": "Seattle",
     "state_abbr": "WA"
+  },
+  {
+    "city_slug": "shreveport-la",
+    "city": "Shreveport",
+    "state_abbr": "LA"
+  },
+  {
+    "city_slug": "south-bend-in",
+    "city": "South Bend",
+    "state_abbr": "IN"
+  },
+  {
+    "city_slug": "spokane-wa",
+    "city": "Spokane",
+    "state_abbr": "WA"
+  },
+  {
+    "city_slug": "springfield-ma",
+    "city": "Springfield",
+    "state_abbr": "MA"
+  },
+  {
+    "city_slug": "springfield-mo",
+    "city": "Springfield",
+    "state_abbr": "MO"
   },
   {
     "city_slug": "st-louis-mo",
@@ -240,9 +685,29 @@
     "state_abbr": "CA"
   },
   {
+    "city_slug": "syracuse-ny",
+    "city": "Syracuse",
+    "state_abbr": "NY"
+  },
+  {
+    "city_slug": "tallahassee-fl",
+    "city": "Tallahassee",
+    "state_abbr": "FL"
+  },
+  {
     "city_slug": "tampa-fl",
     "city": "Tampa",
     "state_abbr": "FL"
+  },
+  {
+    "city_slug": "toledo-oh",
+    "city": "Toledo",
+    "state_abbr": "OH"
+  },
+  {
+    "city_slug": "trenton-nj",
+    "city": "Trenton",
+    "state_abbr": "NJ"
   },
   {
     "city_slug": "tucson-az",
@@ -250,13 +715,48 @@
     "state_abbr": "AZ"
   },
   {
+    "city_slug": "tulsa-ok",
+    "city": "Tulsa",
+    "state_abbr": "OK"
+  },
+  {
+    "city_slug": "vallejo-ca",
+    "city": "Vallejo",
+    "state_abbr": "CA"
+  },
+  {
     "city_slug": "virginia-beach-va",
     "city": "Virginia Beach",
     "state_abbr": "VA"
   },
   {
+    "city_slug": "waco-tx",
+    "city": "Waco",
+    "state_abbr": "TX"
+  },
+  {
     "city_slug": "washington-dc",
     "city": "Washington",
     "state_abbr": "DC"
+  },
+  {
+    "city_slug": "wichita-ks",
+    "city": "Wichita",
+    "state_abbr": "KS"
+  },
+  {
+    "city_slug": "winston-salem-nc",
+    "city": "Winston-Salem",
+    "state_abbr": "NC"
+  },
+  {
+    "city_slug": "worcester-ma",
+    "city": "Worcester",
+    "state_abbr": "MA"
+  },
+  {
+    "city_slug": "youngstown-oh",
+    "city": "Youngstown",
+    "state_abbr": "OH"
   }
 ]

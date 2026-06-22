@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://remodeleriq.com/remodeling-cost-guides/sitemap.xml
+Sitemap: https://intelligence.remodeleriq.com/remodeling-cost-guides/sitemap.xml

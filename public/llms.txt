@@ -2,9 +2,9 @@
 
 > AI-Powered Contractor Bid Analysis for Homeowners
 
-RemodelerIQ is a free tool that helps homeowners analyze contractor estimates and bids before signing. Upload a PDF, image, or paste text from any contractor proposal to get instant analysis including price comparison, scope review, contractor verification, and negotiation guidance. Built by Gustavo Atar (founder) to protect homeowners from overpaying — what started as a personal spreadsheet during his own renovation became a tool used by thousands.
+RemodelerIQ is a free tool that helps homeowners analyze contractor estimates and bids before signing. Upload a PDF, image, or paste text from any contractor proposal to get instant analysis including price comparison, scope review, contractor verification, and negotiation guidance. Built by Gustavo to protect homeowners from overpaying — what started as a personal spreadsheet during his own renovation became a tool used by thousands.
 
-**Last updated: 2026-06-13**
+**Last updated: 2026-06-21**
 
 ## The Three Pillars Methodology
 
@@ -65,7 +65,13 @@ RemodelerIQ analysis is powered by:
 
 ## Regional Cost Guides
 
-52 city-specific remodeling cost guides with local BLS labor data, FRED material indices, permit timelines, and state-specific gotchas. Index at [/remodeling-cost-guides/](https://remodeleriq.com/remodeling-cost-guides/). Sample cities:
+936 city-and-project remodeling cost guides — 52 metros × 18 project types — each with local BLS labor data, FRED material indices, regional cost factors, permit timelines, state-specific gotchas, and an FAQ section (FAQPage schema). Index at [/remodeling-cost-guides/](https://remodeleriq.com/remodeling-cost-guides/).
+
+**URL pattern:** `/remodeling-cost-guides/{city}-remodeling-cost-guide/{project}/` — e.g. [Austin roof replacement cost](https://remodeleriq.com/remodeling-cost-guides/austin-tx-remodeling-cost-guide/roof-replacement/), [Atlanta kitchen remodel cost](https://remodeleriq.com/remodeling-cost-guides/atlanta-ga-remodeling-cost-guide/kitchen-remodel/).
+
+**18 project types covered per metro:** kitchen remodel, bathroom remodel, basement remodel, home addition, roof replacement, siding replacement, flooring, deck, whole-house remodel, garage build, sunroom, interior painting, exterior painting, window replacement, HVAC replacement, ADU / garage conversion, driveway replacement, fence installation.
+
+Sample cities:
 
 - [Atlanta, GA](https://remodeleriq.com/remodeling-cost-guides/atlanta-ga-remodeling-cost-guide/)
 - [Phoenix, AZ](https://remodeleriq.com/remodeling-cost-guides/phoenix-az-remodeling-cost-guide/)
@@ -206,4 +212,4 @@ RemodelerIQ provides regional cost adjustments for all 50 US states and major me
 
 ---
 
-*RemodelerIQ is a free tool for homeowners. Data sourced from Zonda Cost vs Value 2025, BLS OEWS, Houzz, and public business records.*
+*RemodelerIQ is a free tool for homeowners. Data sourced from Zonda Cost vs Value 2026, BLS OEWS, Houzz, and public business records.*

@@ -4,6 +4,10 @@
     "project_name": "Addition"
   },
   {
+    "project_slug": "adu",
+    "project_name": "ADU / Garage Conversion"
+  },
+  {
     "project_slug": "basement-remodel",
     "project_name": "Basement Remodel"
   },
@@ -12,7 +16,59 @@
     "project_name": "Bathroom Remodel"
   },
   {
+    "project_slug": "deck",
+    "project_name": "Deck Construction"
+  },
+  {
+    "project_slug": "driveway",
+    "project_name": "Driveway Replacement"
+  },
+  {
+    "project_slug": "exterior-painting",
+    "project_name": "Exterior Painting"
+  },
+  {
+    "project_slug": "fence-installation",
+    "project_name": "Fence Installation"
+  },
+  {
+    "project_slug": "flooring",
+    "project_name": "Flooring Installation"
+  },
+  {
+    "project_slug": "garage",
+    "project_name": "Garage Build"
+  },
+  {
+    "project_slug": "hvac-replacement",
+    "project_name": "HVAC Replacement"
+  },
+  {
+    "project_slug": "interior-painting",
+    "project_name": "Interior Painting"
+  },
+  {
     "project_slug": "kitchen-remodel",
     "project_name": "Kitchen Remodel"
+  },
+  {
+    "project_slug": "roof-replacement",
+    "project_name": "Roof Replacement"
+  },
+  {
+    "project_slug": "siding-replacement",
+    "project_name": "Siding Replacement"
+  },
+  {
+    "project_slug": "sunroom",
+    "project_name": "Sunroom Addition"
+  },
+  {
+    "project_slug": "whole-house-remodel",
+    "project_name": "Whole House Remodel"
+  },
+  {
+    "project_slug": "window-replacement",
+    "project_name": "Window Replacement"
   }
 ]
