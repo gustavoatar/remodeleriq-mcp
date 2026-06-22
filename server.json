@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.gustavoatar/remodeleriq",
+  "description": "Check if a home-remodeling contractor's bid is fair: analyze a quote (fairness score + red flags), get 2026 cost estimates by city, and look up BLS trade labor rates.",
+  "version": "1.0.0",
+  "websiteUrl": "https://remodeleriq.com",
+  "repository": {
+    "url": "https://github.com/gustavoatar/remodeleriq-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://remodeleriq.com/mcp"
+    }
+  ]
+}
