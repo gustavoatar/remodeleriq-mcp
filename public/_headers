@@ -14,3 +14,12 @@
 
 /pricing.md
   Content-Type: text/markdown; charset=utf-8
+
+# Cost-guide HTML — short edge cache so deploys reflect within minutes
+# (was getting stuck stale at the edge after deploys).
+/remodeling-cost-guides/*
+  Cache-Control: public, max-age=300, must-revalidate
+
+# Content-hashed Next.js assets — safe to cache hard (override the rule above).
+/remodeling-cost-guides/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
