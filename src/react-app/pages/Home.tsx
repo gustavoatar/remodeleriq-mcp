@@ -692,7 +692,14 @@ export default function HomePage() {
     }
     
     setAnalyzedBid({ content, fileName, overrides, bidTotal, zipCode });
-    
+
+    // Activation event — a real bid analysis was completed and rendered.
+    // Closes the funnel: SEO page → estimator → analyze click → analysis_completed → purchase.
+    (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag?.('event', 'analysis_completed', {
+      has_bid_total: !!bidTotal,
+      zip: zipCode || undefined,
+    });
+
     // Save the state location if provided (this updates the user's saved location for future uploads)
     if (overrides?.stateCode) {
       setLocation(overrides.stateCode);
