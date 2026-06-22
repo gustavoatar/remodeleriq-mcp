@@ -691,8 +691,8 @@ app.post("/webhooks/stripe", async (c) => {
         premiumEndsAt.setFullYear(premiumEndsAt.getFullYear() + 1);
         
         await db.prepare(
-          'UPDATE user_profiles SET is_premium = 1, premium_purchased_at = datetime("now"), premium_ends_at = ?, stripe_session_id = ?, updated_at = datetime("now") WHERE id = ?'
-        ).bind(premiumEndsAt.toISOString(), session.id, parseInt(userId)).run();
+          'UPDATE user_profiles SET is_premium = 1, subscription_status = ?, subscription_tier = ?, premium_purchased_at = datetime("now"), premium_ends_at = ?, stripe_session_id = ?, updated_at = datetime("now") WHERE id = ?'
+        ).bind('active', 'premium', premiumEndsAt.toISOString(), session.id, parseInt(userId)).run();
         
         const firstName = userEmail.split('@')[0].split(/[._0-9]/)[0];
         const capitalizedName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
@@ -705,14 +705,14 @@ app.post("/webhooks/stripe", async (c) => {
         
         if (existingUser) {
           await db.prepare(
-            'UPDATE user_profiles SET is_premium = 1, premium_purchased_at = datetime("now"), premium_ends_at = ?, stripe_session_id = ?, updated_at = datetime("now") WHERE email = ?'
-          ).bind(premiumEndsAt.toISOString(), session.id, customerEmail).run();
+            'UPDATE user_profiles SET is_premium = 1, subscription_status = ?, subscription_tier = ?, premium_purchased_at = datetime("now"), premium_ends_at = ?, stripe_session_id = ?, updated_at = datetime("now") WHERE email = ?'
+          ).bind('active', 'premium', premiumEndsAt.toISOString(), session.id, customerEmail).run();
         } else {
           const guestUserId = `guest_${customerEmail.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
           const guestName = customerName || customerEmail.split('@')[0];
           await db.prepare(
-            'INSERT INTO user_profiles (user_id, email, name, is_premium, premium_purchased_at, premium_ends_at, stripe_session_id, created_at, updated_at) VALUES (?, ?, ?, 1, datetime("now"), ?, ?, datetime("now"), datetime("now"))'
-          ).bind(guestUserId, customerEmail, guestName, premiumEndsAt.toISOString(), session.id).run();
+            'INSERT INTO user_profiles (user_id, email, name, is_premium, subscription_status, subscription_tier, premium_purchased_at, premium_ends_at, stripe_session_id, created_at, updated_at) VALUES (?, ?, ?, 1, ?, ?, datetime("now"), ?, ?, datetime("now"), datetime("now"))'
+          ).bind(guestUserId, customerEmail, guestName, 'active', 'premium', premiumEndsAt.toISOString(), session.id).run();
         }
         
         const firstName = (customerName?.split(' ')[0] || customerEmail.split('@')[0].split(/[._0-9]/)[0]);
