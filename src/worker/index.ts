@@ -379,6 +379,39 @@ app.route('/api/webhooks', facebookWebhookRoutes);
 app.route('/api/admin/facebook', facebookPublishRoutes);
 
 // ============================================
+// AGENT DISCOVERY — RFC 9727 API catalog (application/linkset+json).
+// Advertises RemodelerIQ's machine-readable resources to AI agents.
+// ============================================
+app.get('/.well-known/api-catalog', (c) => {
+  const base = 'https://remodeleriq.com';
+  const catalog = {
+    linkset: [
+      {
+        anchor: `${base}/`,
+        'service-doc': [
+          { href: `${base}/llms.txt`, type: 'text/plain', title: 'RemodelerIQ context for LLMs' },
+          { href: `${base}/how-we-score`, type: 'text/html', title: 'Three Pillars scoring methodology' },
+        ],
+        'service-desc': [
+          { href: `${base}/pricing.md`, type: 'text/markdown', title: 'Machine-readable pricing' },
+        ],
+        describedby: [
+          { href: `${base}/llms.txt`, type: 'text/plain' },
+        ],
+        sitemap: [
+          { href: `${base}/sitemap.xml`, type: 'application/xml' },
+        ],
+      },
+    ],
+  };
+  return c.body(JSON.stringify(catalog, null, 2), 200, {
+    'Content-Type': 'application/linkset+json',
+    'Cache-Control': 'public, max-age=3600',
+    'Access-Control-Allow-Origin': '*',
+  });
+});
+
+// ============================================
 // GEOLOCATION ENDPOINT
 // ============================================
 

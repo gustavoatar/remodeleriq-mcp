@@ -105,7 +105,7 @@ export default function ToolsPage() {
       />
       <Header />
 
-      <main className="max-w-5xl mx-auto px-4 py-12">
+      <main className="max-w-5xl mx-auto px-4 pt-28 md:pt-32 pb-16">
         {/* Hero */}
         <div className="text-center mb-12">
           <div

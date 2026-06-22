@@ -1,0 +1,16 @@
+# RFC 8288 Link headers for AI-agent discovery (applied to every response).
+# Points agents at the machine-readable resources: API catalog, llms.txt
+# context file, machine-readable pricing, and the sitemap.
+/*
+  Link: </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", </llms.txt>; rel="describedby"; type="text/plain", </pricing.md>; rel="service-desc"; type="text/markdown", </sitemap.xml>; rel="sitemap"; type="application/xml"
+
+# Ensure the agent-discovery resources serve the correct content types.
+/.well-known/api-catalog
+  Content-Type: application/linkset+json
+  Cache-Control: public, max-age=3600
+
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+
+/pricing.md
+  Content-Type: text/markdown; charset=utf-8
