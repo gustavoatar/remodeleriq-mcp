@@ -1722,11 +1722,17 @@ app.get("/api/usage/can-upload", async (c) => {
 
       if (session) {
         const user = await db.prepare(
-          'SELECT id, email, is_premium, subscription_tier, subscription_status FROM user_profiles WHERE id = ?'
-        ).bind(session.user_id).first<{ id: number; email: string; is_premium: number; subscription_tier: string | null; subscription_status: string | null }>();
+          'SELECT id, email, is_premium, subscription_tier, subscription_status, premium_ends_at FROM user_profiles WHERE id = ?'
+        ).bind(session.user_id).first<{ id: number; email: string; is_premium: number; subscription_tier: string | null; subscription_status: string | null; premium_ends_at: string | null }>();
 
         if (user) {
-          const isPremium = user.is_premium === 1 && user.subscription_status === 'active';
+          // Premium definition MUST match /users/me (auth.ts) so the UI and the
+          // paywall never disagree: premium if is_premium=1 OR an unexpired
+          // premium_ends_at. is_premium is the master flag (cleared to 0 on
+          // cancellation); the strict subscription_status='active' check used
+          // before wrongly paywalled paid users whose status field was unset.
+          const isPremium = user.is_premium === 1 ||
+            (!!user.premium_ends_at && user.premium_ends_at > new Date().toISOString());
 
           if (isPremium) {
             return c.json({
@@ -1801,10 +1807,12 @@ app.post("/api/usage/record-upload", async (c) => {
         userId = session.user_id;
 
         const user = await db.prepare(
-          'SELECT is_premium, subscription_tier, subscription_status FROM user_profiles WHERE id = ?'
-        ).bind(userId).first<{ is_premium: number; subscription_tier: string | null; subscription_status: string | null }>();
+          'SELECT is_premium, subscription_tier, subscription_status, premium_ends_at FROM user_profiles WHERE id = ?'
+        ).bind(userId).first<{ is_premium: number; subscription_tier: string | null; subscription_status: string | null; premium_ends_at: string | null }>();
 
-        isPremium = user?.is_premium === 1 && user?.subscription_status === 'active';
+        // Match /users/me + can-upload: premium if is_premium=1 OR unexpired term.
+        isPremium = user?.is_premium === 1 ||
+          (!!user?.premium_ends_at && user.premium_ends_at > new Date().toISOString());
 
         // Atomic gatekeeper for logged-in free users
         if (!isPremium) {
