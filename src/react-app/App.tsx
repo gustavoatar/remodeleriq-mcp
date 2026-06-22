@@ -16,6 +16,7 @@ import GraveyardPage from "@/react-app/pages/Graveyard";
 import HowWeScorePage from "@/react-app/pages/HowWeScore";
 import GlossaryPage from "@/react-app/pages/Glossary";
 import TrustedRadarPage from "@/react-app/pages/TrustedRadar";
+import ToolsPage from "@/react-app/pages/Tools";
 import TestPaymentPage from "@/react-app/pages/TestPayment";
 import MagicLinkLoginPage from "@/react-app/pages/MagicLinkLogin";
 import MagicLinkVerifyPage from "@/react-app/pages/MagicLinkVerify";
@@ -100,6 +101,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/labor-rates" element={<LaborRatesPage />} />
           <Route path="/trusted-radar" element={<TrustedRadarPage />} />
+          <Route path="/tools" element={<ToolsPage />} />
           <Route path="/studio" element={<StudioPage />} />
           <Route path="/join" element={<JoinPage />} />
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
