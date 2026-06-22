@@ -47,6 +47,15 @@ RemodelerIQ analysis is powered by:
 - [Google Places API](https://developers.google.com/maps/documentation/places/): Business ratings and reviews
 - State contractor licensing databases
 
+## MCP Server (for AI agents)
+
+RemodelerIQ runs a Model Context Protocol server so AI agents can USE the analyzer on a user's behalf (not just read about it). Streamable-HTTP endpoint: `https://remodeleriq.com/mcp`. Discovery: [/.well-known/mcp/server-card.json](https://remodeleriq.com/.well-known/mcp/server-card.json).
+
+Tools:
+- `analyze_bid` — score a contractor's remodeling bid for fairness; returns confidence score, red flags, missing items, negotiation talk-track. Inputs: bid_text, bid_total?, state_code?.
+- `get_cost_estimate` — 2026 cost range for a project in a US state/city (Zonda-backed). Inputs: project_type, state_code, city_key?.
+- `get_labor_rates` — BLS construction trade labor rates by US state. Inputs: state_code, trade?.
+
 ## Sitemaps
 
 - [XML Sitemap](https://remodeleriq.com/sitemap.xml): Contains all public URLs for this website

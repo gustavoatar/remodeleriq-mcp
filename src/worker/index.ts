@@ -425,6 +425,52 @@ app.get('/.well-known/api-catalog', (c) => {
   });
 });
 
+// MCP Server Card — advertises the RemodelerIQ MCP server so AI agents can
+// discover + connect to the bid-analysis tools.
+app.get('/.well-known/mcp/server-card.json', (c) => {
+  const card = {
+    schemaVersion: '2025-06-18',
+    name: 'remodeleriq',
+    version: '1.0.0',
+    description:
+      "Check if a home-remodeling contractor's bid is fair. Tools: analyze a quote (fairness score + red flags), get 2026 cost estimates by city, and look up BLS trade labor rates.",
+    serverInfo: { name: 'remodeleriq', version: '1.0.0' },
+    transport: { type: 'streamable-http', url: 'https://remodeleriq.com/mcp' },
+    capabilities: {
+      tools: [
+        { name: 'analyze_bid', description: 'Score a contractor bid for fairness + flag risks.' },
+        { name: 'get_cost_estimate', description: '2026 remodel cost range by project + US state/city.' },
+        { name: 'get_labor_rates', description: 'BLS construction trade labor rates by US state.' },
+      ],
+    },
+    documentation: 'https://remodeleriq.com/how-we-score',
+  };
+  return c.body(JSON.stringify(card, null, 2), 200, {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'public, max-age=3600',
+    'Access-Control-Allow-Origin': '*',
+  });
+});
+
+// Agent Skills discovery index — points agents at the MCP tools as skills.
+app.get('/.well-known/agent-skills/index.json', (c) => {
+  const ep = 'https://remodeleriq.com/mcp';
+  const index = {
+    $schema: 'https://agentskills.io/schema/v0.2.0/index.json',
+    version: '0.2.0',
+    skills: [
+      { name: 'analyze_bid', type: 'mcp-tool', description: 'Analyze a contractor remodeling bid for fairness and risk.', url: ep },
+      { name: 'get_cost_estimate', type: 'mcp-tool', description: '2026 remodeling cost ranges by project and location.', url: ep },
+      { name: 'get_labor_rates', type: 'mcp-tool', description: 'BLS construction trade labor rates by US state.', url: ep },
+    ],
+  };
+  return c.body(JSON.stringify(index, null, 2), 200, {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'public, max-age=3600',
+    'Access-Control-Allow-Origin': '*',
+  });
+});
+
 // ============================================
 // GEOLOCATION ENDPOINT
 // ============================================
