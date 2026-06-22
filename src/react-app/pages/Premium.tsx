@@ -28,6 +28,14 @@ export default function PremiumPage() {
     }
   }, [navigate]);
 
+  // Fire the conversion event when Stripe redirects back with payment=success.
+  useEffect(() => {
+    if (paymentStatus === 'success') {
+      const w = window as unknown as { gtag?: (...a: unknown[]) => void };
+      w.gtag?.('event', 'premium_purchase', { guest: isGuestPayment });
+    }
+  }, [paymentStatus, isGuestPayment]);
+
   // Don't render anything while redirecting
   if (!PREMIUM_MODE_ENABLED) {
     return null;

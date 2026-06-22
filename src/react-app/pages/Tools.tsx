@@ -15,6 +15,11 @@ import {
 
 const BRAND = '#1F9C4C';
 
+function trackToolsAnalyze(location: string) {
+  const w = window as unknown as { gtag?: (...a: unknown[]) => void };
+  w.gtag?.('event', 'tools_analyze_click', { location });
+}
+
 interface Tool {
   title: string;
   blurb: string;
@@ -127,6 +132,7 @@ export default function ToolsPage() {
         {/* Featured: the analyzer (the destination) */}
         <Link
           to="/"
+          onClick={() => trackToolsAnalyze('featured_card')}
           className="block rounded-3xl p-8 md:p-10 mb-10 text-white shadow-xl transition-transform hover:-translate-y-0.5"
           style={{ backgroundColor: BRAND }}
         >
@@ -195,6 +201,7 @@ export default function ToolsPage() {
           </p>
           <Link
             to="/"
+            onClick={() => trackToolsAnalyze('closing_cta')}
             className="inline-flex items-center gap-2 text-white px-9 py-4 rounded-2xl font-black text-lg shadow-lg active:scale-95 transition-transform"
             style={{ backgroundColor: BRAND }}
           >
