@@ -28,6 +28,9 @@ export default function Footer() {
             <Link to="/is-my-contractor-quote-fair" className="text-gray-400 hover:text-white transition-colors">
               Is My Quote Fair?
             </Link>
+            <Link to="/vs/chatgpt" className="text-gray-400 hover:text-white transition-colors">
+              vs ChatGPT
+            </Link>
             <Link to="/glossary" className="text-gray-400 hover:text-white transition-colors">
               Glossary
             </Link>

@@ -231,7 +231,10 @@ export default function QuoteFairnessPage() {
                 </p>
                 <p className="text-navy-600">
                   And we answer to you: RemodelerIQ takes no referral fees from contractors, so the analysis
-                  has nothing to sell but the truth about your bid.
+                  has nothing to sell but the truth about your bid. Full breakdown:{' '}
+                  <Link to="/vs/chatgpt" className="text-emerald-700 underline hover:text-emerald-800">
+                    RemodelerIQ vs ChatGPT
+                  </Link>.
                 </p>
               </div>
             </div>

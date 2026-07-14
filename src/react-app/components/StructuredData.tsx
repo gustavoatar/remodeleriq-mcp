@@ -346,6 +346,10 @@ export const BREADCRUMBS = {
     { name: 'Home', path: '/' },
     { name: 'Is My Contractor Quote Fair?', path: '/is-my-contractor-quote-fair' },
   ],
+  vsChatgpt: [
+    { name: 'Home', path: '/' },
+    { name: 'RemodelerIQ vs ChatGPT', path: '/vs/chatgpt' },
+  ],
   trustRadar: [
     { name: 'Home', path: '/' },
     { name: 'Trust Radar', path: '/trust-radar' },
