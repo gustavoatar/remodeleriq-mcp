@@ -1,39 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowRight, TrendingUp, FileWarning, AlertTriangle, Crown, Check, Zap, Users, Star, Loader2, Gem } from 'lucide-react';
 import MoneyBurst, { MoneyBurstHandle } from './MoneyBurst';
 import { FREE_TOTAL_ANALYSES } from '@/shared/featureFlags';
-
-// Hook to fetch location-based savings
-function useLocationSavings() {
-  const [data, setData] = useState<{ location: string; savings: number } | null>(null);
-  
-  useEffect(() => {
-    // Check cache first
-    const cached = sessionStorage.getItem('remodeleriq_geo');
-    if (cached) {
-      try {
-        setData(JSON.parse(cached));
-        return;
-      } catch {}
-    }
-    
-    // Fetch from API
-    fetch('/api/geo')
-      .then(res => res.json())
-      .then(result => {
-        const geoData = { location: result.location, savings: result.savings };
-        setData(geoData);
-        sessionStorage.setItem('remodeleriq_geo', JSON.stringify(geoData));
-      })
-      .catch(() => {
-        // Fallback on error
-        setData({ location: 'your area', savings: 1258 });
-      });
-  }, []);
-  
-  return data;
-}
+import useLocationSavings, { DEFAULT_SAVINGS } from '@/react-app/hooks/useLocationSavings';
 import { useAuth } from '@/react-app/lib/auth';
 import XRayAudit from './XRayAudit';
 import DataPartners from '@/react-app/components/DataPartners';
@@ -193,9 +163,9 @@ export default function Hero({ onGetStarted, onSeeDemo }: HeroProps) {
                 </div>
               </div>
               <span className="text-sm text-gray-600 font-medium text-center">
-                {locationSavings 
-                  ? `Homeowners in ${locationSavings.location}, save $${locationSavings.savings.toLocaleString()} on average.`
-                  : 'Homeowners in your area, save $1,258 on average.'
+                {locationSavings
+                  ? `Homeowners in ${locationSavings.location} save $${locationSavings.savings.toLocaleString()} on average.`
+                  : `Homeowners in your area save $${DEFAULT_SAVINGS.toLocaleString()} on average.`
                 }
               </span>
             </div>

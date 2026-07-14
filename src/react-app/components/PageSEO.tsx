@@ -11,7 +11,7 @@ interface PageSEOProps {
 }
 
 const BASE_URL = 'https://remodeleriq.com';
-const DEFAULT_OG_IMAGE = '/mocha-assets/image.png_4808.png';
+const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
 
 export default function PageSEO({
   title,
@@ -24,6 +24,8 @@ export default function PageSEO({
 }: PageSEOProps) {
   const fullUrl = `${BASE_URL}${path}`;
   const fullTitle = path === '/' ? title : `${title} | RemodelerIQ`;
+  // Social scrapers require absolute og:image URLs.
+  const fullOgImage = ogImage.startsWith('http') ? ogImage : `${BASE_URL}${ogImage}`;
 
   return (
     <Helmet>
@@ -39,7 +41,7 @@ export default function PageSEO({
       <meta property="og:url" content={fullUrl} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={ogImage} />
+      <meta property="og:image" content={fullOgImage} />
       <meta property="og:site_name" content="RemodelerIQ" />
 
       {/* Twitter Card */}
@@ -47,7 +49,7 @@ export default function PageSEO({
       <meta name="twitter:site" content="@RemodelerIQ" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image" content={fullOgImage} />
     </Helmet>
   );
 }

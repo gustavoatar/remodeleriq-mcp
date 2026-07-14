@@ -1,7 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 
 const BASE_URL = 'https://remodeleriq.com';
-const LOGO_URL = '/mocha-assets/image.png_4808.png';
+// Schema.org URLs must be absolute.
+const LOGO_URL = `${BASE_URL}/og-image.png`;
 
 // Metro areas with coordinates - pulled from Zonda/CITY_SAVINGS data
 const SERVICE_AREAS: Array<{ city: string; state: string; lat: number; lng: number }> = [

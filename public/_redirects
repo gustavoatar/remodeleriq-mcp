@@ -1,0 +1,5 @@
+# Server-side redirects (Cloudflare Workers static assets).
+# /pricing never existed as a route — crawlers were getting a 200 SPA shell
+# (soft 404). Send it to the real pricing page with a proper 301.
+/pricing /premium 301
+/pricing/ /premium 301

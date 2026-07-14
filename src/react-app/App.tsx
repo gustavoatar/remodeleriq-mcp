@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router";
 import { AuthProvider } from "@/react-app/lib/auth";
 import { CombinedAuthProvider } from "@/react-app/hooks/useCombinedAuth";
 import { MessageSquareHeart } from "lucide-react";
@@ -29,9 +29,11 @@ import RedditKitPage from "@/react-app/pages/RedditKit";
 import NextdoorKitPage from "@/react-app/pages/NextdoorKit";
 import FeedbackModal from "@/react-app/components/FeedbackModal";
 import ScrollToTop from "@/react-app/components/ScrollToTop";
+import ConciergeWidget from "@/react-app/components/ConciergeWidget";
 import { ErrorBoundary } from "@/react-app/components/ErrorBoundary";
 import { NetworkStatusBanner } from "@/react-app/components/AlertBanner";
 import { logErrorToServer } from "@/react-app/hooks/useErrorLogger";
+import { initWebMcp } from "@/react-app/lib/webmcp";
 
 // Floating feedback button - hidden on home page (upload/results screens)
 function FeedbackButton({ onClick }: { onClick: () => void }) {
@@ -45,7 +47,7 @@ function FeedbackButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 bg-navy-800 hover:bg-navy-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all group"
+      className="fixed bottom-6 left-6 z-40 flex items-center gap-2 px-4 py-3 bg-navy-800 hover:bg-navy-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all group"
       aria-label="Share feedback"
     >
       <MessageSquareHeart className="w-5 h-5" />
@@ -84,6 +86,9 @@ export default function App() {
     window.addEventListener('error', handleError);
     window.addEventListener('unhandledrejection', handleRejection);
 
+    // Expose the analyzer tools to AI browsers via WebMCP (no-op where unsupported).
+    initWebMcp();
+
     return () => {
       window.removeEventListener('error', handleError);
       window.removeEventListener('unhandledrejection', handleRejection);
@@ -107,6 +112,9 @@ export default function App() {
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/premium" element={<PremiumPage />} />
+          {/* /pricing has no page of its own — the server 301s it to /premium
+              (public/_redirects); this covers client-side navigations. */}
+          <Route path="/pricing" element={<Navigate to="/premium" replace />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/graveyard" element={<GraveyardPage />} />
@@ -124,6 +132,7 @@ export default function App() {
           <Route path="/admin/nextdoor" element={<NextdoorKitPage />} />
         </Routes>
         <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+        <ConciergeWidget />
       </Router>
 
       <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />

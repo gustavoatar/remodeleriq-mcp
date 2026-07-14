@@ -6,13 +6,17 @@ Allow: /
 # Sitemap location
 Sitemap: https://remodeleriq.com/sitemap.xml
 
+# Agentic Resource Discovery (ARD) catalog — for AI agent registries
+AI-Catalog: https://remodeleriq.com/.well-known/ai-catalog.json
+
 # Block API and authentication routes
 Disallow: /api/
 Disallow: /auth/
 
 # Block user-specific pages (not useful for search)
+# NOTE: /premium is intentionally crawlable — it is the canonical pricing page
+# (llms.txt and pricing.md both point to it).
 Disallow: /settings
-Disallow: /premium
 
 # Block internal/test pages
 Disallow: /graveyard

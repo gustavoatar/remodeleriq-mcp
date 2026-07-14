@@ -3,23 +3,30 @@ import { useNavigate, useSearchParams } from 'react-router';
 import { useAuth } from '@/react-app/lib/auth';
 import Header from '@/react-app/components/Header';
 import PageSEO from '@/react-app/components/PageSEO';
-import { 
-  Crown, Lock, ArrowLeft, 
-  Loader2, Sparkles, Infinity, BarChart3, MessageSquareText,
-  AlertCircle, CheckCircle, Users, TrendingUp, Zap, Clock
+import useLocationSavings, { DEFAULT_SAVINGS, DEFAULT_LOCATION } from '@/react-app/hooks/useLocationSavings';
+import {
+  Crown, Lock, ArrowLeft, Check, Gem,
+  Loader2, Sparkles, Infinity as InfinityIcon, BarChart3, MessageSquareText,
+  AlertCircle, CheckCircle, TrendingUp, Zap, Clock
 } from 'lucide-react';
-import { PREMIUM_MODE_ENABLED } from '@/shared/featureFlags';
+import { PREMIUM_MODE_ENABLED, FREE_TOTAL_ANALYSES } from '@/shared/featureFlags';
+
+type PaidTier = 'project' | 'remodeler' | 'lifetime';
 
 export default function PremiumPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, redirectToLogin } = useAuth();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState<PaidTier | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const locationSavings = useLocationSavings();
 
   const paymentStatus = searchParams.get('payment');
   const isGuestPayment = searchParams.get('guest') === 'true';
-  const isPremium = (user as any)?.profile?.isPremium;
+  const isPremium = (user as { profile?: { isPremium?: boolean } } | null)?.profile?.isPremium;
+
+  const savingsLocation = locationSavings?.location ?? DEFAULT_LOCATION;
+  const savingsAmount = locationSavings?.savings ?? DEFAULT_SAVINGS;
 
   // Redirect to join page if premium mode is disabled
   useEffect(() => {
@@ -69,13 +76,19 @@ export default function PremiumPage() {
     );
   }
 
-  const handleCheckout = async () => {
-    setIsProcessing(true);
+  const handleCheckout = async (tier: PaidTier) => {
+    setCheckoutLoading(tier);
     setError(null);
 
     try {
-      // Use subscription endpoint (project-pass = $19.99/mo monthly plan)
-      const endpoint = user ? '/api/subscription/project-pass' : '/api/premium/guest-checkout';
+      const tierPath = tier === 'project' ? 'project-pass' : tier === 'remodeler' ? 'remodeler-pass' : 'lifetime-pass';
+
+      // Guests use the no-auth checkout endpoints; account holders get the
+      // session tied to their user via the authenticated ones.
+      const endpoint = user
+        ? `/api/subscription/${tierPath}`
+        : `/api/subscription/guest/${tierPath}`;
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -98,7 +111,7 @@ export default function PremiumPage() {
       console.error('Checkout error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to start checkout';
       setError(errorMessage);
-      setIsProcessing(false);
+      setCheckoutLoading(null);
     }
   };
 
@@ -114,7 +127,7 @@ export default function PremiumPage() {
               </div>
               <h1 className="text-2xl font-bold text-navy-900 mb-2">You're Already Premium!</h1>
               <p className="text-navy-600 mb-6">
-                Enjoy unlimited bid analyses with your annual subscription.
+                Enjoy unlimited bid analyses with your RemodelerIQ pass.
               </p>
               <button
                 onClick={() => navigate('/settings')}
@@ -132,14 +145,13 @@ export default function PremiumPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <PageSEO
-        title="RemodelerIQ Premium - Unlimited Bid Analysis"
-        description="Analyze unlimited contractor bids, get AI negotiation scripts, and access deep contractor research. Average member saves $2,400 on their renovation."
+        title="Premium Plans & Pricing"
+        description={`Analyze unlimited contractor bids with Project Pass ($19.99/mo), Remodeler Pass ($39.99/3 months), or Lifetime Pass ($99.99 one-time). Start with ${FREE_TOTAL_ANALYSES} free analyses — homeowners save an average of $${DEFAULT_SAVINGS.toLocaleString()} per project.`}
         path="/premium"
-        keywords="contractor bid analyzer premium, unlimited renovation analysis, home improvement savings tool, negotiation help for contractors"
-        noindex={true}
+        keywords="contractor bid analyzer premium, RemodelerIQ pricing, unlimited renovation analysis, home improvement savings tool, negotiation help for contractors"
       />
       <Header />
-      
+
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-5xl mx-auto">
           {/* Back Button */}
@@ -164,48 +176,16 @@ export default function PremiumPage() {
           {/* Plan Comparison Header */}
           <div className="text-center mb-10">
             <h1 className="text-3xl md:text-4xl font-bold text-navy-900 mb-3">
-              Pre-Launch Pricing
+              Simple, Transparent Pricing
             </h1>
             <p className="text-navy-600 max-w-xl mx-auto">
-              Start free, then upgrade at a 70% discount
+              Start with {FREE_TOTAL_ANALYSES} free analyses. Go unlimited with a monthly, quarterly, or lifetime pass — cancel anytime.
             </p>
           </div>
 
           {/* Plan Cards */}
-          <div className={`grid gap-6 mb-12 ${user ? 'md:grid-cols-2 max-w-2xl mx-auto' : 'md:grid-cols-3'}`}>
-            {/* Anonymous Plan — only shown to guests */}
-            {!user && (
-            <div className="card-glass p-6 border-2 border-navy-200">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-navy-100 rounded-lg flex items-center justify-center">
-                  <Users className="w-5 h-5 text-navy-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-navy-900">Guest</h3>
-                  <p className="text-xs text-navy-500">No account needed</p>
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <span className="text-3xl font-bold text-navy-900">Free</span>
-              </div>
-
-              <ul className="space-y-2 mb-6 text-sm">
-                <PlanFeature included>3 free analyses total</PlanFeature>
-                <PlanFeature included>Risk analysis & flags</PlanFeature>
-                <PlanFeature included>AI insights</PlanFeature>
-              </ul>
-
-              <button
-                onClick={() => navigate('/')}
-                className="w-full py-3 rounded-xl font-semibold border-2 border-navy-200 text-navy-700 hover:bg-navy-50 transition-colors"
-              >
-                Try It Free
-              </button>
-            </div>
-            )}
-
-            {/* Free Account Plan */}
+          <div className="grid gap-6 mb-8 md:grid-cols-3">
+            {/* Free Plan */}
             <div className="card-glass p-6 border-2 border-teal-200 bg-teal-50/30 relative overflow-visible">
               {user && !isPremium && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-teal-600 text-white text-xs font-semibold rounded-full shadow-lg z-10 whitespace-nowrap">
@@ -217,72 +197,174 @@ export default function PremiumPage() {
                   <Zap className="w-5 h-5 text-teal-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-navy-900">Free Account</h3>
-                  <p className="text-xs text-navy-500">{user && !isPremium ? 'Your plan' : 'Save your history'}</p>
+                  <h3 className="font-semibold text-navy-900">Free</h3>
+                  <p className="text-xs text-navy-500">{user && !isPremium ? 'Your plan' : 'No card needed'}</p>
                 </div>
               </div>
 
               <div className="mb-4">
-                <span className="text-3xl font-bold text-navy-900">Free</span>
+                <span className="text-3xl font-bold text-navy-900">$0</span>
               </div>
 
               <ul className="space-y-2 mb-6 text-sm">
-                <PlanFeature included>3 free analyses total</PlanFeature>
-                <PlanFeature included>Saved analysis history</PlanFeature>
-                <PlanFeature included>Labor rate audit</PlanFeature>
-                <PlanFeature included>Cost trends</PlanFeature>
+                <PlanFeature included>{FREE_TOTAL_ANALYSES} free analyses total</PlanFeature>
+                <PlanFeature included>Risk analysis & flags</PlanFeature>
+                <PlanFeature included>AI insights</PlanFeature>
+                <PlanFeature included>Saved history with account</PlanFeature>
               </ul>
 
               <button
                 onClick={user ? () => navigate('/?view=upload') : redirectToLogin}
-                className="w-full py-3 rounded-xl font-semibold bg-teal-600 hover:bg-teal-700 text-white transition-colors"
+                className="w-full py-3 rounded-xl font-semibold border-2 border-teal-300 text-teal-700 hover:bg-teal-50 transition-colors"
               >
-                {user ? 'Analyze a Bid' : 'Create Account'}
+                {user ? 'Analyze a Bid' : 'Start Free'}
               </button>
             </div>
 
-            {/* Premium Plan */}
-            <div className="card-glass p-6 border-2 border-emerald-400 bg-emerald-50 relative overflow-visible">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full shadow-lg z-10">
-                BEST VALUE
-              </div>
-              
+            {/* Project Pass */}
+            <div className="card-glass p-6 border-2 border-navy-200 relative overflow-visible">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center shadow-md">
-                  <Crown className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-navy-900">Premium</h3>
-                  <p className="text-xs text-navy-500">Unlimited monthly</p>
+                  <h3 className="font-semibold text-navy-900">Project Pass</h3>
+                  <p className="text-xs text-navy-500">Monthly unlimited</p>
                 </div>
               </div>
-              
+
               <div className="mb-4">
                 <span className="text-3xl font-bold text-navy-900">$19.99</span>
                 <span className="text-navy-500 text-sm">/month</span>
               </div>
-              
+
               <ul className="space-y-2 mb-6 text-sm">
                 <PlanFeature included premium>Unlimited analyses</PlanFeature>
                 <PlanFeature included premium>Everything in Free</PlanFeature>
+                <PlanFeature included premium>Multi-bid comparison</PlanFeature>
                 <PlanFeature included premium>Priority AI processing</PlanFeature>
                 <PlanFeature included premium>Negotiation scripts</PlanFeature>
               </ul>
-              
+
               <button
-                onClick={handleCheckout}
-                disabled={isProcessing}
-                className="w-full py-3 rounded-xl font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                onClick={() => handleCheckout('project')}
+                disabled={checkoutLoading !== null}
+                className="w-full py-3 rounded-xl font-semibold bg-navy-800 hover:bg-navy-900 text-white transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {isProcessing ? (
+                {checkoutLoading === 'project' ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
                     Processing...
                   </>
                 ) : (
-                  'Get Premium'
+                  'Get Project Pass'
                 )}
               </button>
+              <p className="text-xs text-navy-400 text-center mt-3">Cancel anytime</p>
+            </div>
+
+            {/* Remodeler Pass */}
+            <div className="card-glass p-6 border-2 border-emerald-400 bg-emerald-50 relative overflow-visible">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full shadow-lg z-10">
+                BEST VALUE
+              </div>
+
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center shadow-md">
+                  <Crown className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-navy-900">Remodeler Pass</h3>
+                  <p className="text-xs text-navy-500">3 months unlimited</p>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <span className="text-3xl font-bold text-navy-900">$39.99</span>
+                <span className="text-navy-500 text-sm">/3 months</span>
+                <p className="text-emerald-700 text-xs font-semibold mt-1">Save 33% vs monthly</p>
+              </div>
+
+              <ul className="space-y-2 mb-6 text-sm">
+                <PlanFeature included premium>Everything in Project Pass</PlanFeature>
+                <PlanFeature included premium>Quarterly market report</PlanFeature>
+                <PlanFeature included premium>Advanced contractor research</PlanFeature>
+                <PlanFeature included premium>Covers your whole remodel</PlanFeature>
+              </ul>
+
+              <button
+                onClick={() => handleCheckout('remodeler')}
+                disabled={checkoutLoading !== null}
+                className="w-full py-3 rounded-xl font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {checkoutLoading === 'remodeler' ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Get Remodeler Pass'
+                )}
+              </button>
+              <p className="text-xs text-navy-400 text-center mt-3">Cancel anytime</p>
+            </div>
+          </div>
+
+          {/* Lifetime Pass - Full Width */}
+          <div className="mb-12">
+            <div className="bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 rounded-2xl p-6 md:p-8 border-2 border-amber-400 shadow-lg">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-md">
+                    <Gem className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xl font-bold text-navy-900">Lifetime Pass</h3>
+                      <span className="px-2 py-0.5 bg-amber-500 text-white text-xs font-bold rounded-full">VIP</span>
+                    </div>
+                    <p className="text-sm text-navy-500">One-time purchase, unlimited forever</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-8">
+                  <ul className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-navy-600">
+                    <li className="flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-amber-600" />
+                      Unlimited forever
+                    </li>
+                    <li className="flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-amber-600" />
+                      Never billed again
+                    </li>
+                    <li className="flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-amber-600" />
+                      Beta invites & events
+                    </li>
+                  </ul>
+
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <span className="text-3xl font-bold text-amber-600">$99.99</span>
+                      <span className="text-navy-500 text-sm ml-1">once</span>
+                    </div>
+                    <button
+                      onClick={() => handleCheckout('lifetime')}
+                      disabled={checkoutLoading !== null}
+                      className="px-6 py-3 rounded-xl font-bold text-white bg-amber-600 hover:bg-amber-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
+                    >
+                      {checkoutLoading === 'lifetime' ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        'Get Lifetime Access'
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -299,10 +381,10 @@ export default function PremiumPage() {
               <Sparkles className="w-5 h-5 text-brand-500" />
               Why Go Premium?
             </h2>
-            
+
             <div className="grid md:grid-cols-2 gap-6">
               <BenefitCard
-                icon={<Infinity className="w-6 h-6" />}
+                icon={<InfinityIcon className="w-6 h-6" />}
                 title="Unlimited Analyses"
                 description="Analyze as many bids as you need. Compare contractors, review revisions, and negotiate with confidence."
               />
@@ -318,11 +400,11 @@ export default function PremiumPage() {
               />
               <BenefitCard
                 icon={<TrendingUp className="w-6 h-6" />}
-                title="Save Thousands"
-                description="Our users report saving an average of $2,400 on their projects by catching issues early."
+                title="Save Real Money"
+                description={`Homeowners in ${savingsLocation} save $${savingsAmount.toLocaleString()} on average by catching inflated pricing and hidden costs early.`}
               />
             </div>
-            
+
             <div className="mt-8 pt-6 border-t border-navy-200 flex flex-wrap items-center justify-center gap-6 text-sm text-navy-500">
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4" />

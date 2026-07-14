@@ -1,41 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowRight, X, Sparkles } from 'lucide-react';
-
-interface LocationData {
-  location: string;
-  savings: number;
-}
-
-// Reuse the location savings hook pattern from Hero
-function useLocationSavings() {
-  const [data, setData] = useState<LocationData | null>(null);
-  
-  useEffect(() => {
-    // Check cache first
-    const cached = sessionStorage.getItem('remodeleriq_geo');
-    if (cached) {
-      try {
-        setData(JSON.parse(cached));
-        return;
-      } catch {}
-    }
-    
-    // Fetch from API
-    fetch('/api/geo')
-      .then(res => res.json())
-      .then(result => {
-        const geoData = { location: result.location, savings: result.savings };
-        setData(geoData);
-        sessionStorage.setItem('remodeleriq_geo', JSON.stringify(geoData));
-      })
-      .catch(() => {
-        // Fallback on error
-        setData({ location: 'your area', savings: 1258 });
-      });
-  }, []);
-  
-  return data;
-}
+import useLocationSavings, { DEFAULT_SAVINGS, DEFAULT_LOCATION } from '@/react-app/hooks/useLocationSavings';
 
 interface SampleDemoBannerProps {
   onAnalyzeYourBid: () => void;
@@ -47,8 +12,8 @@ export default function SampleDemoBanner({ onAnalyzeYourBid }: SampleDemoBannerP
   
   if (isDismissed) return null;
   
-  const location = locationSavings?.location || 'your area';
-  const savings = locationSavings?.savings || 1258;
+  const location = locationSavings?.location || DEFAULT_LOCATION;
+  const savings = locationSavings?.savings || DEFAULT_SAVINGS;
   
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pointer-events-none">
