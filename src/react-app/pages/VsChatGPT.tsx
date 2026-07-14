@@ -344,6 +344,11 @@ export default function VsChatGPTPage() {
               <Link to="/how-we-score" className="text-emerald-700 font-medium hover:underline">our full scoring methodology</Link>, or{' '}
               <Link to="/labor-rates" className="text-emerald-700 font-medium hover:underline">look up labor rates in your metro</Link>.
             </p>
+            <p className="mt-2">
+              More comparisons:{' '}
+              <Link to="/vs/bidcompare-ai" className="text-emerald-700 font-medium hover:underline">vs BidCompareAI</Link>{' '}·{' '}
+              <Link to="/vs/estimatehawk" className="text-emerald-700 font-medium hover:underline">vs EstimateHawk</Link>
+            </p>
           </section>
         </div>
       </main>

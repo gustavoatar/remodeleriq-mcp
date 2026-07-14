@@ -350,6 +350,14 @@ export const BREADCRUMBS = {
     { name: 'Home', path: '/' },
     { name: 'RemodelerIQ vs ChatGPT', path: '/vs/chatgpt' },
   ],
+  vsBidCompareAI: [
+    { name: 'Home', path: '/' },
+    { name: 'RemodelerIQ vs BidCompareAI', path: '/vs/bidcompare-ai' },
+  ],
+  vsEstimateHawk: [
+    { name: 'Home', path: '/' },
+    { name: 'RemodelerIQ vs EstimateHawk', path: '/vs/estimatehawk' },
+  ],
   trustRadar: [
     { name: 'Home', path: '/' },
     { name: 'Trust Radar', path: '/trust-radar' },

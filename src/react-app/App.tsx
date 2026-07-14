@@ -16,6 +16,8 @@ import GraveyardPage from "@/react-app/pages/Graveyard";
 import HowWeScorePage from "@/react-app/pages/HowWeScore";
 import QuoteFairnessPage from "@/react-app/pages/QuoteFairness";
 import VsChatGPTPage from "@/react-app/pages/VsChatGPT";
+import VsBidCompareAIPage from "@/react-app/pages/VsBidCompareAI";
+import VsEstimateHawkPage from "@/react-app/pages/VsEstimateHawk";
 import GlossaryPage from "@/react-app/pages/Glossary";
 import TrustedRadarPage from "@/react-app/pages/TrustedRadar";
 import ToolsPage from "@/react-app/pages/Tools";
@@ -123,6 +125,8 @@ export default function App() {
           <Route path="/how-we-score" element={<HowWeScorePage />} />
           <Route path="/is-my-contractor-quote-fair" element={<QuoteFairnessPage />} />
           <Route path="/vs/chatgpt" element={<VsChatGPTPage />} />
+          <Route path="/vs/bidcompare-ai" element={<VsBidCompareAIPage />} />
+          <Route path="/vs/estimatehawk" element={<VsEstimateHawkPage />} />
           <Route path="/glossary" element={<GlossaryPage />} />
           <Route path="/test-payment" element={<TestPaymentPage />} />
           <Route path="/login" element={<LoginPage />} />

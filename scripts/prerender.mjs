@@ -14,7 +14,16 @@ import puppeteer from "puppeteer";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, "..", "dist", "client");
-const ROUTES = ["/how-we-score", "/glossary", "/tools", "/premium", "/is-my-contractor-quote-fair", "/vs/chatgpt"];
+const ROUTES = [
+  "/how-we-score",
+  "/glossary",
+  "/tools",
+  "/premium",
+  "/is-my-contractor-quote-fair",
+  "/vs/chatgpt",
+  "/vs/bidcompare-ai",
+  "/vs/estimatehawk",
+];
 const PORT = 5099;
 
 const MIME = {
