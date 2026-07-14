@@ -14,6 +14,7 @@ import TermsPage from "@/react-app/pages/Terms";
 import PrivacyPage from "@/react-app/pages/Privacy";
 import GraveyardPage from "@/react-app/pages/Graveyard";
 import HowWeScorePage from "@/react-app/pages/HowWeScore";
+import QuoteFairnessPage from "@/react-app/pages/QuoteFairness";
 import GlossaryPage from "@/react-app/pages/Glossary";
 import TrustedRadarPage from "@/react-app/pages/TrustedRadar";
 import ToolsPage from "@/react-app/pages/Tools";
@@ -119,6 +120,7 @@ export default function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/graveyard" element={<GraveyardPage />} />
           <Route path="/how-we-score" element={<HowWeScorePage />} />
+          <Route path="/is-my-contractor-quote-fair" element={<QuoteFairnessPage />} />
           <Route path="/glossary" element={<GlossaryPage />} />
           <Route path="/test-payment" element={<TestPaymentPage />} />
           <Route path="/login" element={<LoginPage />} />

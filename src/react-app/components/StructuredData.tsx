@@ -342,6 +342,10 @@ export const BREADCRUMBS = {
     { name: 'Home', path: '/' },
     { name: 'Cost Calculator', path: '/studio' },
   ],
+  quoteFair: [
+    { name: 'Home', path: '/' },
+    { name: 'Is My Contractor Quote Fair?', path: '/is-my-contractor-quote-fair' },
+  ],
   trustRadar: [
     { name: 'Home', path: '/' },
     { name: 'Trust Radar', path: '/trust-radar' },

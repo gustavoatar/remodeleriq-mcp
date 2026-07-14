@@ -25,6 +25,9 @@ export default function Footer() {
             <Link to="/how-we-score" className="text-gray-400 hover:text-white transition-colors">
               How We Score
             </Link>
+            <Link to="/is-my-contractor-quote-fair" className="text-gray-400 hover:text-white transition-colors">
+              Is My Quote Fair?
+            </Link>
             <Link to="/glossary" className="text-gray-400 hover:text-white transition-colors">
               Glossary
             </Link>

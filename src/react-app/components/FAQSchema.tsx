@@ -44,7 +44,7 @@ export const HOME_FAQS: FAQItem[] = [
   },
   {
     question: 'Is RemodelerIQ free to use?',
-    answer: 'Yes! Free accounts get 5 bid analyses per day. Simply upload a photo or PDF of your contractor estimate and get instant insights on pricing, red flags, and negotiation tips.',
+    answer: 'Yes! Your first 3 bid analyses are free — no credit card required. Upload a photo or PDF of your contractor estimate and get instant insights on pricing, red flags, and negotiation tips. Unlimited plans start at $19.99/month.',
   },
   {
     question: 'What information does the bid analysis include?',
@@ -82,7 +82,7 @@ export const STUDIO_FAQS: FAQItem[] = [
 export const JOIN_FAQS: FAQItem[] = [
   {
     question: 'What do I get with a free RemodelerIQ account?',
-    answer: 'Free accounts include 5 bid analyses per day, full price comparison reports, contractor trust scores, scope red flags, change order risk assessment, and AI-powered negotiation scripts.',
+    answer: 'Free accounts include 3 bid analyses, full price comparison reports, contractor trust scores, scope red flags, change order risk assessment, and AI-powered negotiation scripts — plus saved analysis history.',
   },
   {
     question: 'Do I need a credit card to sign up?',

@@ -64,6 +64,7 @@ Tools:
 
 - [Home / Bid Analyzer](https://remodeleriq.com/): Upload or paste a contractor bid for instant AI analysis
 - [How We Score](https://remodeleriq.com/how-we-score): The Three Pillars methodology (Contract Risk 40%, Price Check 30%, Scope 30%)
+- [Is My Contractor Quote Fair?](https://remodeleriq.com/is-my-contractor-quote-fair): The 5 fairness checks — local price vs BLS/Zonda data, deposit terms, allowances, scope gaps, contractor verification
 - [Labor Rates Tool](https://remodeleriq.com/labor-rates): Look up BLS wage data for construction trades by ZIP code
 - [Trusted Radar](https://remodeleriq.com/trusted-radar): Verify contractor licenses, BBB ratings, and reviews
 - [Glossary](https://remodeleriq.com/glossary): Remodeling terms decoded
