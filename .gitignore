@@ -7,3 +7,13 @@ dist/
 *.log
 .DS_Store
 worker-configuration.d.ts
+
+# AI-tooling local state — never commit (and never let into public/)
+ruvector.db
+**/ruvector.db
+agentdb.rvf
+agentdb.rvf.lock
+.plugin-state/
+
+# One-off migration scratch (contains contact lists / licensed data exports)
+tmp-r2-migration/
