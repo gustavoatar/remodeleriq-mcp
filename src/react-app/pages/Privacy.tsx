@@ -4,7 +4,7 @@ import PageSEO from '@/react-app/components/PageSEO';
 import { BreadcrumbSchema, BREADCRUMBS } from '@/react-app/components/StructuredData';
 
 export default function PrivacyPage() {
-  const lastUpdated = 'June 2025';
+  const lastUpdated = 'July 2026';
   
   return (
     <div className="min-h-screen bg-slate-50">
@@ -91,13 +91,17 @@ export default function PrivacyPage() {
 
               <h3 className="text-lg font-medium text-navy-800 mt-4 mb-2">Aggregated Statistics</h3>
               <p className="text-navy-700 leading-relaxed">
-                Before your data is deleted, we may incorporate it into aggregated statistics (e.g., "average 
-                bathroom remodel cost in Texas is $X based on Y samples"). These statistics:
+                Before your data is deleted, we may incorporate it into cumulative, anonymized statistics (e.g., "average
+                bathroom remodel cost in Texas is $X based on Y samples," or the total number of bids analyzed to date).
+                These are computed incrementally as running counts and averages — we do not keep any per-bid record behind
+                them. These statistics:
               </p>
               <ul className="list-disc list-inside text-navy-700 space-y-2 ml-4 mt-2">
-                <li>Cannot be traced back to any individual bid</li>
+                <li>Cannot be traced back to any individual bid, contractor, or user</li>
                 <li>Contain no personally identifiable information</li>
                 <li>May be retained indefinitely to improve the service</li>
+                <li>May be published or shared publicly (e.g., in research reports, articles, cost guides, and marketing
+                  about remodeling-cost and bid trends) — always in aggregate only, never as an individual bid</li>
               </ul>
 
               <h3 className="text-lg font-medium text-navy-800 mt-4 mb-2">If You Do Not Consent</h3>

@@ -44,6 +44,9 @@
       "bucket_name": "remodeleriq-assets"
     }
   ],
+  "services": [
+    { "binding": "VISUALIZER", "service": "remodeleriq-visualizer" }
+  ],
   "queues": {
     "producers": [
       { "queue": "remodeleriq-blog", "binding": "BLOG_QUEUE" }

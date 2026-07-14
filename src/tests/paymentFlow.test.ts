@@ -282,7 +282,10 @@ describe('Premium Welcome Email', () => {
   });
 
   it('should include formatted expiration date', () => {
-    const premiumEndsAt = new Date('2027-03-11');
+    // Construct via local-time components: 'YYYY-MM-DD' strings parse as UTC
+    // midnight, which formats as the previous day in US timezones. Production
+    // passes epoch-derived Dates, never date-only strings (stripe.ts:626,690).
+    const premiumEndsAt = new Date(2027, 2, 11);
     const formattedDate = premiumEndsAt.toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 

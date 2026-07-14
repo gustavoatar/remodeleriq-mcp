@@ -43,7 +43,7 @@ interface ContractorFingerprintExtract {
 }
 
 interface UploadAreaProps {
-  onFileProcessed: (content: string, fileName: string, overrides?: { projectType?: string | null; squareFootage?: number | null; bidTotal?: number | null; stateCode?: string; contractorFingerprint?: ContractorFingerprintExtract | null; contractorPulse?: ContractorPulse | null; linearFeet?: number | null; unitCount?: number | null }) => void;
+  onFileProcessed: (content: string, fileName: string, overrides?: { projectType?: string | null; squareFootage?: number | null; bidTotal?: number | null; stateCode?: string; contractorFingerprint?: ContractorFingerprintExtract | null; contractorPulse?: ContractorPulse | null; linearFeet?: number | null; unitCount?: number | null; contributeData?: boolean }) => void;
   onBack: () => void;
 }
 
@@ -98,6 +98,8 @@ export default function UploadArea({ onFileProcessed, onBack }: UploadAreaProps)
   const [editedYearBuilt, setEditedYearBuilt] = useState<string>('');
   // Linear feet for fence/gutter/railing projects
   const [editedLinearFeet, setEditedLinearFeet] = useState<string>('');
+  // Anonymized data contribution — on by default, homeowner can opt out before analyzing.
+  const [contributeData, setContributeData] = useState<boolean>(true);
   const [editingField, setEditingField] = useState<'projectType' | 'squareFootage' | 'bidTotal' | 'state' | 'windowCount' | 'yearBuilt' | 'linearFeet' | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -582,7 +584,8 @@ export default function UploadArea({ onFileProcessed, onBack }: UploadAreaProps)
         contractorPulse,
         windowCount,
         yearBuilt,
-        linearFeet
+        linearFeet,
+        contributeData
       };
       onFileProcessed(previewData.extractedText, previewData.fileName, overrides);
     }
@@ -1130,6 +1133,25 @@ export default function UploadArea({ onFileProcessed, onBack }: UploadAreaProps)
             END COMMENTED OUT - Year Built field */}
           </div>
 
+          {/* Anonymized data contribution consent */}
+          <label className="flex items-start gap-3 mb-4 p-3 rounded-xl bg-navy-50 border border-navy-100 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={contributeData}
+              onChange={(e) => setContributeData(e.target.checked)}
+              className="mt-0.5 w-4 h-4 rounded border-navy-300 flex-shrink-0 accent-[#1F9C4C]"
+            />
+            <span className="text-sm text-navy-600">
+              <span className="font-medium text-navy-700">Help make RemodelerIQ smarter.</span>{' '}
+              We anonymize everything — no names, addresses, or documents are ever stored, and raw data is deleted
+              after 24 hours. Only stripped-down numbers (project type, region, pricing, detected issues) are used
+              to sharpen the model's analysis for every homeowner.{' '}
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#1F9C4C] hover:underline">
+                Learn more
+              </a>
+            </span>
+          </label>
+
           {/* Primary action - Analyze Bid */}
           <button
             onClick={handleConfirmAnalysis}
@@ -1225,6 +1247,17 @@ export default function UploadArea({ onFileProcessed, onBack }: UploadAreaProps)
       <div className="max-w-2xl w-full">
         {/* Header */}
         <div className="text-center mb-8">
+          {typeof window !== 'undefined' &&
+            new URLSearchParams(window.location.search).get('from') === 'chatgpt' && (
+              <div className="mb-4 inline-flex items-start gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-left text-sm text-brand-800">
+                <span className="text-base leading-none">👋</span>
+                <span>
+                  <strong>Picking up from ChatGPT.</strong> You already got the quick score — now upload the
+                  actual bid document and we'll run the full line-by-line report (our AI vision reads PDFs &amp; photos
+                  for hidden scope gaps and missing items ChatGPT can't see from text alone).
+                </span>
+              </div>
+            )}
           <h2 className="text-3xl font-bold text-navy-900 mb-3">Upload Your Contractor Bid</h2>
           <p className="text-navy-600 text-lg">
             Upload a PDF or photo of your contractor's quote and we'll analyze it for risks and savings opportunities

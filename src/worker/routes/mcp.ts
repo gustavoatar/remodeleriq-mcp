@@ -6,18 +6,26 @@
 // Endpoint: https://mcp.remodeleriq.com/  (and https://remodeleriq.com/mcp)
 // Tools: analyze_bid, get_cost_estimate, get_labor_rates
 
-import { analyzeBid } from "@/shared/analysisEngine";
-import {
-  getStateAdjustedWages,
-  TRADE_NAMES,
-  CONTRACTOR_MULTIPLIER,
-  getStateName,
-  type TradeType,
-} from "@/shared/blsLaborRates";
-import { getZondaProjectCost, mapToZondaProjectKey } from "@/shared/zondaCostData";
+import { analyzeBidResult, costEstimateResult, laborRatesResult, isToolError } from "@/shared/toolResults";
+import { BID_WIDGET_URI, BID_WIDGET_HTML } from "./bidWidgetHtml";
 
 const PROTOCOL_VERSION = "2025-06-18";
 const SERVER_INFO = { name: "remodeleriq", version: "1.0.0" };
+
+// Apps SDK widget metadata (required for ChatGPT app submission). The widget is
+// fully self-contained (inline HTML/CSS/JS, no external fetches or assets), so
+// the CSP is empty except the "full report" link out to remodeleriq.com. Both
+// snake_case and *_domains variants are included to satisfy either spec version.
+const WIDGET_META = {
+  "openai/widgetDomain": "https://remodeleriq.com",
+  "openai/widgetDescription":
+    "RemodelerIQ bid-analysis score card — confidence score, top red flags, and a link to the full report.",
+  "openai/widgetCSP": {
+    connect_domains: [] as string[],
+    resource_domains: [] as string[],
+    redirect_domains: ["https://remodeleriq.com"],
+  },
+};
 
 // ---- Tool definitions (JSON Schema inputs) ---------------------------------
 const TOOLS = [
@@ -43,6 +51,15 @@ const TOOLS = [
       },
       required: ["bid_text"],
     },
+    annotations: {
+      title: "Analyze a contractor's bid",
+      readOnlyHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+      destructiveHint: false,
+    },
+    // ChatGPT Apps SDK: render the result with the bid-result card widget.
+    _meta: { "openai/outputTemplate": BID_WIDGET_URI },
   },
   {
     name: "get_cost_estimate",
@@ -66,6 +83,13 @@ const TOOLS = [
       },
       required: ["project_type", "state_code"],
     },
+    annotations: {
+      title: "Estimate remodel cost",
+      readOnlyHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+      destructiveHint: false,
+    },
   },
   {
     name: "get_labor_rates",
@@ -85,6 +109,13 @@ const TOOLS = [
       },
       required: ["state_code"],
     },
+    annotations: {
+      title: "Look up trade labor rates",
+      readOnlyHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+      destructiveHint: false,
+    },
   },
 ];
 
@@ -93,77 +124,37 @@ function txt(text: string) {
   return { content: [{ type: "text", text }] };
 }
 
+// Wrap a shared ToolResult into the MCP text-content envelope.
+function wrap(r: ReturnType<typeof analyzeBidResult>) {
+  if (isToolError(r)) return { ...txt(`Error: ${r.error}`), isError: true };
+  return txt(JSON.stringify(r.data, null, 2));
+}
+
 function runAnalyzeBid(args: Record<string, unknown>) {
-  const bidText = String(args.bid_text || "");
-  if (!bidText.trim()) return { ...txt("Error: bid_text is required."), isError: true };
   const bidTotal = typeof args.bid_total === "number" ? args.bid_total : undefined;
-  const state = (String(args.state_code || "GA").toUpperCase()).slice(0, 2);
-  const r = analyzeBid(bidText, bidTotal, state);
-  const out = {
-    confidence_score: r.confidenceScore,
-    verdict:
-      r.confidenceScore >= 75 ? "Looks fair" : r.confidenceScore >= 50 ? "Proceed with caution" : "High risk — scrutinize",
-    summary: r.summary,
-    red_flags: (r.flags || [])
-      .filter((f) => f.level === "critical" || f.level === "high")
-      .map((f) => ({ level: f.level, issue: f.title, detail: f.description, fix: f.recommendation })),
-    missing_items: r.missingItems || [],
-    negotiation_talk_track: r.talkTrack || [],
-    note: "Free analysis from RemodelerIQ. Full report + saved history at https://remodeleriq.com/?view=upload",
+  const r = analyzeBidResult(String(args.bid_text || ""), bidTotal, args.state_code as string | undefined);
+  if (isToolError(r)) return { ...txt(`Error: ${r.error}`), isError: true };
+  // Include structuredContent + widget template so ChatGPT (Apps SDK) can render
+  // the bid-result card. Plain MCP clients ignore these and use the text content.
+  return {
+    ...txt(JSON.stringify(r.data, null, 2)),
+    structuredContent: r.data,
+    _meta: { "openai/outputTemplate": BID_WIDGET_URI },
   };
-  return txt(JSON.stringify(out, null, 2));
 }
 
 function runCostEstimate(args: Record<string, unknown>) {
-  const projectType = String(args.project_type || "");
-  const state = String(args.state_code || "").toUpperCase().slice(0, 2);
-  const cityKey = args.city_key ? String(args.city_key) : undefined;
-  const key = mapToZondaProjectKey(projectType);
-  if (!key) {
-    return {
-      ...txt(
-        `Unknown project type "${projectType}". Try: kitchen-remodel, bathroom-remodel, roofing, siding, deck, addition, basement, window-replacement.`
-      ),
-      isError: true,
-    };
-  }
-  const res = getZondaProjectCost(key, state, cityKey);
-  if (!res) return { ...txt(`No cost data for ${projectType} in ${state}.`), isError: true };
-  const low = Math.round(res.cost * 0.8);
-  const high = Math.round(res.cost * 1.25);
-  const out = {
-    project: projectType,
-    location: `${getStateName(state) || state}`,
-    typical_cost: res.cost,
-    range_low: low,
-    range_high: high,
-    regional_multiplier: res.multiplier,
-    data_source: res.citation || res.sourceName,
-    note: `Estimate for ${state}. Get the localized guide + check your actual bid at https://remodeleriq.com/`,
-  };
-  return txt(JSON.stringify(out, null, 2));
+  return wrap(
+    costEstimateResult(
+      String(args.project_type || ""),
+      String(args.state_code || ""),
+      args.city_key ? String(args.city_key) : undefined
+    )
+  );
 }
 
 function runLaborRates(args: Record<string, unknown>) {
-  const state = String(args.state_code || "").toUpperCase().slice(0, 2);
-  if (!state) return { ...txt("Error: state_code is required."), isError: true };
-  const wages = getStateAdjustedWages(state);
-  const tradeFilter = args.trade ? String(args.trade).toLowerCase() : null;
-  const rates = Object.entries(wages)
-    .map(([trade, meanWage]) => ({
-      trade: TRADE_NAMES[trade as TradeType] || trade,
-      trade_key: trade,
-      bls_mean_wage_per_hour: meanWage,
-      fair_billed_rate_per_hour: Math.round(meanWage * CONTRACTOR_MULTIPLIER * 100) / 100,
-    }))
-    .filter((r) => !tradeFilter || r.trade.toLowerCase().includes(tradeFilter) || r.trade_key.includes(tradeFilter));
-  const out = {
-    state: getStateName(state) || state,
-    note: "BLS mean wage vs. the fair billed rate (incl. ~2.8x burden for overhead, profit, insurance, equipment). 2026.",
-    rates,
-    full_tool: "https://remodeleriq.com/labor-rates",
-  };
-  return txt(JSON.stringify(out, null, 2));
+  return wrap(laborRatesResult(String(args.state_code || ""), args.trade ? String(args.trade) : undefined));
 }
 
 function callTool(name: string, args: Record<string, unknown>) {
@@ -202,7 +193,7 @@ function handleRpc(req: RpcReq): Record<string, unknown> | null {
     case "initialize":
       return ok({
         protocolVersion: PROTOCOL_VERSION,
-        capabilities: { tools: {} },
+        capabilities: { tools: {}, resources: {} },
         serverInfo: SERVER_INFO,
         instructions:
           "RemodelerIQ tools help homeowners check if a contractor's remodeling bid is fair: analyze_bid (score a quote), get_cost_estimate (2026 cost ranges), get_labor_rates (BLS trade wages).",
@@ -221,7 +212,26 @@ function handleRpc(req: RpcReq): Record<string, unknown> | null {
       }
     }
     case "resources/list":
-      return ok({ resources: [] });
+      return ok({
+        resources: [
+          {
+            uri: BID_WIDGET_URI,
+            name: "Bid analysis card",
+            description: "Interactive score card rendered by ChatGPT for analyze_bid results.",
+            mimeType: "text/html+skybridge",
+            _meta: WIDGET_META,
+          },
+        ],
+      });
+    case "resources/read": {
+      const uri = String(params?.uri || "");
+      if (uri === BID_WIDGET_URI) {
+        return ok({
+          contents: [{ uri, mimeType: "text/html+skybridge", text: BID_WIDGET_HTML, _meta: WIDGET_META }],
+        });
+      }
+      return err(-32602, `Resource not found: ${uri}`);
+    }
     case "prompts/list":
       return ok({ prompts: [] });
     default:
@@ -241,7 +251,42 @@ const JSON_HEADERS = { "Content-Type": "application/json", ...CORS };
 // Path-agnostic fetch handler — called directly from the worker for both
 // remodeleriq.com/mcp and the mcp.remodeleriq.com subdomain root. Avoids the
 // Hono prefix-strip mounting quirk that swallowed /mcp into the SPA fallback.
-export async function mcpFetch(request: Request): Promise<Response> {
+// Minimal env shape this handler needs — D1 for usage logging + the rate guard.
+type McpEnv = { DB?: D1Database } | undefined;
+
+// Generous cap: the tools are cheap in-process lookups (no external cost), so
+// this only exists to stop a runaway loop hammering the public endpoint.
+const RATE_LIMIT_PER_MIN = 120;
+
+async function isRateLimited(env: McpEnv, ip: string | null): Promise<boolean> {
+  if (!env?.DB || !ip) return false;
+  try {
+    const row = await env.DB.prepare(
+      "SELECT COUNT(*) AS n FROM mcp_usage WHERE ip = ? AND created_at > datetime('now','-60 seconds')"
+    ).bind(ip).first<{ n: number }>();
+    return (row?.n ?? 0) >= RATE_LIMIT_PER_MIN;
+  } catch {
+    return false; // never block real traffic on a logging failure
+  }
+}
+
+async function logToolCall(env: McpEnv, tool: string, ip: string | null, ua: string | null): Promise<void> {
+  if (!env?.DB || !tool) return;
+  try {
+    await env.DB.prepare("INSERT INTO mcp_usage (tool, ip, ua) VALUES (?, ?, ?)")
+      .bind(tool, ip, ua ? ua.slice(0, 200) : null).run();
+  } catch {
+    /* best-effort — usage logging must never break a tool call */
+  }
+}
+
+function toolNameOf(body: unknown): string | null {
+  const b = body as RpcReq | undefined;
+  if (b && b.method === "tools/call") return String((b.params as Record<string, unknown>)?.name || "unknown");
+  return null;
+}
+
+export async function mcpFetch(request: Request, env?: McpEnv): Promise<Response> {
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
 
   if (request.method === "GET") {
@@ -260,12 +305,29 @@ export async function mcpFetch(request: Request): Promise<Response> {
     return new Response(JSON.stringify({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } }), { status: 400, headers: JSON_HEADERS });
   }
 
+  const ip = request.headers.get("cf-connecting-ip");
+  const ua = request.headers.get("user-agent");
+  const singleTool = Array.isArray(body) ? null : toolNameOf(body);
+
+  // Light per-IP rate guard, tool calls only.
+  if (singleTool && (await isRateLimited(env, ip))) {
+    return new Response(
+      JSON.stringify({ jsonrpc: "2.0", id: (body as RpcReq).id ?? null, error: { code: -32029, message: "Rate limit exceeded. Try again in a minute." } }),
+      { status: 429, headers: JSON_HEADERS }
+    );
+  }
+
   if (Array.isArray(body)) {
     const responses = (body as RpcReq[]).map(handleRpc).filter((r): r is Record<string, unknown> => r !== null);
+    for (const b of body as RpcReq[]) {
+      const t = toolNameOf(b);
+      if (t) await logToolCall(env, t, ip, ua);
+    }
     return new Response(JSON.stringify(responses), { status: 200, headers: JSON_HEADERS });
   }
 
   const res = handleRpc(body as RpcReq);
+  if (singleTool) await logToolCall(env, singleTool, ip, ua);
   if (res === null) return new Response(null, { status: 202, headers: CORS });
   return new Response(JSON.stringify(res), { status: 200, headers: JSON_HEADERS });
 }

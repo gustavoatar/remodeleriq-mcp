@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1F9C4C" />
+    <title>Add RemodelerIQ to your AI — Free MCP Connector</title>
+    <meta name="description" content="Connect RemodelerIQ to Claude, Cursor, VS Code, or any AI assistant. Free MCP server that checks if a contractor's remodeling bid is fair, gets 2026 cost estimates, and looks up trade labor rates." />
+    <link rel="canonical" href="https://remodeleriq.com/connect/" />
+    <meta property="og:title" content="Add RemodelerIQ to your AI" />
+    <meta property="og:description" content="Free MCP connector — your AI can check if a contractor's remodeling bid is fair, using real cost data." />
+    <meta property="og:url" content="https://remodeleriq.com/connect/" />
+    <meta property="og:type" content="website" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5B1H28GHF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-C5B1H28GHF');
+      function track(name){ try { gtag('event', name); } catch(e){} }
+    </script>
+    <style>
+      :root { --green:#1F9C4C; --ink:#0f172a; --muted:#475569; --line:#e2e8f0; --bg:#f8fafc; }
+      * { box-sizing: border-box; }
+      body { margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:#fff; line-height:1.55; }
+      .wrap { max-width:820px; margin:0 auto; padding:56px 20px 80px; }
+      .kicker { display:inline-block; background:#dcfce7; color:var(--green); font-size:.72rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; padding:6px 14px; border-radius:999px; }
+      h1 { font-size:2.6rem; line-height:1.1; letter-spacing:-.03em; margin:18px 0 10px; }
+      .sub { font-size:1.2rem; color:var(--muted); margin:0 0 8px; }
+      h2 { font-size:1.35rem; letter-spacing:-.02em; margin:44px 0 14px; }
+      .endpoint { display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin:28px 0; }
+      .endpoint code { font-size:1.05rem; font-weight:700; color:var(--ink); }
+      .btn { display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:11px 20px; font-weight:700; font-size:.95rem; text-decoration:none; cursor:pointer; border:0; }
+      .btn-green { background:var(--green); color:#fff; }
+      .btn-green:hover { background:#18813e; }
+      .btn-ghost { background:#fff; color:var(--ink); border:1.5px solid var(--line); }
+      .btn-ghost:hover { border-color:var(--green); color:var(--green); }
+      .btns { display:flex; flex-wrap:wrap; gap:12px; margin:8px 0 4px; }
+      pre { background:#0f172a; color:#e2e8f0; border-radius:12px; padding:18px; overflow:auto; font-size:.86rem; margin:12px 0; position:relative; }
+      .copy { position:absolute; top:10px; right:10px; background:rgba(255,255,255,.1); color:#fff; border:0; border-radius:8px; padding:6px 12px; font-size:.75rem; font-weight:700; cursor:pointer; }
+      .copy:hover { background:var(--green); }
+      .card { border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:12px 0; }
+      .card h3 { margin:0 0 8px; font-size:1rem; }
+      .muted { color:var(--muted); }
+      ul.prompts { list-style:none; padding:0; margin:12px 0; }
+      ul.prompts li { background:var(--bg); border:1px solid var(--line); border-left:3px solid var(--green); border-radius:10px; padding:12px 16px; margin:10px 0; font-style:italic; }
+      .foot { margin-top:56px; padding-top:28px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }
+      a { color:var(--green); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <span class="kicker">Free MCP Connector</span>
+      <h1>Add RemodelerIQ to your AI</h1>
+      <p class="sub">Give Claude, Cursor, or any AI assistant the power to check if a contractor's remodeling bid is fair — using real 2026 cost data. Free, no signup, read-only.</p>
+
+      <div class="endpoint">
+        <code id="ep">https://remodeleriq.com/mcp</code>
+        <button class="btn btn-ghost" onclick="copyText('https://remodeleriq.com/mcp', this); track('mcp_copy_url')">Copy URL</button>
+      </div>
+
+      <div class="btns">
+        <a class="btn btn-green" href="cursor://anysphere.cursor-deeplink/mcp/install?name=remodeleriq&config=eyJ1cmwiOiJodHRwczovL3JlbW9kZWxlcmlxLmNvbS9tY3AifQ==" onclick="track('mcp_add_cursor')">＋ Add to Cursor</a>
+        <a class="btn btn-green" href="vscode:mcp/install?%7B%22name%22%3A%22remodeleriq%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fremodeleriq.com%2Fmcp%22%7D" onclick="track('mcp_add_vscode')">＋ Add to VS Code</a>
+        <button class="btn btn-ghost" onclick="copyClaude(this); track('mcp_copy_claude')">Copy config for Claude</button>
+      </div>
+
+      <h2>Set it up in any client</h2>
+
+      <div class="card">
+        <h3>Claude Desktop / Claude Code</h3>
+        <p class="muted">Add to your config (<code>claude_desktop_config.json</code> or <code>.mcp.json</code>):</p>
+        <pre><button class="copy" onclick="copyPre(this)">Copy</button><code id="cfg-claude">{
+  "mcpServers": {
+    "remodeleriq": {
+      "type": "http",
+      "url": "https://remodeleriq.com/mcp"
+    }
+  }
+}</code></pre>
+        <p class="muted">Or, in a terminal: <code>claude mcp add --transport http remodeleriq https://remodeleriq.com/mcp</code></p>
+      </div>
+
+      <div class="card">
+        <h3>Cursor</h3>
+        <p class="muted">Click <strong>Add to Cursor</strong> above, or add to <code>~/.cursor/mcp.json</code>:</p>
+        <pre><button class="copy" onclick="copyPre(this)">Copy</button><code>{
+  "mcpServers": {
+    "remodeleriq": { "url": "https://remodeleriq.com/mcp" }
+  }
+}</code></pre>
+      </div>
+
+      <h2>Try asking your AI</h2>
+      <ul class="prompts">
+        <li>"Is a $48,000 kitchen remodel with a 50% upfront deposit fair in Texas?"</li>
+        <li>"How much should a bathroom remodel cost in Atlanta?"</li>
+        <li>"What should a plumber cost per hour in California?"</li>
+      </ul>
+
+      <h2>What your AI gets</h2>
+      <p class="muted">Three read-only tools, backed by BLS labor wages, Zonda Cost vs. Value benchmarks, and live material indexes:</p>
+      <ul>
+        <li><strong>analyze_bid</strong> — scores a contractor's bid 0–100, flags red flags, returns negotiation talk-tracks</li>
+        <li><strong>get_cost_estimate</strong> — 2026 cost range for a project by US state/city</li>
+        <li><strong>get_labor_rates</strong> — 2026 burdened trade labor rates by state</li>
+      </ul>
+
+      <h2>Or use it right in your AI browser <span style="color:var(--green)">(WebMCP)</span></h2>
+      <p class="muted">
+        No setup at all. On <a href="https://remodeleriq.com">remodeleriq.com</a>, RemodelerIQ publishes these same
+        three tools to your browser's AI via the emerging <strong>WebMCP</strong> standard
+        (<code>navigator.modelContext</code>). AI browsers like Gemini in Chrome and other agentic browsers can run a
+        bid check, cost lookup, or labor-rate lookup <em>on the page itself</em> — no copy/paste, no config.
+      </p>
+      <div class="card">
+        <h3>How to try it</h3>
+        <p class="muted">Open <a href="https://remodeleriq.com">remodeleriq.com</a> in an AI-enabled browser and ask its assistant:</p>
+        <ul class="prompts">
+          <li>"Use this site to check if my $48,000 kitchen bid with a 50% deposit is fair."</li>
+          <li>"Ask RemodelerIQ what a bathroom remodel costs here in Georgia."</li>
+        </ul>
+        <p class="muted" style="margin-top:14px">Developers can confirm the tools are live from the console:</p>
+        <pre><button class="copy" onclick="copyPre(this)">Copy</button><code>// on remodeleriq.com, in an AI browser that supports WebMCP
+'modelContext' in navigator  // → true, exposing analyze_bid, get_cost_estimate, get_labor_rates</code></pre>
+      </div>
+
+      <div class="foot">
+        Built by <a href="https://remodeleriq.com">RemodelerIQ</a> — a free AI bid analyzer for homeowners.
+        Also listed in the <a href="https://registry.modelcontextprotocol.io/" rel="nofollow">official MCP Registry</a> and <a href="https://smithery.ai/server/gustavo-atar/remodeleriq" rel="nofollow">Smithery</a>.
+      </div>
+    </div>
+
+    <script>
+      function copyText(t, btn){ navigator.clipboard.writeText(t).then(()=>flash(btn)); }
+      function copyPre(btn){ const code = btn.parentElement.querySelector('code'); navigator.clipboard.writeText(code.innerText).then(()=>flash(btn)); }
+      function copyClaude(btn){ navigator.clipboard.writeText(document.getElementById('cfg-claude').innerText).then(()=>flash(btn)); }
+      function flash(btn){ const o = btn.innerText; btn.innerText = 'Copied ✓'; setTimeout(()=>btn.innerText=o, 1400); }
+    </script>
+  </body>
+</html>

@@ -11,6 +11,8 @@ import {
   ScrollText,
   BookOpen,
   ArrowRight,
+  Camera,
+  Bot,
 } from 'lucide-react';
 
 const BRAND = '#1F9C4C';
@@ -31,6 +33,15 @@ interface Tool {
 
 // The free tools that funnel toward the paid analyzer. Order = funnel priority.
 const TOOLS: Tool[] = [
+  {
+    title: 'Photo Cost Estimator',
+    blurb:
+      'Snap a photo of your kitchen, bath, or basement and get an instant 2026 cost range — backed by Zonda, BLS, and Houzz data. No signup.',
+    href: '/visualizer/',
+    external: true,
+    icon: Camera,
+    cta: 'Estimate from a photo',
+  },
   {
     title: 'Remodeling Cost Estimator',
     blurb:
@@ -71,6 +82,15 @@ const TOOLS: Tool[] = [
     href: '/glossary',
     icon: BookOpen,
     cta: 'Browse terms',
+  },
+  {
+    title: 'Add RemodelerIQ to your AI',
+    blurb:
+      'Connect RemodelerIQ to Claude, Cursor, or any AI assistant. Your AI can then check if a contractor bid is fair, using real cost data. Free MCP connector.',
+    href: '/connect/',
+    external: true,
+    icon: Bot,
+    cta: 'Connect your AI',
   },
 ];
 

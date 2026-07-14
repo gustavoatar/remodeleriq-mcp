@@ -732,6 +732,48 @@ app.post("/:wpPostId/strip-spans", async (c) => {
   }
 });
 
+// POST /:wpPostId/strip-broken-chart — surgically remove any chart block whose
+// bars rendered at zero (width="0" / "0.0%") — a data-less block that shipped
+// before the chartHasData() guard existed. Leaves valid charts and all other
+// content untouched. In-place, no regeneration.
+// ====================================================================
+app.post("/:wpPostId/strip-broken-chart", async (c) => {
+  const wpPostId = parseInt(c.req.param("wpPostId"));
+  if (!wpPostId) return c.json({ error: "bad wpPostId" }, 400);
+
+  const row = await c.env.DB.prepare(
+    "SELECT persona FROM content_drafts WHERE wp_post_id = ? LIMIT 1"
+  ).bind(wpPostId).first<{ persona: string | null }>();
+  const persona = (row?.persona || "bella") as "bella" | "gustavo";
+
+  try {
+    const post = await getWpPost(c.env as never, persona, wpPostId);
+    const pc = (post as unknown as { content?: { raw?: string; rendered?: string } }).content;
+    const raw = pc?.raw ?? pc?.rendered ?? "";
+    if (!raw) return c.json({ error: "no content" }, 404);
+
+    let removed = 0;
+    // Match the chart wrapper (with or without its wp:html comment wrapper) and
+    // drop it only when it contains a zero-width bar — the broken-chart signature.
+    const cleaned = raw
+      .replace(
+        /(?:<!-- wp:html -->\s*)?<div class="riq-chart-wrap"[\s\S]*?<\/div>(?:\s*<!-- \/wp:html -->)?/g,
+        (m) => {
+          if (/width="0"/.test(m)) { removed++; return ""; }
+          return m;
+        }
+      )
+      .replace(/\n{3,}/g, "\n\n");
+
+    if (removed === 0) return c.json({ success: true, removed: 0, note: "no broken chart found" });
+
+    await updateWpPostContent(c.env as never, persona, wpPostId, cleaned);
+    return c.json({ success: true, removed, persona });
+  } catch (err) {
+    return c.json({ error: err instanceof Error ? err.message : "strip failed" }, 500);
+  }
+});
+
 // ====================================================================
 // POST /:wpPostId/refresh — regenerate an existing published post's content
 // with the CURRENT renderers (fixes chart clipping, span leaks, layout, etc.)

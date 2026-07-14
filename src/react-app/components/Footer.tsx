@@ -1,4 +1,7 @@
 import { Link } from 'react-router';
+import { Facebook } from 'lucide-react';
+
+const FACEBOOK_URL = 'https://www.facebook.com/remodeleriq';
 
 export default function Footer() {
   return (
@@ -7,6 +10,15 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
             <img src="/mocha-assets/remodeler-iq-2x-logo-reverse.svg" alt="RemodelerIQ" className="h-12" />
+            <a
+              href={FACEBOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow RemodelerIQ on Facebook"
+              className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#1F9C4C]"
+            >
+              <Facebook className="h-[18px] w-[18px]" />
+            </a>
           </div>
           
           <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 text-sm">
@@ -33,6 +45,9 @@ export default function Footer() {
             </a>
             <a href="https://intelligence.remodeleriq.com/remodeling-cost-guides/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
               Remodeling Guides
+            </a>
+            <a href="/partners" className="text-gray-400 hover:text-white transition-colors">
+              For Partners
             </a>
           </div>
         </div>

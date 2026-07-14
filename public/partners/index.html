@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1F9C4C" />
+    <title>Add a Free Contractor Bid Checker to Your Site — RemodelerIQ for Partners</title>
+    <meta name="description" content="Realtors, home inspectors, and home-service pros: embed RemodelerIQ's free contractor-bid checker on your site with one line of code. Give clients an instant fairness score — no signup, no cost." />
+    <link rel="canonical" href="https://remodeleriq.com/partners/" />
+    <meta property="og:title" content="Add a free contractor-bid checker to your site" />
+    <meta property="og:description" content="One line of code. Give your clients an instant, data-backed check on any contractor's remodeling bid." />
+    <meta property="og:url" content="https://remodeleriq.com/partners/" />
+    <meta property="og:type" content="website" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5B1H28GHF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-C5B1H28GHF');
+      function track(name){ try { gtag('event', name); } catch(e){} }
+    </script>
+    <style>
+      :root { --green:#1F9C4C; --ink:#0f172a; --muted:#475569; --line:#e2e8f0; --bg:#f6f8f7; }
+      * { box-sizing: border-box; }
+      body { margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:#fff; line-height:1.55; }
+      .wrap { max-width:900px; margin:0 auto; padding:56px 20px 90px; }
+      .kicker { display:inline-block; background:#dcfce7; color:var(--green); font-size:.72rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; padding:6px 14px; border-radius:999px; }
+      h1 { font-size:2.7rem; line-height:1.08; letter-spacing:-.03em; margin:18px 0 12px; max-width:16ch; }
+      .sub { font-size:1.2rem; color:var(--muted); margin:0 0 8px; max-width:60ch; }
+      h2 { font-size:1.35rem; letter-spacing:-.02em; margin:52px 0 14px; }
+      .cols { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; margin-top:40px; }
+      @media (max-width:760px){ .cols { grid-template-columns:1fr; gap:28px; } h1 { font-size:2.1rem; } }
+      pre { background:#0f172a; color:#e2e8f0; border-radius:12px; padding:18px; overflow:auto; font-size:.85rem; margin:12px 0; position:relative; line-height:1.6; }
+      .copy { position:absolute; top:10px; right:10px; background:rgba(255,255,255,.12); color:#fff; border:0; border-radius:8px; padding:6px 12px; font-size:.75rem; font-weight:700; cursor:pointer; }
+      .copy:hover { background:var(--green); }
+      .who { list-style:none; padding:0; margin:14px 0; }
+      .who li { display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:1rem; }
+      .who li b { color:var(--ink); }
+      .dot { width:8px; height:8px; border-radius:50%; background:var(--green); margin-top:8px; flex:0 0 auto; }
+      .previewbox { background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:20px; }
+      .previewbox .plabel { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+      .steps { counter-reset:s; list-style:none; padding:0; margin:14px 0; }
+      .steps li { counter-increment:s; position:relative; padding:8px 0 8px 40px; font-size:1rem; }
+      .steps li::before { content:counter(s); position:absolute; left:0; top:6px; width:26px; height:26px; background:var(--green); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:800; }
+      .foot { margin-top:64px; padding-top:28px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }
+      a { color:var(--green); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <span class="kicker">Free · One line of code</span>
+      <h1>Add a free contractor-bid checker to your site</h1>
+      <p class="sub">Give your clients an instant, data-backed read on any contractor's remodeling bid — right on your website. No signup, no cost, no maintenance.</p>
+
+      <div class="cols">
+        <div>
+          <h2 style="margin-top:8px">Paste this where you want it</h2>
+          <pre><button class="copy" onclick="copyPre(this); track('embed_copy')">Copy</button><code id="snippet">&lt;div id="remodeleriq-bid-checker"&gt;&lt;/div&gt;
+&lt;script src="https://remodeleriq.com/embed.js" async&gt;&lt;/script&gt;</code></pre>
+          <ol class="steps">
+            <li>Copy the snippet above.</li>
+            <li>Paste it into any page or post (HTML block, widget area, or site builder embed).</li>
+            <li>That's it — it's live, responsive, and updates itself.</li>
+          </ol>
+
+          <h2>Who it's for</h2>
+          <ul class="who">
+            <li><span class="dot"></span><span><b>Realtors &amp; agents</b> — help buyers vet renovation quotes on listings that need work.</span></li>
+            <li><span class="dot"></span><span><b>Home inspectors</b> — a natural add-on your clients will actually use.</span></li>
+            <li><span class="dot"></span><span><b>Home-service pros &amp; bloggers</b> — a genuinely useful tool that keeps people on your page.</span></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="previewbox">
+            <div class="plabel">Live preview — this is the widget</div>
+            <div id="remodeleriq-bid-checker"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot">
+        Built by <a href="https://remodeleriq.com">RemodelerIQ</a> — a free AI bid analyzer for homeowners, backed by BLS labor wages and Zonda 2026 cost benchmarks.
+        Questions? <a href="mailto:help@remodeleriq.com">help@remodeleriq.com</a>.
+      </div>
+    </div>
+
+    <script>
+      function copyPre(btn){ var code=btn.parentElement.querySelector('code'); var t=code.innerText; navigator.clipboard.writeText(t).then(function(){ var o=btn.innerText; btn.innerText='Copied ✓'; setTimeout(function(){ btn.innerText=o; }, 1400); }); }
+    </script>
+    <!-- Live preview loads the real widget -->
+    <script src="https://remodeleriq.com/embed.js?v=2" async></script>
+  </body>
+</html>

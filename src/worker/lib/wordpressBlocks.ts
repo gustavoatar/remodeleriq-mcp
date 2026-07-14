@@ -466,7 +466,23 @@ function renderImageBlock(
 <!-- /wp:html -->`;
 }
 
+// Guard against publishing an empty chart: if every numeric value in the chart
+// data is 0 or missing, the SVG renders zero-width bars + "0.0%" labels (a broken,
+// data-less block). Skip rendering entirely in that case.
+function chartHasData(data: unknown): boolean {
+  let found = false;
+  const walk = (v: unknown) => {
+    if (found) return;
+    if (typeof v === "number") { if (isFinite(v) && v !== 0) found = true; }
+    else if (Array.isArray(v)) v.forEach(walk);
+    else if (v && typeof v === "object") Object.values(v).forEach(walk);
+  };
+  walk(data);
+  return found;
+}
+
 function renderChartBlock(b: Extract<BlogBlock, { type: "chart" }>): string {
+  if (!chartHasData(b.data)) return ""; // never emit an all-zero / data-less chart
   let svg = "";
   if (b.chart_type === "bar") svg = renderBarChartSvg(b.data as BarChartData);
   else if (b.chart_type === "comparison_bars") svg = renderComparisonBarsSvg(b.data as ComparisonBarsData);
@@ -492,6 +508,10 @@ const VALID_INTERNAL_URLS = new Set([
   "https://remodeleriq.com/premium",
   "https://remodeleriq.com/remodeling-cost-guides/",
   "https://remodeleriq.com/studio",
+  "https://remodeleriq.com/visualizer/",
+  "https://remodeleriq.com/visualizer",
+  "https://remodeleriq.com/tools",
+  "https://remodeleriq.com/?view=upload",
   "https://intelligence.remodeleriq.com",
   "https://intelligence.remodeleriq.com/",
 ]);

@@ -24,6 +24,9 @@ declare global {
     NEXTDOOR_CLIENT_SECRET?: string;
     REDDIT_CLIENT_ID?: string;
     REDDIT_CLIENT_SECRET?: string;
+    // Service binding to the remodeleriq-visualizer Worker (photo -> estimate).
+    // Requests to /api/visualizer/* are forwarded here, keeping them same-origin.
+    VISUALIZER: Fetcher;
   }
 }
 

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router';
 import { useAuth } from '@/react-app/lib/auth';
 import Header from '@/react-app/components/Header';
@@ -57,6 +57,7 @@ interface AnalyzedBid {
     linearFeet?: number | null;
     contractorFingerprint?: ContractorFingerprintExtract | null;
     contractorPulse?: ContractorPulse | null;
+    contributeData?: boolean;
   };
   bidTotal?: number | null;
   zipCode?: string;
@@ -576,6 +577,7 @@ export default function HomePage() {
     return {
       confidenceScore: analysis.confidenceScore,
       bidTotal: effectiveBidTotal,
+      issues: analysis.flags.map(f => f.id),
       flagCounts: {
         critical: analysis.flags.filter(f => f.level === 'critical').length,
         high: analysis.flags.filter(f => f.level === 'high').length,
@@ -585,10 +587,36 @@ export default function HomePage() {
     };
   }, [analyzedBid, effectiveBidTotal, userStateCode, effectiveYearBuilt]);
 
+  // Contribute anonymized bid data to benchmarks (opt-out consent captured at upload).
+  // Fires once per real analyzed bid; skips the sample demo. No PII leaves the client —
+  // only project type, region, pricing, square footage, score, and issue codes.
+  const contributedBidsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!analyzedBid || !analysisData || isSampleDemo) return;
+    if (analyzedBid.overrides?.contributeData === false) return;
+
+    const sig = `${analyzedBid.fileName}|${effectiveBidTotal ?? ''}|${effectiveSquareFootage ?? ''}`;
+    if (contributedBidsRef.current.has(sig)) return;
+    contributedBidsRef.current.add(sig);
+
+    fetch('/api/bid-analytics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        projectType: projectType || 'Unknown',
+        stateCode: userStateCode || undefined,
+        totalAmount: effectiveBidTotal ?? undefined,
+        squareFootage: effectiveSquareFootage ?? undefined,
+        issuesDetected: analysisData.issues,
+        confidenceScore: analysisData.confidenceScore,
+      }),
+    }).catch(() => { /* non-blocking; ignore */ });
+  }, [analyzedBid, analysisData, isSampleDemo, projectType, userStateCode, effectiveBidTotal, effectiveSquareFootage]);
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const betaParam = params.get('beta') || params.get('utm_source');
-    
+
     if (betaParam === 'launch' || betaParam === 'beta') {
       localStorage.setItem(STORAGE_KEYS.betaSource, betaParam);
       if (typeof window !== 'undefined' && (window as any).gtag) {
@@ -654,7 +682,7 @@ export default function HomePage() {
     setCurrentView('upload');
   }, [navigate, isLoggedIn, uploadLimits]);
 
-  const handleFileProcessed = useCallback(async (content: string, fileName: string, overrides?: { projectType?: string | null; squareFootage?: number | null; bidTotal?: number | null; stateCode?: string; windowCount?: number | null; linearFeet?: number | null; contractorFingerprint?: ContractorFingerprintExtract | null; contractorPulse?: ContractorPulse | null }) => {
+  const handleFileProcessed = useCallback(async (content: string, fileName: string, overrides?: { projectType?: string | null; squareFootage?: number | null; bidTotal?: number | null; stateCode?: string; windowCount?: number | null; linearFeet?: number | null; contractorFingerprint?: ContractorFingerprintExtract | null; contractorPulse?: ContractorPulse | null; contributeData?: boolean }) => {
     // Record upload on server (tracks usage and returns updated limits)
     try {
       const response = await fetch('/api/usage/record-upload', {
@@ -809,7 +837,53 @@ export default function HomePage() {
             </div>
           )}
           <Hero onGetStarted={handleGetStarted} onSeeDemo={handleSeeDemo} />
-          
+
+          {/* Showcase gallery — curated remodel inspiration; funnels to the photo Visualizer */}
+          <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+            <div className="max-w-6xl mx-auto text-center">
+              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+                See what your remodel could cost
+              </h2>
+              <p className="mt-3 text-lg text-slate-600 max-w-2xl mx-auto">
+                Snap a photo of your kitchen, bath, or basement and get an instant 2026 cost estimate — free, no signup.
+              </p>
+              <div className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  { src: '/visualizer/inspiration/spa-bath.jpg', label: 'Spa Bathroom' },
+                  { src: '/visualizer/inspiration/modern-vanity.jpg', label: 'Modern Vanity' },
+                  { src: '/visualizer/inspiration/farmhouse-living.jpg', label: 'Open-Concept Living' },
+                  { src: '/visualizer/inspiration/entry-level-basement.jpg', label: 'Finished Basement' },
+                  { src: '/visualizer/inspiration/master-bedroom.jpg', label: 'Master Suite' },
+                  { src: '/visualizer/inspiration/modern-office.jpg', label: 'Home Office' },
+                ].map((item) => (
+                  <a
+                    key={item.src}
+                    href="/visualizer/"
+                    className="group relative block overflow-hidden rounded-xl aspect-[4/3] shadow-sm"
+                    aria-label={`Estimate a ${item.label} remodel`}
+                  >
+                    <img
+                      src={item.src}
+                      alt={item.label}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                    <span className="absolute bottom-3 left-3 text-sm font-bold text-white drop-shadow">
+                      {item.label}
+                    </span>
+                  </a>
+                ))}
+              </div>
+              <a
+                href="/visualizer/"
+                className="mt-10 inline-flex items-center gap-2 rounded-xl bg-[#1F9C4C] px-8 py-3.5 text-base font-bold text-white shadow-md transition-colors hover:bg-[#18813e] no-underline"
+              >
+                Estimate your project from a photo →
+              </a>
+            </div>
+          </section>
+
           {/* CTA Section */}
           <section className="py-16 px-4 sm:px-6 lg:px-8 bg-emerald-600">
             <div className="max-w-3xl mx-auto text-center">

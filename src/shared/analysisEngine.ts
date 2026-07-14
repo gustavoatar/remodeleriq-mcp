@@ -465,7 +465,10 @@ export function analyzeBid(
   // Apply Safety Compliance adjustment (Pre-1978 Lead Safety + Contingency)
   confidenceScore += safetyCompliance.totalAdjustment;
   
-  confidenceScore = Math.max(0, Math.min(100, confidenceScore));
+  // Floor at 12 (not 0): a genuinely risky bid should read "12/100 — high risk",
+  // a real verdict, rather than "0/100" which looks like the tool errored. The
+  // verdict/flags carry the severity; the number just shouldn't look broken.
+  confidenceScore = Math.max(12, Math.min(100, confidenceScore));
   
   // Generate summary
   const criticalCount = flags.filter(f => f.level === 'critical').length;

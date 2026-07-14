@@ -4,7 +4,7 @@ import PageSEO from '@/react-app/components/PageSEO';
 import { BreadcrumbSchema, BREADCRUMBS } from '@/react-app/components/StructuredData';
 
 export default function TermsPage() {
-  const lastUpdated = 'June 2025';
+  const lastUpdated = 'July 2026';
   
   return (
     <div className="min-h-screen bg-slate-50">
@@ -285,11 +285,17 @@ export default function TermsPage() {
                   identifiable information.</li>
                 <li><strong>Retention period:</strong> 24 hours. After 24 hours, your contributed data is automatically 
                   and permanently deleted from our systems.</li>
-                <li><strong>How it's used:</strong> Your anonymized data helps us calculate regional pricing benchmarks, 
+                <li><strong>How it's used:</strong> Your anonymized data helps us calculate regional pricing benchmarks,
                   identify common issues by project type, and improve our AI analysis for all users.</li>
-                <li><strong>Aggregated statistics:</strong> We may retain aggregated, fully anonymized statistics 
-                  (e.g., "average kitchen remodel cost in Georgia") indefinitely. These statistics cannot be traced 
-                  back to any individual bid.</li>
+                <li><strong>Aggregated statistics:</strong> Before your contributed data is deleted, we combine it into
+                  cumulative, fully anonymized statistics — running counts and averages such as "average kitchen remodel
+                  cost in Georgia" or "number of bids analyzed to date." These aggregates are computed incrementally and
+                  contain no per-bid records. They cannot be traced back to any individual bid, contractor, or user, and
+                  we may retain them indefinitely.</li>
+                <li><strong>Publication of aggregates:</strong> We may publish, share, and use these anonymized aggregate
+                  statistics publicly — for example in research reports, articles, cost guides, and marketing about
+                  remodeling-cost and contractor-bid trends. We never publish or share any individual bid, document, or
+                  personally identifiable information.</li>
               </ul>
               <p className="text-navy-700 leading-relaxed mt-3">
                 <strong>Consent is optional.</strong> You can use the Service without contributing data. If you choose 

@@ -29,6 +29,9 @@ import inboundEmailRoutes from './routes/inboundEmail';
 import facebookWebhookRoutes from './routes/facebookWebhook';
 import facebookPublishRoutes from './routes/facebookPublish';
 import { mcpFetch } from './routes/mcp';
+import conciergeRoutes from './routes/concierge';
+import { EMBED_LOADER_JS } from './routes/embed';
+import { analyzeBidResult, isToolError } from '@/shared/toolResults';
 import { generateAndScheduleFbBatch } from './lib/fbContentGenerator';
 import { scoutRedditRss } from './lib/redditScout';
 import { authMiddleware } from './middleware/auth';
@@ -163,7 +166,7 @@ const app = new Hono<AppEnv>();
 app.use('*', async (c, next) => {
   const host = (c.req.header('host') || '').toLowerCase();
   if (host.startsWith('mcp.')) {
-    return mcpFetch(c.req.raw);
+    return mcpFetch(c.req.raw, c.env);
   }
   await next();
 });
@@ -389,8 +392,16 @@ app.route('/api/admin/blog', blogPublishRoutes);
 app.route('/api/webhooks', inboundEmailRoutes);
 app.route('/api/webhooks', facebookWebhookRoutes);
 app.route('/api/admin/facebook', facebookPublishRoutes);
-app.all('/mcp', (c) => mcpFetch(c.req.raw));
-app.all('/mcp/*', (c) => mcpFetch(c.req.raw));
+app.route('/api/concierge', conciergeRoutes);
+app.all('/mcp', (c) => mcpFetch(c.req.raw, c.env));
+app.all('/mcp/*', (c) => mcpFetch(c.req.raw, c.env));
+
+// Visualizer (photo -> estimate) — forwarded to the remodeleriq-visualizer
+// Worker via the VISUALIZER service binding. Same-origin so the static tool at
+// /visualizer/ calls /api/visualizer/* with no CORS. Exact paths only (parse =
+// multipart image, estimate = JSON); kept off app.route to avoid prefix-strip.
+app.all('/api/visualizer/parse', (c) => c.env.VISUALIZER.fetch(c.req.raw));
+app.all('/api/visualizer/estimate', (c) => c.env.VISUALIZER.fetch(c.req.raw));
 
 // ============================================
 // AGENT DISCOVERY — RFC 9727 API catalog (application/linkset+json).
@@ -469,6 +480,100 @@ app.get('/.well-known/agent-skills/index.json', (c) => {
     'Cache-Control': 'public, max-age=3600',
     'Access-Control-Allow-Origin': '*',
   });
+});
+
+// Agentic Resource Discovery (ARD) catalog — the Google/Microsoft-backed spec that
+// lets agent registries discover our MCP server. Wraps the existing MCP server card
+// (/.well-known/mcp/server-card.json) in the ARD envelope. Spec: agenticresourcediscovery.org
+app.get('/.well-known/ai-catalog.json', (c) => {
+  const catalog = {
+    specVersion: '1.0',
+    host: {
+      displayName: 'RemodelerIQ',
+      identifier: 'remodeleriq.com',
+      documentationUrl: 'https://remodeleriq.com/connect',
+      logoUrl: 'https://remodeleriq.com/mocha-assets/remodeler-iq-2x-logo-icon2.png',
+    },
+    entries: [
+      {
+        identifier: 'urn:air:remodeleriq.com:server:bid-analyzer',
+        displayName: 'RemodelerIQ Bid Analyzer',
+        type: 'application/mcp-server-card+json',
+        url: 'https://remodeleriq.com/.well-known/mcp/server-card.json',
+        description:
+          "Check if a home-remodeling contractor's bid is fair — 0-100 fairness score, red flags, 2026 cost ranges, and BLS trade labor rates.",
+        capabilities: ['analyze_bid', 'get_cost_estimate', 'get_labor_rates'],
+        representativeQueries: [
+          'is this contractor quote fair',
+          'how much should a kitchen remodel cost in Texas',
+          'what should a plumber charge per hour',
+          'analyze my remodeling bid for red flags',
+          'how much does a bathroom remodel cost',
+        ],
+        tags: ['home-improvement', 'construction', 'cost-estimate', 'consumer', 'remodeling'],
+        trustManifest: { identity: 'remodeleriq.com', identityType: 'domain' },
+        version: '1.0.0',
+        updatedAt: '2026-07-03',
+      },
+    ],
+  };
+  return c.body(JSON.stringify(catalog, null, 2), 200, {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'public, max-age=3600',
+    'Access-Control-Allow-Origin': '*',
+  });
+});
+
+// OpenAI ChatGPT App — domain ownership verification token. Served as plaintext
+// at the origin-root well-known path OpenAI checks during app submission.
+app.get('/.well-known/openai-apps-challenge', (c) =>
+  c.body('UsU1rM6Y5hW8KMm_ceL_OcRMAy7TKS1mf7epiZOQWU4', 200, {
+    'Content-Type': 'text/plain',
+    'Cache-Control': 'no-store',
+  })
+);
+
+// ============================================
+// EMBEDDABLE BID CHECKER WIDGET
+// Partners drop <script src="/embed.js"> on their site. See routes/embed.ts.
+// ============================================
+app.get('/embed.js', (c) =>
+  c.body(EMBED_LOADER_JS, 200, {
+    'Content-Type': 'text/javascript; charset=utf-8',
+    'Cache-Control': 'no-store', // never cache the loader — keeps the iframe path fresh
+    'Access-Control-Allow-Origin': '*',
+  })
+);
+
+// The widget page itself is served as a STATIC asset at /embed/checker/ (see
+// public/embed/checker/index.html). Static assets are matched before the SPA
+// not-found fallback, so browser navigations get the real widget — a worker
+// route here would be shadowed by the SPA fallback for text/html requests.
+
+// Public analysis endpoint powering the embed. Same shared engine as MCP/WebMCP.
+const EMBED_CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Max-Age': '86400',
+};
+app.options('/api/embed/analyze', (c) => c.body(null, 204, EMBED_CORS));
+app.post('/api/embed/analyze', async (c) => {
+  let body: { bid_text?: string; bid_total?: number; state_code?: string };
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: 'Invalid request.' }, 400);
+  }
+  const bidText = String(body.bid_text || '').slice(0, 12000);
+  if (!bidText.trim()) return c.json({ error: 'bid_text is required.' }, 400, EMBED_CORS);
+  const r = analyzeBidResult(
+    bidText,
+    typeof body.bid_total === 'number' ? body.bid_total : undefined,
+    body.state_code
+  );
+  if (isToolError(r)) return c.json({ error: r.error }, 400, EMBED_CORS);
+  return c.json({ data: r.data }, 200, EMBED_CORS);
 });
 
 // ============================================
@@ -3600,15 +3705,36 @@ app.post("/api/bid-analytics", async (c) => {
       expiresAt.toISOString()
     ).run();
 
-    // Trigger benchmark update in background (fire and forget)
-    updateBidBenchmarks(db, projectType, stateCode || null).catch(err => 
-      console.error('Benchmark update error:', err)
-    );
-
-    // Also clean up expired data in background
-    cleanupExpiredBidData(db).catch(err => 
-      console.error('Cleanup error:', err)
-    );
+    // Post-response background work. MUST go through waitUntil — a bare fire-and-forget
+    // promise is killed when the isolate freezes after the response, so these updates
+    // silently never run (that's why benchmarks/lifetime stats stayed empty).
+    c.executionCtx.waitUntil((async () => {
+      try {
+        // Accumulate lifetime aggregates (durable, never-expiring, no raw rows).
+        // Both the specific state and the national (NULL) roll-up get incremented.
+        await updateLifetimeBidStats(db, {
+          projectType,
+          stateCode: stateCode || null,
+          totalAmount: totalAmount ?? null,
+          pricePerSqft,
+          confidenceScore: confidenceScore ?? null,
+          issuesDetected: issuesDetected ?? null,
+          tradeBreakdown: tradeBreakdown ?? null,
+        });
+      } catch (err) {
+        console.error('Lifetime stats update error:', err);
+      }
+      try {
+        await updateBidBenchmarks(db, projectType, stateCode || null);
+      } catch (err) {
+        console.error('Benchmark update error:', err);
+      }
+      try {
+        await cleanupExpiredBidData(db);
+      } catch (err) {
+        console.error('Cleanup error:', err);
+      }
+    })());
 
     return c.json({ 
       success: true, 
@@ -3724,6 +3850,65 @@ app.get("/api/bid-benchmarks/all", authMiddleware, async (c) => {
   }
 });
 
+// Cumulative lifetime aggregate stats (admin only) — durable source for reporting.
+app.get("/api/bid-stats/lifetime", authMiddleware, async (c) => {
+  const user = c.get('user');
+  if (!isAdminEmail(user.email, c.env)) return c.json({ error: "Forbidden" }, 403);
+  try {
+    const db = c.env.DB;
+    const rows = await db.prepare(
+      `SELECT project_type, state_code, lifetime_count,
+              sum_total_amount, count_total_amount, sum_price_per_sqft, count_price_per_sqft,
+              sum_confidence_score, count_confidence_score, min_total_amount, max_total_amount,
+              issue_counts, trade_sums, first_seen_at, last_seen_at
+       FROM bid_stats_lifetime
+       ORDER BY lifetime_count DESC`
+    ).all<{
+      project_type: string;
+      state_code: string | null;
+      lifetime_count: number;
+      sum_total_amount: number;
+      count_total_amount: number;
+      sum_price_per_sqft: number;
+      count_price_per_sqft: number;
+      sum_confidence_score: number;
+      count_confidence_score: number;
+      min_total_amount: number | null;
+      max_total_amount: number | null;
+      issue_counts: string | null;
+      trade_sums: string | null;
+      first_seen_at: string | null;
+      last_seen_at: string | null;
+    }>();
+
+    const national = (rows.results || []).find(r => r.state_code === null);
+    const totalAnalyzed = national?.lifetime_count ?? 0;
+
+    const stats = (rows.results || []).map(r => ({
+      projectType: r.project_type,
+      stateCode: r.state_code,
+      count: r.lifetime_count,
+      avgTotalAmount: r.count_total_amount ? Math.round(r.sum_total_amount / r.count_total_amount) : null,
+      avgPricePerSqft: r.count_price_per_sqft ? Math.round((r.sum_price_per_sqft / r.count_price_per_sqft) * 100) / 100 : null,
+      avgConfidenceScore: r.count_confidence_score ? Math.round(r.sum_confidence_score / r.count_confidence_score) : null,
+      minTotalAmount: r.min_total_amount,
+      maxTotalAmount: r.max_total_amount,
+      issueCounts: r.issue_counts ? JSON.parse(r.issue_counts) : {},
+      tradeAverages: r.trade_sums
+        ? Object.fromEntries(Object.entries(JSON.parse(r.trade_sums) as Record<string, { sumAmount: number; sumPct: number; count: number }>)
+            .map(([trade, d]) => [trade, { avgAmount: Math.round(d.sumAmount / d.count), avgPercentage: Math.round((d.sumPct / d.count) * 10) / 10 }]))
+        : {},
+      firstSeenAt: r.first_seen_at,
+      lastSeenAt: r.last_seen_at,
+    }));
+
+    return c.json({ success: true, totalAnalyzed, stats });
+  } catch (error) {
+    console.error('Lifetime stats fetch error:', error);
+    return c.json({ success: false, error: 'Failed to fetch lifetime stats' }, 500);
+  }
+});
+
 // Helper: Update benchmarks for a project type/state combination
 async function updateBidBenchmarks(db: D1Database, projectType: string, stateCode: string | null): Promise<void> {
   // Get all non-expired bids for this project type and state
@@ -3829,6 +4014,112 @@ async function updateBidBenchmarks(db: D1Database, projectType: string, stateCod
     JSON.stringify(issueCounts),
     JSON.stringify(tradeAverages)
   ).run();
+}
+
+// Helper: Incrementally accumulate lifetime aggregate stats for one analysis.
+// Writes ONLY to bid_stats_lifetime (running sums/counts, never a raw per-bid row).
+// Called for the specific state AND the national NULL roll-up so both accrue.
+interface LifetimeStatInput {
+  projectType: string;
+  stateCode: string | null;
+  totalAmount: number | null;
+  pricePerSqft: number | null;
+  confidenceScore: number | null;
+  issuesDetected: string[] | null;
+  tradeBreakdown: Array<{ trade: string; amount: number; percentage: number }> | null;
+}
+
+async function accumulateLifetimeRow(db: D1Database, scope: string | null, input: LifetimeStatInput): Promise<void> {
+  const existing = await db.prepare(
+    `SELECT lifetime_count, sum_total_amount, count_total_amount, sum_price_per_sqft,
+            count_price_per_sqft, sum_confidence_score, count_confidence_score,
+            min_total_amount, max_total_amount, issue_counts, trade_sums
+     FROM bid_stats_lifetime WHERE project_type = ? AND state_code IS ?`
+  ).bind(input.projectType, scope).first<{
+    lifetime_count: number;
+    sum_total_amount: number;
+    count_total_amount: number;
+    sum_price_per_sqft: number;
+    count_price_per_sqft: number;
+    sum_confidence_score: number;
+    count_confidence_score: number;
+    min_total_amount: number | null;
+    max_total_amount: number | null;
+    issue_counts: string | null;
+    trade_sums: string | null;
+  }>();
+
+  const hasTotal = typeof input.totalAmount === 'number';
+  const hasPsf = typeof input.pricePerSqft === 'number';
+  const hasScore = typeof input.confidenceScore === 'number';
+
+  // Merge cumulative issue tallies.
+  const issueCounts: Record<string, number> = existing?.issue_counts ? JSON.parse(existing.issue_counts) : {};
+  for (const issue of input.issuesDetected ?? []) {
+    issueCounts[issue] = (issueCounts[issue] || 0) + 1;
+  }
+
+  // Merge cumulative trade sums.
+  const tradeSums: Record<string, { sumAmount: number; sumPct: number; count: number }> =
+    existing?.trade_sums ? JSON.parse(existing.trade_sums) : {};
+  for (const t of input.tradeBreakdown ?? []) {
+    if (!tradeSums[t.trade]) tradeSums[t.trade] = { sumAmount: 0, sumPct: 0, count: 0 };
+    tradeSums[t.trade].sumAmount += t.amount;
+    tradeSums[t.trade].sumPct += t.percentage;
+    tradeSums[t.trade].count += 1;
+  }
+
+  const newMin = hasTotal
+    ? (existing?.min_total_amount != null ? Math.min(existing.min_total_amount, input.totalAmount!) : input.totalAmount!)
+    : (existing?.min_total_amount ?? null);
+  const newMax = hasTotal
+    ? (existing?.max_total_amount != null ? Math.max(existing.max_total_amount, input.totalAmount!) : input.totalAmount!)
+    : (existing?.max_total_amount ?? null);
+
+  await db.prepare(
+    `INSERT INTO bid_stats_lifetime (
+       project_type, state_code, lifetime_count,
+       sum_total_amount, count_total_amount, sum_price_per_sqft, count_price_per_sqft,
+       sum_confidence_score, count_confidence_score, min_total_amount, max_total_amount,
+       issue_counts, trade_sums, first_seen_at, last_seen_at
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime("now"), datetime("now"))
+     ON CONFLICT(project_type, state_code) DO UPDATE SET
+       lifetime_count = lifetime_count + 1,
+       sum_total_amount = sum_total_amount + excluded.sum_total_amount,
+       count_total_amount = count_total_amount + excluded.count_total_amount,
+       sum_price_per_sqft = sum_price_per_sqft + excluded.sum_price_per_sqft,
+       count_price_per_sqft = count_price_per_sqft + excluded.count_price_per_sqft,
+       sum_confidence_score = sum_confidence_score + excluded.sum_confidence_score,
+       count_confidence_score = count_confidence_score + excluded.count_confidence_score,
+       min_total_amount = excluded.min_total_amount,
+       max_total_amount = excluded.max_total_amount,
+       issue_counts = excluded.issue_counts,
+       trade_sums = excluded.trade_sums,
+       last_seen_at = datetime("now")`
+  ).bind(
+    input.projectType,
+    scope,
+    1,
+    hasTotal ? input.totalAmount! : 0,
+    hasTotal ? 1 : 0,
+    hasPsf ? input.pricePerSqft! : 0,
+    hasPsf ? 1 : 0,
+    hasScore ? input.confidenceScore! : 0,
+    hasScore ? 1 : 0,
+    newMin,
+    newMax,
+    JSON.stringify(issueCounts),
+    JSON.stringify(tradeSums)
+  ).run();
+}
+
+async function updateLifetimeBidStats(db: D1Database, input: LifetimeStatInput): Promise<void> {
+  // National roll-up (state_code = NULL) always accrues.
+  await accumulateLifetimeRow(db, null, input);
+  // Plus the specific state, when known.
+  if (input.stateCode) {
+    await accumulateLifetimeRow(db, input.stateCode, input);
+  }
 }
 
 // Helper: Clean up expired bid data
@@ -6707,11 +6998,12 @@ async function scheduledHandler(
       console.error("Weekly blog cron failed:", err);
     }
 
-    // Same weekly slot — generate + schedule a batch of brand-voice Facebook Page
-    // posts with branded images (every-other-day across the coming ~week). Folded
-    // into the Sunday cron because Cloudflare caps the worker at 5 cron triggers.
+    // Same weekly slot — generate + schedule ONE brand-voice Facebook Page post
+    // with a branded image, ~2 days out. Cut from 4/week to 1/week (2026-07):
+    // the page was getting flooded. Folded into the Sunday cron because
+    // Cloudflare caps the worker at 5 cron triggers.
     try {
-      const fb = await generateAndScheduleFbBatch(env as never, Math.floor(Date.now() / 1000), 4);
+      const fb = await generateAndScheduleFbBatch(env as never, Math.floor(Date.now() / 1000), 1);
       console.log(`Weekly FB batch: scheduled=${fb.scheduled} failed=${fb.failed}`);
     } catch (err) {
       console.error("Weekly FB batch failed:", err);
