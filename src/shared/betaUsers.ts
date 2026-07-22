@@ -1,16 +1,12 @@
 // Beta Launch Users - Lifetime Premium Access
 // These users get unlimited access regardless of login status
-
-import { PREMIUM_MODE_ENABLED } from './featureFlags';
-
-// TEMPORARY: Give everyone premium access during beta launch
-// This is now controlled by featureFlags.ts - when PREMIUM_MODE_ENABLED is false,
-// all logged-in users get full access anyway
-// Set to true to give EVERYONE (including guests) premium access
-export const EVERYONE_HAS_PREMIUM = !PREMIUM_MODE_ENABLED;
-
-// Investor demo mode disabled — URL-based premium bypass removed for security
-export const INVESTOR_DEMO_CODE = '';
+//
+// ⚠️ SERVER-ONLY MODULE — never import from src/react-app. This list contains
+// real names and personal email addresses; importing it from client code ships
+// all of them in the public JS bundle (enforced by no-restricted-imports in
+// eslint.config.js). The client gets what it needs from /api/users/me:
+// profile.isBetaUser and profile.betaFirstName.
+// EVERYONE_HAS_PREMIUM / INVESTOR_DEMO_CODE live in featureFlags.ts.
 
 export interface BetaUser {
   firstName: string;

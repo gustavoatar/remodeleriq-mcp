@@ -45,6 +45,18 @@ export const FREE_TOTAL_ANALYSES: number = 3;
 export const FREE_DAILY_LIMIT: number = PREMIUM_MODE_ENABLED ? 0 : 5;
 
 // ============================================
+// DEMO / BETA ACCESS FLAGS
+// ============================================
+// Moved out of shared/betaUsers.ts so client code never imports that module —
+// the beta email list is server-only and must not ship in the public bundle.
+
+/** When premium mode is off, everyone (including guests) is treated as premium. */
+export const EVERYONE_HAS_PREMIUM = !PREMIUM_MODE_ENABLED;
+
+/** Investor demo mode (?demo=CODE premium bypass). Empty string = disabled. */
+export const INVESTOR_DEMO_CODE = '';
+
+// ============================================
 // PRICING DISPLAY
 // ============================================
 export const PROJECT_PASS_PRICE = '$19.99/month';

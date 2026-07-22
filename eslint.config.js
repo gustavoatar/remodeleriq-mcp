@@ -24,5 +24,24 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
     },
+  },
+  {
+    // The beta tester list holds real names + personal emails; importing it
+    // from client code ships them all in the public JS bundle.
+    files: ["src/react-app/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/shared/betaUsers",
+              message:
+                "Server-only module (personal emails). Use profile.isBetaUser / profile.betaFirstName from /api/users/me instead.",
+            },
+          ],
+        },
+      ],
+    },
   }
 );

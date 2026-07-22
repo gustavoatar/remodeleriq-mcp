@@ -18,8 +18,7 @@ import { usePdfExport } from '@/react-app/hooks/usePdfExport';
 import { analyzeBid, extractBidTotal } from '@/shared/analysisEngine';
 import { useUserLocation } from '@/react-app/hooks/useGeolocation';
 import { extractDetectedData } from '@/react-app/components/ProjectDataEditor';
-import { EVERYONE_HAS_PREMIUM, INVESTOR_DEMO_CODE } from '@/shared/betaUsers';
-import { PREMIUM_MODE_ENABLED } from '@/shared/featureFlags';
+import { PREMIUM_MODE_ENABLED, EVERYONE_HAS_PREMIUM, INVESTOR_DEMO_CODE } from '@/shared/featureFlags';
 import { ContractorPulse } from '@/shared/contractorPulse';
 import { detectProjectZip } from '@/shared/zipDetection';
 import { getUnitConfig, normalizeProjectType } from '@/shared/unitTypeEngine';
@@ -405,6 +404,15 @@ export default function HomePage() {
   // Handle investor demo mode - ?demo=CODE grants premium access
   const [isDemoMode] = useState(() => {
     if (typeof window === 'undefined') return false;
+    // Demo mode is disabled while no code is set. Guarding here (not just on
+    // the URL check) matters twice over: `?demo` with no value yields '' from
+    // URLSearchParams — equal to the disabled code — and stale localStorage
+    // flags from when the bypass was active would otherwise grant premium
+    // forever. Clear any such flag.
+    if (!INVESTOR_DEMO_CODE) {
+      localStorage.removeItem('riq_demo_mode');
+      return false;
+    }
     // Check localStorage first (persists demo mode during session)
     if (localStorage.getItem('riq_demo_mode') === 'active') {
       return true;
