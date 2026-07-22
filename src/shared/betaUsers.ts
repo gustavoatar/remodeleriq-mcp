@@ -115,6 +115,7 @@ export const BETA_USERS: BetaUser[] = [
   { firstName: "Sally", lastName: "Hoben-Atar", email: "sallyhoben@gmail.com" },
   { firstName: "Sam", lastName: "Marcozzi", email: "sam.marcozzi@evigna.com" },
   { firstName: "Samuel", lastName: "Gacka", email: "samuel.gacka@gmail.com" },
+  { firstName: "Sean", lastName: "Gerety", email: "sean.gerety@gmail.com" },
   { firstName: "Sean", lastName: "Giaier", email: "sean.giaier@gmail.com" },
   { firstName: "Sebastian", lastName: "Atar", email: "sebastianatar@gmail.com" },
   { firstName: "Serge", lastName: "van der Voo", email: "svdvoo@gmail.com" },

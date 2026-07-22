@@ -32,6 +32,7 @@ import { mcpFetch } from './routes/mcp';
 import conciergeRoutes from './routes/concierge';
 import { EMBED_LOADER_JS } from './routes/embed';
 import { analyzeBidResult, isToolError } from '@/shared/toolResults';
+import { isBetaUser } from '@/shared/betaUsers';
 import { generateAndScheduleFbBatch } from './lib/fbContentGenerator';
 import { scoutRedditRss } from './lib/redditScout';
 import { authMiddleware } from './middleware/auth';
@@ -1893,11 +1894,13 @@ app.get("/api/usage/can-upload", async (c) => {
         if (user) {
           // Premium definition MUST match /users/me (auth.ts) so the UI and the
           // paywall never disagree: premium if is_premium=1 OR an unexpired
-          // premium_ends_at. is_premium is the master flag (cleared to 0 on
-          // cancellation); the strict subscription_status='active' check used
-          // before wrongly paywalled paid users whose status field was unset.
+          // premium_ends_at OR on the beta lifetime list. is_premium is the
+          // master flag (cleared to 0 on cancellation); the strict
+          // subscription_status='active' check used before wrongly paywalled
+          // paid users whose status field was unset.
           const isPremium = user.is_premium === 1 ||
-            (!!user.premium_ends_at && user.premium_ends_at > new Date().toISOString());
+            (!!user.premium_ends_at && user.premium_ends_at > new Date().toISOString()) ||
+            isBetaUser(user.email);
 
           if (isPremium) {
             return c.json({
@@ -1972,12 +1975,14 @@ app.post("/api/usage/record-upload", async (c) => {
         userId = session.user_id;
 
         const user = await db.prepare(
-          'SELECT is_premium, subscription_tier, subscription_status, premium_ends_at FROM user_profiles WHERE id = ?'
-        ).bind(userId).first<{ is_premium: number; subscription_tier: string | null; subscription_status: string | null; premium_ends_at: string | null }>();
+          'SELECT email, is_premium, subscription_tier, subscription_status, premium_ends_at FROM user_profiles WHERE id = ?'
+        ).bind(userId).first<{ email: string; is_premium: number; subscription_tier: string | null; subscription_status: string | null; premium_ends_at: string | null }>();
 
-        // Match /users/me + can-upload: premium if is_premium=1 OR unexpired term.
+        // Match /users/me + can-upload: premium if is_premium=1 OR unexpired
+        // term OR on the beta lifetime list.
         isPremium = user?.is_premium === 1 ||
-          (!!user?.premium_ends_at && user.premium_ends_at > new Date().toISOString());
+          (!!user?.premium_ends_at && user.premium_ends_at > new Date().toISOString()) ||
+          (!!user?.email && isBetaUser(user.email));
 
         // Atomic gatekeeper for logged-in free users
         if (!isPremium) {
