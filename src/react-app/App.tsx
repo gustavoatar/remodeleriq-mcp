@@ -108,6 +108,8 @@ export default function App() {
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          {/* Same page, sample analysis preloaded with all premium modules unlocked */}
+          <Route path="/how-it-works" element={<HomePage howItWorksTour />} />
           <Route path="/labor-rates" element={<LaborRatesPage />} />
           <Route path="/trusted-radar" element={<TrustedRadarPage />} />
           <Route path="/tools" element={<ToolsPage />} />

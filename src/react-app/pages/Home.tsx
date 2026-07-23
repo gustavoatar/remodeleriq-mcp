@@ -383,7 +383,10 @@ interface UploadLimitState {
 
 
 
-export default function HomePage() {
+// howItWorksTour: the /how-it-works route renders this same page with the
+// sample analysis preloaded and every premium module unlocked (client-side
+// display only — sample runs don't touch quotas or server entitlements).
+export default function HomePage({ howItWorksTour = false }: { howItWorksTour?: boolean } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -498,8 +501,8 @@ export default function HomePage() {
   const isBetaUser = profile?.isBetaUser ?? false;
   const isLoggedIn = !!user;
   
-  // Effective premium includes global flag and demo mode
-  const effectiveIsPremium = EVERYONE_HAS_PREMIUM || isPremium || isDemoMode;
+  // Effective premium includes global flag, demo mode, and the how-it-works tour
+  const effectiveIsPremium = EVERYONE_HAS_PREMIUM || isPremium || isDemoMode || howItWorksTour;
   
   // Get user's saved location as fallback
   const { stateCode: savedStateCode, setLocation } = useUserLocation();
@@ -507,12 +510,12 @@ export default function HomePage() {
   // Use state from bid overrides if present, otherwise use saved location
   const userStateCode = analyzedBid?.overrides?.stateCode || savedStateCode;
   
-  const userTier: 'anonymous' | 'free' | 'premium' = isPending 
+  const userTier: 'anonymous' | 'free' | 'premium' = isPending
     ? 'free'
-    : (EVERYONE_HAS_PREMIUM || isPremium || isDemoMode)
-      ? 'premium' 
-      : isLoggedIn 
-        ? 'free' 
+    : (EVERYONE_HAS_PREMIUM || isPremium || isDemoMode || howItWorksTour)
+      ? 'premium'
+      : isLoggedIn
+        ? 'free'
         : 'anonymous';
 
   // Calculate confidence score for sticky header
@@ -798,16 +801,30 @@ export default function HomePage() {
     setCurrentView('analysis');
   }, []);
 
-
+  // /how-it-works route: open straight into the live sample analysis.
+  useEffect(() => {
+    if (howItWorksTour) {
+      handleSeeDemo();
+    }
+  }, [howItWorksTour, handleSeeDemo]);
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <PageSEO
-        title="RemodelerIQ - Stop Overpaying for Home Renovations | Free AI Bid Analysis"
-        description="Upload your contractor bid and get instant AI analysis. See if you're being overcharged, spot hidden risks, and get expert negotiation scripts. Trusted by 10,000+ homeowners."
-        path="/"
-        keywords="contractor bid analysis, home remodeling costs, renovation estimate checker, contractor price comparison, home improvement savings, construction bid review"
-      />
+      {howItWorksTour ? (
+        <PageSEO
+          title="How It Works — Explore a Live Sample Bid Analysis"
+          description="Walk through a real RemodelerIQ analysis with every module unlocked: confidence score, red flags, market comparison against BLS and Zonda 2026 data, contractor verification, and negotiation scripts. Then run your own bid free."
+          path="/how-it-works"
+          keywords="how RemodelerIQ works, contractor bid analysis demo, sample bid analysis, AI bid checker walkthrough"
+        />
+      ) : (
+        <PageSEO
+          title="RemodelerIQ - Stop Overpaying for Home Renovations | Free AI Bid Analysis"
+          description="Upload your contractor bid and get instant AI analysis. See if you're being overcharged, spot hidden risks, and get expert negotiation scripts. Trusted by 10,000+ homeowners."
+          path="/"
+          keywords="contractor bid analysis, home remodeling costs, renovation estimate checker, contractor price comparison, home improvement savings, construction bid review"
+        />
+      )}
       <FAQSchema faqs={HOME_FAQS} />
       <OrganizationSchema />
       <ServiceAreaSchema />
@@ -844,7 +861,7 @@ export default function HomePage() {
               </div>
             </div>
           )}
-          <Hero onGetStarted={handleGetStarted} onSeeDemo={handleSeeDemo} />
+          <Hero onGetStarted={handleGetStarted} onSeeDemo={() => navigate('/how-it-works')} />
 
           {/* Showcase gallery — curated remodel inspiration; funnels to the photo Visualizer */}
           <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
@@ -955,6 +972,30 @@ export default function HomePage() {
 
       {currentView === 'analysis' && analyzedBid && (
         <div className="min-h-screen pt-[72px]">
+          {/* How-it-works tour intro — every module unlocked on the sample */}
+          {howItWorksTour && (
+            <div className="bg-gradient-to-r from-navy-900 to-navy-800 text-white px-4 py-4" style={{ background: 'linear-gradient(90deg, #0f2540, #1a3a5c)' }}>
+              <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <p className="font-semibold">
+                    This is a real analysis of a real-style kitchen bid — every Premium module unlocked.
+                  </p>
+                  <p className="text-sm text-white/80 mt-1">
+                    Click through <strong>Bid Analysis</strong> (score + red flags), <strong>Market Analysis</strong> (your
+                    price vs BLS wages and Zonda 2026 benchmarks), and <strong>Negotiation</strong> (word-for-word talk
+                    tracks) — then try Export. Nothing here counts against your free analyses.
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate('/?view=upload')}
+                  className="flex-shrink-0 inline-flex items-center gap-2 bg-white text-navy-900 px-5 py-2.5 rounded-xl font-bold text-sm shadow hover:scale-105 transition-all"
+                >
+                  Run My Own Bid Free
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
           {/* Unified Sticky Header - Clean Design */}
           <div className="sticky top-[72px] z-40 bg-white border-b border-navy-200 shadow-sm">
             <div className="max-w-5xl mx-auto px-4 py-4">
@@ -1079,9 +1120,9 @@ export default function HomePage() {
                   </button>
                 </div>
 
-                {/* New Bid button */}
+                {/* New Bid button — in the tour, leave the demo and go start a real one */}
                 <button
-                  onClick={handleBackToUpload}
+                  onClick={howItWorksTour ? () => navigate('/?view=upload') : handleBackToUpload}
                   className="flex items-center gap-1.5 text-navy-500 hover:text-emerald-600 font-medium transition-colors text-sm"
                 >
                   <ArrowLeft className="w-4 h-4" />
