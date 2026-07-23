@@ -1,6 +1,6 @@
 /**
  * Sample Bid Data for "See How It Works" Demo Mode
- * B Cal Flooring - Kitchen Remodel in Roswell, GA
+ * BCAL Kitchen Consultants - Kitchen Remodel in Roswell, GA
  * 
  * This provides a realistic, pre-analyzed bid that visitors can explore
  * before uploading their own document.
@@ -41,14 +41,14 @@ export interface SampleBidData {
 
 // Realistic kitchen remodel bid content
 const SAMPLE_BID_CONTENT = `
-B CAL FLOORING
+BCAL KITCHEN CONSULTANTS
 Professional Kitchen Remodeling
 
 License #: RBCO012847
 892 Holcomb Bridge Rd, Suite 150
 Roswell, GA 30076
 Phone: (770) 555-0234
-Email: info@bcalflooring.com
+Email: info@bcalkitchens.com
 
 KITCHEN REMODEL PROPOSAL
 Date: March 10, 2025
@@ -152,14 +152,14 @@ This proposal is valid for 30 days. Any changes to the scope of work may affect 
 Accepted by: _________________________ Date: _________
 
 Brandon Calloway
-Owner, B Cal Flooring
+Owner, BCAL Kitchen Consultants
 Licensed Residential Builder - Georgia
 `;
 
 // Pre-computed contractor pulse data
 const SAMPLE_CONTRACTOR_PULSE: ContractorPulse = {
   fingerprint: {
-    legalBusinessName: "B Cal Flooring",
+    legalBusinessName: "BCAL Kitchen Consultants",
     dbaName: null,
     licenseNumber: 'RBCO012847',
     licenseType: 'RBCO',
@@ -170,7 +170,7 @@ const SAMPLE_CONTRACTOR_PULSE: ContractorPulse = {
     zipCode: '30076',
     primaryContact: 'Brandon Calloway',
     phone: '(770) 555-0234',
-    email: 'info@bcalflooring.com',
+    email: 'info@bcalkitchens.com',
     website: null,
     confidence: {
       businessName: 'high',
@@ -192,7 +192,7 @@ const SAMPLE_CONTRACTOR_PULSE: ContractorPulse = {
 
 export const SAMPLE_BID_DATA: SampleBidData = {
   content: SAMPLE_BID_CONTENT,
-  fileName: 'bcal-flooring-proposal.pdf',
+  fileName: 'bcal-kitchen-proposal.pdf',
   overrides: {
     projectType: 'Kitchen Remodel',
     squareFootage: 150,
@@ -202,7 +202,7 @@ export const SAMPLE_BID_DATA: SampleBidData = {
     yearBuilt: 1998,
     linearFeet: null,
     contractorFingerprint: {
-      legalBusinessName: "B Cal Flooring",
+      legalBusinessName: "BCAL Kitchen Consultants",
       dbaName: null,
       licenseNumber: 'RBCO012847',
       licenseState: 'GA',
@@ -212,8 +212,8 @@ export const SAMPLE_BID_DATA: SampleBidData = {
       zipCode: '30076',
       primaryContact: 'Brandon Calloway',
       phone: '(770) 555-0234',
-      email: 'info@bcalflooring.com',
-      website: 'bcalflooring.com',
+      email: 'info@bcalkitchens.com',
+      website: 'bcalkitchens.com',
     },
     contractorPulse: SAMPLE_CONTRACTOR_PULSE,
   },
