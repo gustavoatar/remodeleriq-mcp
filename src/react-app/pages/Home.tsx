@@ -22,7 +22,7 @@ import { PREMIUM_MODE_ENABLED, EVERYONE_HAS_PREMIUM, INVESTOR_DEMO_CODE } from '
 import { ContractorPulse } from '@/shared/contractorPulse';
 import { detectProjectZip } from '@/shared/zipDetection';
 import { getUnitConfig, normalizeProjectType } from '@/shared/unitTypeEngine';
-import { SAMPLE_BID_DATA } from '@/data/sampleBidData';
+import { SAMPLE_BID_DATA, SAMPLE_CONTRACTOR_DEMO_DATA } from '@/data/sampleBidData';
 import SampleDemoBanner from '@/react-app/components/SampleDemoBanner';
 
 type AppView = 'landing' | 'upload' | 'analysis';
@@ -1152,6 +1152,7 @@ export default function HomePage({ howItWorksTour = false }: { howItWorksTour?: 
                 confidenceScore={analysisData?.confidenceScore}
                 flagCounts={analysisData?.flagCounts}
                 contractorPulse={analyzedBid.overrides?.contractorPulse ?? null}
+                sampleContractorData={isSampleDemo ? SAMPLE_CONTRACTOR_DEMO_DATA : null}
                 projectZipCode={analyzedBid.zipCode}
                 yearBuilt={effectiveYearBuilt}
                 onPriceDataChange={setPriceDataFromAnalysis}

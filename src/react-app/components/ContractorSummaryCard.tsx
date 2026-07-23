@@ -27,6 +27,8 @@ interface ContractorSummaryCardProps {
   hasLicense: boolean;
   licenseNumber?: string | null;
   researchLoading?: boolean;
+  /** Demo/sample mode: skip the live sentiment call and render this instead. */
+  prebakedSentiment?: ReviewSentimentResult | null;
 }
 
 // Hook to fetch sentiment analysis
@@ -106,11 +108,15 @@ export default function ContractorSummaryCard({
   bbbStatus,
   hasLicense,
   researchLoading = false,
+  prebakedSentiment = null,
 }: ContractorSummaryCardProps) {
-  const { data: sentiment, loading: sentimentLoading } = useReviewSentiment(
-    googleData?.reviews,
+  // With prebaked sentiment (demo mode) skip the live call entirely —
+  // passing undefined reviews short-circuits the fetch inside the hook.
+  const { data: fetchedSentiment, loading: sentimentLoading } = useReviewSentiment(
+    prebakedSentiment ? undefined : googleData?.reviews,
     contractorName
   );
+  const sentiment = prebakedSentiment ?? fetchedSentiment;
 
   // Calculate letter grade from Google rating
   const letterGrade = useMemo(() => {

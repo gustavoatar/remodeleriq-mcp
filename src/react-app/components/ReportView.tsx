@@ -15,6 +15,7 @@ import { extractDetectedData, type ProjectDataOverrides } from './ProjectDataEdi
 import ContractorPulseCard from './ContractorPulseCard';
 import ContractorSummaryCard from './ContractorSummaryCard';
 import { ContractorPulse } from '@/shared/contractorPulse';
+import type { SampleContractorDemoData } from '@/data/sampleBidData';
 import { type MarketRateResult } from './MarketComparisonCard';
 import ScopeComparisonCard from './ScopeComparisonCard';
 import PriceAnalysisCard from './PriceAnalysisCard';
@@ -63,6 +64,9 @@ interface ReportViewProps {
   confidenceScore?: number;
   flagCounts?: FlagCounts;
   contractorPulse?: ContractorPulse | null;
+  /** Sample/demo mode: prebaked research payloads — skips the live Google
+   *  Places, research, and review-sentiment lookups (fictional contractor). */
+  sampleContractorData?: SampleContractorDemoData | null;
   projectZipCode?: string;
   yearBuilt?: number;
   onPriceDataChange?: (data: { verdict: string; percentDiff: number; bidTotal: number } | null) => void;
@@ -100,7 +104,7 @@ const POINT_DEDUCTIONS: Record<string, number> = {
 // Special case: license-missing flag deducts less
 
 
-export default function ReportView({ bidContent, fileName, userTier = 'anonymous', uploadOverrides, squareFootageOverride, onSquareFootageChange, windowCountOverrideProp, onWindowCountChange: _onWindowCountChange, bidTotalOverride, onBidTotalChange, bidTotalLocked = false, confidenceScore, flagCounts, contractorPulse, projectZipCode, yearBuilt, onPriceDataChange, onChangeOrderQuestionsChange }: ReportViewProps) {
+export default function ReportView({ bidContent, fileName, userTier = 'anonymous', uploadOverrides, squareFootageOverride, onSquareFootageChange, windowCountOverrideProp, onWindowCountChange: _onWindowCountChange, bidTotalOverride, onBidTotalChange, bidTotalLocked = false, confidenceScore, flagCounts, contractorPulse, sampleContractorData, projectZipCode, yearBuilt, onPriceDataChange, onChangeOrderQuestionsChange }: ReportViewProps) {
   const isPremium = userTier === 'premium';
   const isLoggedIn = userTier !== 'anonymous'; // Free or Premium users are logged in
   const { stateCode: userStateCode, stateName: _userStateName } = useUserLocation();
@@ -270,11 +274,16 @@ export default function ReportView({ bidContent, fileName, userTier = 'anonymous
   
   // Fetch Google Places data for contractor
   useEffect(() => {
+    // Demo/sample mode: fictional contractor — use the prebaked payload.
+    if (sampleContractorData) {
+      setGooglePlacesData(sampleContractorData.googlePlaces);
+      return;
+    }
     if (!contractorPulse?.fingerprint) return;
-    
+
     const fp = contractorPulse.fingerprint;
     const businessName = fp.legalBusinessName || fp.dbaName;
-    
+
     if (!businessName && !fp.phone) return;
     
     const fetchGooglePlaces = async () => {
@@ -301,15 +310,20 @@ export default function ReportView({ bidContent, fileName, userTier = 'anonymous
     };
     
     fetchGooglePlaces();
-  }, [contractorPulse?.fingerprint]);
-  
+  }, [contractorPulse?.fingerprint, sampleContractorData]);
+
   // Fetch contractor research data (for BBB status)
   useEffect(() => {
+    // Demo/sample mode: fictional contractor — use the prebaked payload.
+    if (sampleContractorData) {
+      setContractorResearchData(sampleContractorData.research);
+      return;
+    }
     if (!contractorPulse?.fingerprint) return;
-    
+
     const fp = contractorPulse.fingerprint;
     const businessName = fp.legalBusinessName || fp.dbaName;
-    
+
     if (!businessName) return;
     
     const fetchResearch = async () => {
@@ -349,7 +363,7 @@ export default function ReportView({ bidContent, fileName, userTier = 'anonymous
     };
     
     fetchResearch();
-  }, [contractorPulse?.fingerprint]);
+  }, [contractorPulse?.fingerprint, sampleContractorData]);
   
   const [dataOverrides, setDataOverrides] = useState<ProjectDataOverrides>({
     squareFootage: squareFootageOverride ?? uploadOverrides?.squareFootage ?? null,
@@ -1092,6 +1106,7 @@ export default function ReportView({ bidContent, fileName, userTier = 'anonymous
               bbbStatus={contractorResearchData?.bbbStatus || null}
               hasLicense={!!contractorPulse.fingerprint.licenseNumber || contractorResearchData?.businessRegistration?.status === 'active'}
               licenseNumber={contractorPulse.fingerprint.licenseNumber}
+              prebakedSentiment={sampleContractorData?.reviewSentiment ?? null}
             />
           </div>
         )}

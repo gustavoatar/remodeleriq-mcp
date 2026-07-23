@@ -190,6 +190,155 @@ const SAMPLE_CONTRACTOR_PULSE: ContractorPulse = {
   searchableFields: ['businessName', 'license', 'address', 'phone', 'email'],
 };
 
+// ---------------------------------------------------------------------------
+// Prebaked contractor research for the demo. The live Google Places / research
+// / review-sentiment lookups can't resolve a fictional company, so sample mode
+// injects these instead (ReportView skips the fetches when this is provided).
+// Shapes mirror ReportView's GooglePlacesData / ContractorResearchData and
+// shared/reviewSentiment's ReviewSentimentResult.
+// ---------------------------------------------------------------------------
+
+export interface SampleContractorDemoData {
+  googlePlaces: {
+    placeId: string;
+    name: string;
+    address: string;
+    rating: number | null;
+    reviewCount: number | null;
+    reviews: Array<{ text: string; rating?: number; timeAgo?: string; author?: string }>;
+    website?: string;
+    phone?: string;
+    businessStatus?: string;
+  };
+  reviewSentiment: {
+    positiveFeelingsPercent: number;
+    positiveOutcomesPercent: number;
+    professionalismPercent: number;
+    negativePercent: number;
+    keyThemes: string[];
+    sampleQuotes: { positive: string | null; negative: string | null };
+    reviewCount: number;
+    averageRating: number | null;
+    confidence: 'high' | 'medium' | 'low';
+  };
+  research: {
+    bbbStatus: string | null;
+    businessRegistration: {
+      status?: 'active' | 'inactive' | 'dissolved' | 'unknown';
+      entity?: string | null;
+      registeredState?: string | null;
+      licenseNumber: string | null;
+      notes?: string | null;
+    } | null;
+    permitHistory?: { recentPermits: number | null; totalValue: string | null; notes: string | null } | null;
+    reputation?: {
+      score: 'excellent' | 'good' | 'mixed' | 'concerning' | 'unknown';
+      highlights: string[];
+      concerns: string[];
+    };
+    summary?: string | null;
+    sources?: Array<{ title: string; url: string; snippet: string }>;
+    bbbComplaints?: { total: number | null; lastThreeYears: number | null; resolved: number | null; details: string | null } | null;
+    newsItems?: string[];
+    redFlags?: string[];
+  };
+}
+
+export const SAMPLE_CONTRACTOR_DEMO_DATA: SampleContractorDemoData = {
+  googlePlaces: {
+    placeId: 'demo-bcal-kitchen-consultants',
+    name: 'BCAL Kitchen Consultants',
+    address: '892 Holcomb Bridge Rd, Suite 150, Roswell, GA 30076',
+    rating: 4.9,
+    reviewCount: 108,
+    reviews: [
+      {
+        text: 'Brandon and his crew gutted and rebuilt our 1990s kitchen in five weeks. Communication was excellent — we got a schedule up front and photo updates every Friday. The cabinet install is flawless.',
+        rating: 5,
+        timeAgo: '2 months ago',
+        author: 'Rachel M.',
+      },
+      {
+        text: 'Fair price, showed up when they said they would, and the quartz counters came out beautiful. Only hiccup was a one-week delay waiting on our backordered range hood, which they flagged early.',
+        rating: 5,
+        timeAgo: '4 months ago',
+        author: 'Derrick T.',
+      },
+      {
+        text: 'They handled permits and inspections without us having to chase anything. Final walkthrough punch list was done in two days. Would hire again for the basement.',
+        rating: 5,
+        timeAgo: '6 months ago',
+        author: 'Priya K.',
+      },
+      {
+        text: 'Good work overall. A couple of change orders pushed the price up mid-project — make sure your allowances are realistic going in. Finished product is great.',
+        rating: 4,
+        timeAgo: '8 months ago',
+        author: 'Sam W.',
+      },
+      {
+        text: 'Professional from estimate to cleanup. The crew protected our floors, sealed off the dust, and left the site broom-clean every night.',
+        rating: 5,
+        timeAgo: '11 months ago',
+        author: 'Angela B.',
+      },
+    ],
+    phone: '(770) 555-0234',
+    businessStatus: 'OPERATIONAL',
+  },
+  reviewSentiment: {
+    positiveFeelingsPercent: 78,
+    positiveOutcomesPercent: 84,
+    professionalismPercent: 91,
+    negativePercent: 6,
+    keyThemes: ['Quality craftsmanship', 'On-schedule delivery', 'Clear communication'],
+    sampleQuotes: {
+      positive: 'Communication was excellent — we got a schedule up front and photo updates every Friday.',
+      negative: 'A couple of change orders pushed the price up mid-project.',
+    },
+    reviewCount: 108,
+    averageRating: 4.9,
+    confidence: 'high',
+  },
+  research: {
+    bbbStatus: 'A+',
+    businessRegistration: {
+      status: 'active',
+      entity: 'BCAL Kitchen Consultants LLC',
+      registeredState: 'GA',
+      licenseNumber: 'RBCO012847',
+      notes: 'Georgia residential builder license active and in good standing.',
+    },
+    permitHistory: {
+      recentPermits: 14,
+      totalValue: '$720,000',
+      notes: '14 residential remodel permits pulled in Fulton and DeKalb counties over the last 24 months.',
+    },
+    reputation: {
+      score: 'excellent',
+      highlights: [
+        '4.9 average across 108 reviews with consistent praise for schedule discipline',
+        'Pulls its own permits and passes inspections without homeowner follow-up',
+        'Both BBB complaints on file were resolved within 30 days',
+      ],
+      concerns: [
+        'A few reviewers note mid-project change orders — lock allowances and scope in writing before signing',
+      ],
+    },
+    summary:
+      'Established kitchen remodeling contractor with an active Georgia license, A+ BBB rating, and a strong recent permit history. Review sentiment is overwhelmingly positive; the main pattern to manage is change-order creep, which matches the allowance flags in this bid.',
+    sources: [],
+    bbbComplaints: {
+      total: 2,
+      lastThreeYears: 1,
+      resolved: 2,
+      details: 'Both complaints concerned scheduling delays and were resolved with the customer within 30 days.',
+    },
+    newsItems: [],
+    redFlags: [],
+  },
+};
+
 export const SAMPLE_BID_DATA: SampleBidData = {
   content: SAMPLE_BID_CONTENT,
   fileName: 'bcal-kitchen-proposal.pdf',
