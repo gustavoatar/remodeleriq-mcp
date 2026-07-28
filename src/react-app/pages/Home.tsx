@@ -842,15 +842,16 @@ export default function HomePage({ howItWorksTour = false }: { howItWorksTour?: 
                 <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Lock className="w-7 h-7 text-emerald-600" />
                 </div>
-                <h2 className="text-xl font-bold text-navy-900 mb-2">You've used your 3 free analyses</h2>
+                <h2 className="text-xl font-bold text-navy-900 mb-2">That was your third free analysis</h2>
                 <p className="text-navy-600 mb-6 text-sm leading-relaxed">
-                  Upgrade to <strong>Premium</strong> for unlimited bid analyses, negotiation scripts, and full market data.
+                  You've seen the full product — nothing was held back. When the remodel keeps going
+                  (revised bids, another contractor, round two of negotiation), <strong>go unlimited</strong>.
                 </p>
                 <button
                   onClick={() => { setShowLimitBanner(false); navigate('/premium'); }}
                   className="w-full py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors mb-3"
                 >
-                  Upgrade to Premium — $19.99/mo
+                  Go Unlimited — from $19.99/mo
                 </button>
                 <button
                   onClick={() => setShowLimitBanner(false)}

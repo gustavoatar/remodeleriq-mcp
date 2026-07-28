@@ -174,7 +174,8 @@ export default function Hero({ onGetStarted, onSeeDemo }: HeroProps) {
               Simple, Transparent Pricing
             </h2>
             <p className="text-lg max-w-2xl mx-auto" style={{ color: '#555' }}>
-              Start free, upgrade when you need unlimited access
+              Every analysis gets the complete product — the score, the market check, the negotiation
+              scripts. Paying doesn't unlock features. It removes the limit.
             </p>
           </div>
 
@@ -186,10 +187,10 @@ export default function Hero({ onGetStarted, onSeeDemo }: HeroProps) {
               cardBg="bg-slate-50"
               borderColor="border-gray-200"
               title="Free"
-              subtitle="Get started"
+              subtitle="The whole product, on us"
               price="$0"
-              features={[`${FREE_TOTAL_ANALYSES} bid analyses`, 'Risk analysis & flags', 'AI-powered insights']}
-              buttonText="Sign Up Free"
+              features={[`${FREE_TOTAL_ANALYSES} complete analyses — every module`, 'Negotiation scripts included', 'No card. No signup. No catch.']}
+              buttonText="Start Free"
               buttonStyle="outline"
               onButtonClick={() => navigate('/join')}
             />
@@ -204,7 +205,7 @@ export default function Hero({ onGetStarted, onSeeDemo }: HeroProps) {
               subtitle="Monthly unlimited"
               price="$19.99"
               priceLabel="/month"
-              features={['Unlimited analyses', 'Everything in Free', 'Market price comparison', 'Negotiation scripts']}
+              features={['Unlimited analyses', 'Every revised bid, re-scored', 'Multi-bid comparison', 'Priority AI processing']}
               featureColor="blue"
               buttonText={checkoutLoading === 'project' ? 'Processing...' : 'Get Project Pass'}
               buttonStyle="blue"
@@ -224,7 +225,7 @@ export default function Hero({ onGetStarted, onSeeDemo }: HeroProps) {
               price="$39.99"
               priceLabel="/3 months"
               discount="Save 33%"
-              features={['Unlimited analyses', 'Everything in Free', 'Market price comparison', 'Negotiation scripts']}
+              features={['Unlimited for your whole remodel', 'Every revised bid, re-scored', 'Quarterly market report', 'Advanced contractor research']}
               featureColor="premium"
               buttonText={checkoutLoading === 'remodeler' ? 'Processing...' : 'Get Remodeler Pass'}
               buttonStyle="premium"

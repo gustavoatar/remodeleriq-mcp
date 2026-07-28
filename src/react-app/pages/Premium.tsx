@@ -179,7 +179,8 @@ export default function PremiumPage() {
               Simple, Transparent Pricing
             </h1>
             <p className="text-navy-600 max-w-xl mx-auto">
-              Start with {FREE_TOTAL_ANALYSES} free analyses. Go unlimited with a monthly, quarterly, or lifetime pass — cancel anytime.
+              Your first {FREE_TOTAL_ANALYSES} analyses are free — the complete product, nothing held back.
+              Go unlimited when the remodel gets real. Cancel anytime.
             </p>
           </div>
 
@@ -207,10 +208,10 @@ export default function PremiumPage() {
               </div>
 
               <ul className="space-y-2 mb-6 text-sm">
-                <PlanFeature included>{FREE_TOTAL_ANALYSES} free analyses total</PlanFeature>
-                <PlanFeature included>Risk analysis & flags</PlanFeature>
-                <PlanFeature included>AI insights</PlanFeature>
-                <PlanFeature included>Saved history with account</PlanFeature>
+                <PlanFeature included>The complete analysis, {FREE_TOTAL_ANALYSES} times</PlanFeature>
+                <PlanFeature included>Market Analysis & Negotiation included</PlanFeature>
+                <PlanFeature included>Contractor verification</PlanFeature>
+                <PlanFeature included>No card. No signup. No catch.</PlanFeature>
               </ul>
 
               <button
@@ -240,10 +241,10 @@ export default function PremiumPage() {
 
               <ul className="space-y-2 mb-6 text-sm">
                 <PlanFeature included premium>Unlimited analyses</PlanFeature>
-                <PlanFeature included premium>Everything in Free</PlanFeature>
+                <PlanFeature included premium>Every revised bid, re-scored</PlanFeature>
                 <PlanFeature included premium>Multi-bid comparison</PlanFeature>
                 <PlanFeature included premium>Priority AI processing</PlanFeature>
-                <PlanFeature included premium>Negotiation scripts</PlanFeature>
+                <PlanFeature included premium>Saved analysis history</PlanFeature>
               </ul>
 
               <button

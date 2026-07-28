@@ -139,7 +139,8 @@ export default function JoinPage() {
               Simple, Transparent Pricing
             </h1>
             <p className="text-navy-600 text-lg max-w-2xl mx-auto">
-              Start free, upgrade when you need unlimited access
+              Every analysis gets the complete product — score, market check, negotiation scripts.
+              Paying doesn't unlock features. It removes the limit.
             </p>
           </div>
 
@@ -217,13 +218,13 @@ export default function JoinPage() {
                   
                   <ul className="space-y-3 mb-6">
                     <FeatureItem icon={<ClipboardCheck className="w-5 h-5" />}>
-                      {FREE_TOTAL_ANALYSES} bid analyses
+                      {FREE_TOTAL_ANALYSES} complete analyses — every module unlocked
                     </FeatureItem>
                     <FeatureItem icon={<Shield className="w-5 h-5" />}>
-                      Risk analysis & flags
+                      Price checked against your metro's data
                     </FeatureItem>
-                    <FeatureItem icon={<Check className="w-5 h-5" />}>
-                      AI-powered insights
+                    <FeatureItem icon={<MessageSquareText className="w-5 h-5" />}>
+                      Negotiation scripts included
                     </FeatureItem>
                   </ul>
 
@@ -287,13 +288,13 @@ export default function JoinPage() {
                       Unlimited bid analyses
                     </FeatureItem>
                     <FeatureItem icon={<Check className="w-5 h-5" />} highlight>
-                      Everything in Free
+                      Every revised bid, re-scored
                     </FeatureItem>
                     <FeatureItem icon={<TrendingUp className="w-5 h-5" />} highlight>
-                      Market price comparison
+                      Multi-bid comparison
                     </FeatureItem>
                     <FeatureItem icon={<MessageSquareText className="w-5 h-5" />} highlight>
-                      Negotiation scripts
+                      Priority AI processing
                     </FeatureItem>
                   </ul>
 
@@ -338,16 +339,16 @@ export default function JoinPage() {
                   
                   <ul className="space-y-3 mb-6">
                     <FeatureItem icon={<ClipboardCheck className="w-5 h-5" />} highlight>
-                      Unlimited bid analyses
+                      Unlimited for your whole remodel
                     </FeatureItem>
                     <FeatureItem icon={<Check className="w-5 h-5" />} highlight>
-                      Everything in Free
+                      Every revised bid, re-scored
                     </FeatureItem>
                     <FeatureItem icon={<TrendingUp className="w-5 h-5" />} highlight>
-                      Market price comparison
+                      Quarterly market report
                     </FeatureItem>
                     <FeatureItem icon={<MessageSquareText className="w-5 h-5" />} highlight>
-                      Negotiation scripts
+                      Advanced contractor research
                     </FeatureItem>
                   </ul>
 
