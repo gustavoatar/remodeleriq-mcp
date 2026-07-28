@@ -972,30 +972,6 @@ export default function HomePage({ howItWorksTour = false }: { howItWorksTour?: 
 
       {currentView === 'analysis' && analyzedBid && (
         <div className="min-h-screen pt-[72px]">
-          {/* How-it-works tour intro — every module unlocked on the sample */}
-          {howItWorksTour && (
-            <div className="bg-gradient-to-r from-navy-900 to-navy-800 text-white px-4 py-4" style={{ background: 'linear-gradient(90deg, #0f2540, #1a3a5c)' }}>
-              <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div>
-                  <p className="font-semibold">
-                    This is a real analysis of a real-style kitchen bid — every Premium module unlocked.
-                  </p>
-                  <p className="text-sm text-white/80 mt-1">
-                    Click through <strong>Bid Analysis</strong> (score + red flags), <strong>Market Analysis</strong> (your
-                    price vs BLS wages and Zonda 2026 benchmarks), and <strong>Negotiation</strong> (word-for-word talk
-                    tracks) — then try Export. Nothing here counts against your free analyses.
-                  </p>
-                </div>
-                <button
-                  onClick={() => navigate('/?view=upload')}
-                  className="flex-shrink-0 inline-flex items-center gap-2 bg-white text-navy-900 px-5 py-2.5 rounded-xl font-bold text-sm shadow hover:scale-105 transition-all"
-                >
-                  Run My Own Bid Free
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          )}
           {/* Unified Sticky Header - Clean Design */}
           <div className="sticky top-[72px] z-40 bg-white border-b border-navy-200 shadow-sm">
             <div className="max-w-5xl mx-auto px-4 py-4">
