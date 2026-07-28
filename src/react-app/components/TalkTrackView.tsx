@@ -5,6 +5,7 @@ import {
   Info, BookOpen
 } from 'lucide-react';
 import { extractBidTotal, analyzeBid, detectProjectTrade } from '@/shared/analysisEngine';
+import { ALL_MODULES_FREE } from '@/shared/featureFlags';
 import { getTradeBenchmark } from '@/shared/tradeBenchmarks';
 import { useUserLocation } from '@/react-app/hooks/useGeolocation';
 import { detectStateFromBid, CRITICAL_CONTRACT_CLAUSES } from '@/shared/stateLaws';
@@ -61,7 +62,9 @@ export default function TalkTrackView({
   priceDataFromAnalysis,
   changeOrderQuestions = []
 }: TalkTrackViewProps) {
-  const isPremium = userTier === 'premium';
+  // ALL_MODULES_FREE: negotiation toolkit is free on every analysis — the
+  // paywall is the analysis count, not features.
+  const isPremium = userTier === 'premium' || ALL_MODULES_FREE;
   const { stateCode: geoStateCode } = useUserLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

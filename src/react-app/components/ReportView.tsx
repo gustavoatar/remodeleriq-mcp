@@ -9,6 +9,7 @@ import {
 import ReportIssueModal from './ReportIssueModal';
 import ScoreBreakdownModal from './ScoreBreakdownModal';
 import { analyzeBid, extractBidTotal, type AnalysisFlag, type DealRiskResult, type ScopeGapWithCost } from '@/shared/analysisEngine';
+import { ALL_MODULES_FREE } from '@/shared/featureFlags';
 // CompactPremiumGate removed - Issues Found section moved to graveyard
 import { useUserLocation } from '@/react-app/hooks/useGeolocation';
 import { extractDetectedData, type ProjectDataOverrides } from './ProjectDataEditor';
@@ -105,7 +106,9 @@ const POINT_DEDUCTIONS: Record<string, number> = {
 
 
 export default function ReportView({ bidContent, fileName, userTier = 'anonymous', uploadOverrides, squareFootageOverride, onSquareFootageChange, windowCountOverrideProp, onWindowCountChange: _onWindowCountChange, bidTotalOverride, onBidTotalChange, bidTotalLocked = false, confidenceScore, flagCounts, contractorPulse, sampleContractorData, projectZipCode, yearBuilt, onPriceDataChange, onChangeOrderQuestionsChange }: ReportViewProps) {
-  const isPremium = userTier === 'premium';
+  // ALL_MODULES_FREE: modules are free on every analysis — the paywall is the
+  // analysis count, not features (matches published pricing.md).
+  const isPremium = userTier === 'premium' || ALL_MODULES_FREE;
   const isLoggedIn = userTier !== 'anonymous'; // Free or Premium users are logged in
   const { stateCode: userStateCode, stateName: _userStateName } = useUserLocation();
   const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);

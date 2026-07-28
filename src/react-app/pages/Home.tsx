@@ -18,7 +18,7 @@ import { usePdfExport } from '@/react-app/hooks/usePdfExport';
 import { analyzeBid, extractBidTotal } from '@/shared/analysisEngine';
 import { useUserLocation } from '@/react-app/hooks/useGeolocation';
 import { extractDetectedData } from '@/react-app/components/ProjectDataEditor';
-import { PREMIUM_MODE_ENABLED, EVERYONE_HAS_PREMIUM, INVESTOR_DEMO_CODE } from '@/shared/featureFlags';
+import { PREMIUM_MODE_ENABLED, EVERYONE_HAS_PREMIUM, INVESTOR_DEMO_CODE, ALL_MODULES_FREE } from '@/shared/featureFlags';
 import { ContractorPulse } from '@/shared/contractorPulse';
 import { detectProjectZip } from '@/shared/zipDetection';
 import { getUnitConfig, normalizeProjectType } from '@/shared/unitTypeEngine';
@@ -1046,37 +1046,37 @@ export default function HomePage({ howItWorksTour = false }: { howItWorksTour?: 
                   </button>
 
                   <button
-                    onClick={() => (effectiveIsPremium || (!PREMIUM_MODE_ENABLED && isLoggedIn)) && setActiveTab('market')}
+                    onClick={() => (ALL_MODULES_FREE || effectiveIsPremium || (!PREMIUM_MODE_ENABLED && isLoggedIn)) && setActiveTab('market')}
                     disabled={!effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn)}
                     className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full font-medium text-sm transition-all whitespace-nowrap flex-shrink-0 ${
-                      (!effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn))
+                      (!ALL_MODULES_FREE && !effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn))
                         ? 'text-gray-400 cursor-not-allowed opacity-60'
                         : activeTab === 'market'
                           ? 'text-white shadow-md'
                           : 'text-navy-600 hover:bg-navy-100'
                     }`}
-                    style={(effectiveIsPremium || (!PREMIUM_MODE_ENABLED && isLoggedIn)) && activeTab === 'market' ? { backgroundColor: '#1F9C4C' } : undefined}
+                    style={(ALL_MODULES_FREE || effectiveIsPremium || (!PREMIUM_MODE_ENABLED && isLoggedIn)) && activeTab === 'market' ? { backgroundColor: '#1F9C4C' } : undefined}
                   >
                     <BarChart3 className="w-4 h-4" />
                     Market Analysis
-                    {(!effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn)) && <Lock className="w-3 h-3" />}
+                    {(!ALL_MODULES_FREE && !effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn)) && <Lock className="w-3 h-3" />}
                   </button>
 
                   <button
-                    onClick={() => (effectiveIsPremium || (!PREMIUM_MODE_ENABLED && isLoggedIn)) && setActiveTab('negotiate')}
+                    onClick={() => (ALL_MODULES_FREE || effectiveIsPremium || (!PREMIUM_MODE_ENABLED && isLoggedIn)) && setActiveTab('negotiate')}
                     disabled={!effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn)}
                     className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full font-medium text-sm transition-all whitespace-nowrap flex-shrink-0 ${
-                      (!effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn))
+                      (!ALL_MODULES_FREE && !effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn))
                         ? 'text-gray-400 cursor-not-allowed opacity-60'
                         : activeTab === 'negotiate'
                           ? 'text-white shadow-md'
                           : 'text-navy-600 hover:bg-navy-100'
                     }`}
-                    style={(effectiveIsPremium || (!PREMIUM_MODE_ENABLED && isLoggedIn)) && activeTab === 'negotiate' ? { backgroundColor: '#1F9C4C' } : undefined}
+                    style={(ALL_MODULES_FREE || effectiveIsPremium || (!PREMIUM_MODE_ENABLED && isLoggedIn)) && activeTab === 'negotiate' ? { backgroundColor: '#1F9C4C' } : undefined}
                   >
                     <MessageCircle className="w-4 h-4" />
                     Negotiation
-                    {(!effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn)) && <Lock className="w-3 h-3" />}
+                    {(!ALL_MODULES_FREE && !effectiveIsPremium && (PREMIUM_MODE_ENABLED || !isLoggedIn)) && <Lock className="w-3 h-3" />}
                   </button>
 
                   {/* Export button - available to all users */}

@@ -44,6 +44,16 @@ export const FREE_TOTAL_ANALYSES: number = 3;
 /** Legacy: Daily limit for free mode (when PREMIUM_MODE_ENABLED = false) */
 export const FREE_DAILY_LIMIT: number = PREMIUM_MODE_ENABLED ? 0 : 5;
 
+/**
+ * 2026-07-14 founder decision: every analysis module (Market Analysis,
+ * Negotiation, Contractor Pulse, Questions to Ask, Price Analysis, Export)
+ * is available on every analysis, free or paid. The paywall is the analysis
+ * COUNT (FREE_TOTAL_ANALYSES), not features — this is also what the published
+ * pricing.md has promised all along. Paid tiers sell unlimited analyses.
+ * Set to false to re-gate modules behind premium.
+ */
+export const ALL_MODULES_FREE = true;
+
 // ============================================
 // DEMO / BETA ACCESS FLAGS
 // ============================================
@@ -73,22 +83,22 @@ export const PREMIUM_PRICE = PROJECT_PASS_PRICE;
 // When false, these features are available to all logged-in users
 
 /** Gate Price Analysis card (requires premium when true) */
-export const GATE_PRICE_ANALYSIS = PREMIUM_MODE_ENABLED;
+export const GATE_PRICE_ANALYSIS = PREMIUM_MODE_ENABLED && !ALL_MODULES_FREE;
 
 /** Gate Contractor Pulse card (requires premium when true) */
-export const GATE_CONTRACTOR_PULSE = PREMIUM_MODE_ENABLED;
+export const GATE_CONTRACTOR_PULSE = PREMIUM_MODE_ENABLED && !ALL_MODULES_FREE;
 
 /** Gate Questions to Ask card (requires premium when true) */
-export const GATE_QUESTIONS_CARD = PREMIUM_MODE_ENABLED;
+export const GATE_QUESTIONS_CARD = PREMIUM_MODE_ENABLED && !ALL_MODULES_FREE;
 
 /** Gate PDF Export (requires premium when true) */
-export const GATE_PDF_EXPORT = PREMIUM_MODE_ENABLED;
+export const GATE_PDF_EXPORT = PREMIUM_MODE_ENABLED && !ALL_MODULES_FREE;
 
 /** Gate Market Analysis tab (requires premium when true) */
-export const GATE_MARKET_ANALYSIS = PREMIUM_MODE_ENABLED;
+export const GATE_MARKET_ANALYSIS = PREMIUM_MODE_ENABLED && !ALL_MODULES_FREE;
 
 /** Gate Negotiation tab (requires premium when true) */
-export const GATE_NEGOTIATION = PREMIUM_MODE_ENABLED;
+export const GATE_NEGOTIATION = PREMIUM_MODE_ENABLED && !ALL_MODULES_FREE;
 
 // ============================================
 // UI ELEMENT FLAGS
