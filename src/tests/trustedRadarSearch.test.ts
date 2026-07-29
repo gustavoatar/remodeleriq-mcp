@@ -5,7 +5,7 @@
  * - query sanitization and length bounds
  * - ZIP validation
  * - parsing Google `formattedAddress` into street/city/state/ZIP
- * - mapping Google place types onto our trade ids
+ * - resolving a result to one of the 9 recognized trades (or excluding it)
  *
  * The address parser is the highest-risk piece: it depends on Google's formatting,
  * which is not contractual. These cases pin the shapes we actually see so a change
@@ -18,10 +18,13 @@ import {
   isValidKeywordQuery,
   isValidZip,
   parsePlaceAddress,
-  mapPlaceTypesToTrades,
+  resolveTradesForKeywordSearch,
+  isValidTradeMatch,
+  TRADE_BUSINESS_KEYWORDS,
   KEYWORD_MIN_LENGTH,
   KEYWORD_MAX_LENGTH,
 } from '@/shared/trustedRadarSearch';
+import { RADAR_TRADE_CATEGORIES } from '@/shared/trustedRadarTypes';
 
 // ============================================
 // QUERY SANITIZATION
@@ -185,36 +188,92 @@ describe('parsePlaceAddress', () => {
 });
 
 // ============================================
-// TRADE TAGGING
+// TRADE RESOLUTION — keyword-search relevance filtering
 // ============================================
 
-describe('mapPlaceTypesToTrades', () => {
+describe('resolveTradesForKeywordSearch', () => {
   it('should map known Google contractor types to our trade ids', () => {
-    expect(mapPlaceTypesToTrades(['roofing_contractor'])).toEqual(['roofing']);
-    expect(mapPlaceTypesToTrades(['hvac_contractor'])).toEqual(['hvac']);
-    expect(mapPlaceTypesToTrades(['plumber'])).toEqual(['plumber']);
-    expect(mapPlaceTypesToTrades(['electrician'])).toEqual(['electrician']);
+    expect(resolveTradesForKeywordSearch('Any Name', ['roofing_contractor'])).toEqual(['roofing']);
+    expect(resolveTradesForKeywordSearch('Any Name', ['hvac_contractor'])).toEqual(['hvac']);
+    expect(resolveTradesForKeywordSearch('Any Name', ['plumber'])).toEqual(['plumber']);
+    expect(resolveTradesForKeywordSearch('Any Name', ['electrician'])).toEqual(['electrician']);
   });
 
   it('should collapse several landscaping types to one trade', () => {
-    expect(mapPlaceTypesToTrades(['landscaper', 'lawn_care_service', 'gardener'])).toEqual(['landscaper']);
+    expect(resolveTradesForKeywordSearch('Any Name', ['landscaper', 'lawn_care_service', 'gardener'])).toEqual(['landscaper']);
   });
 
-  it('should ignore unrelated Google types', () => {
-    expect(mapPlaceTypesToTrades(['point_of_interest', 'establishment', 'plumber'])).toEqual(['plumber']);
+  it('should ignore unrelated Google types alongside a real one', () => {
+    expect(resolveTradesForKeywordSearch('Any Name', ['point_of_interest', 'establishment', 'plumber'])).toEqual(['plumber']);
   });
 
-  it('should fall back to general when nothing maps', () => {
-    expect(mapPlaceTypesToTrades(['point_of_interest', 'establishment'])).toEqual(['general']);
+  it('should keep multiple distinct trades from structural types', () => {
+    expect(resolveTradesForKeywordSearch('Any Name', ['plumber', 'hvac_contractor'])).toEqual(['plumber', 'hvac']);
   });
 
-  it('should fall back to general for empty, undefined, and null', () => {
-    expect(mapPlaceTypesToTrades([])).toEqual(['general']);
-    expect(mapPlaceTypesToTrades(undefined)).toEqual(['general']);
-    expect(mapPlaceTypesToTrades(null)).toEqual(['general']);
+  it('should fall back to a business-name keyword when types are generic', () => {
+    // Google often tags small local businesses with only generic types.
+    expect(resolveTradesForKeywordSearch('ABC Roofing & Repair', ['point_of_interest', 'establishment'])).toEqual(['roofing']);
   });
 
-  it('should keep multiple distinct trades', () => {
-    expect(mapPlaceTypesToTrades(['plumber', 'hvac_contractor'])).toEqual(['plumber', 'hvac']);
+  it('should prefer the structural type over a conflicting name keyword', () => {
+    // Google's own classification wins even if the name suggests something else.
+    expect(resolveTradesForKeywordSearch('Ace Electric Plumbing Co', ['plumber'])).toEqual(['plumber']);
+  });
+
+  it('should exclude a result that matches no trade by type or name — the core fix', () => {
+    // A free-text Google search surfaces non-contractor businesses too; those
+    // must be dropped rather than tagged 'general' and shown anyway.
+    expect(resolveTradesForKeywordSearch('Joe\'s Ice Cream Shop', ['point_of_interest', 'establishment'])).toEqual([]);
+  });
+
+  it('should exclude when types and name are both empty/missing', () => {
+    expect(resolveTradesForKeywordSearch('Mystery LLC', [])).toEqual([]);
+    expect(resolveTradesForKeywordSearch('Mystery LLC', undefined)).toEqual([]);
+    expect(resolveTradesForKeywordSearch('Mystery LLC', null)).toEqual([]);
+  });
+
+  it('should match business-name keywords case-insensitively', () => {
+    expect(resolveTradesForKeywordSearch('ATLANTA ROOFING SPECIALISTS', [])).toEqual(['roofing']);
+  });
+
+  it('should recognize every one of the 9 canonical trades by name alone', () => {
+    // Locks resolveTradesForKeywordSearch to RADAR_TRADE_CATEGORIES: if a trade is
+    // added there without a TRADE_BUSINESS_KEYWORDS entry, this fails loudly.
+    for (const category of RADAR_TRADE_CATEGORIES) {
+      if (category.id === 'all') continue;
+      const keyword = TRADE_BUSINESS_KEYWORDS[category.id]?.[0];
+      expect(keyword, `missing TRADE_BUSINESS_KEYWORDS entry for "${category.id}"`).toBeTruthy();
+      const result = resolveTradesForKeywordSearch(`Test ${keyword} Business`, []);
+      expect(result, `"${category.id}" not recognized via keyword "${keyword}"`).toContain(category.id);
+    }
+  });
+});
+
+describe('isValidTradeMatch', () => {
+  it('should match when a keyword is present in the business name', () => {
+    expect(isValidTradeMatch('ABC Roofing Co', 'roofing')).toBe(true);
+    expect(isValidTradeMatch('Metro Plumbing Services', 'plumber')).toBe(true);
+  });
+
+  it('should reject when no keyword matches a trade that has a keyword list', () => {
+    expect(isValidTradeMatch('ABC Roofing Co', 'plumber')).toBe(false);
+  });
+
+  it('should match case-insensitively', () => {
+    expect(isValidTradeMatch('METRO ROOFING LLC', 'roofing')).toBe(true);
+  });
+
+  it('should pass unconditionally for a trade with no keyword list defined', () => {
+    expect(isValidTradeMatch('Literally Anything', 'not-a-real-trade')).toBe(true);
+  });
+});
+
+describe('TRADE_BUSINESS_KEYWORDS completeness', () => {
+  it('should define at least one keyword for every non-"all" RADAR_TRADE_CATEGORIES id', () => {
+    for (const category of RADAR_TRADE_CATEGORIES) {
+      if (category.id === 'all') continue;
+      expect(TRADE_BUSINESS_KEYWORDS[category.id]?.length, `"${category.id}" has no keywords`).toBeGreaterThan(0);
+    }
   });
 });

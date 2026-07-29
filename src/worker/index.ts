@@ -14,7 +14,8 @@ import {
   isValidKeywordQuery,
   isValidZip,
   parsePlaceAddress,
-  mapPlaceTypesToTrades,
+  resolveTradesForKeywordSearch,
+  isValidTradeMatch,
   KEYWORD_MIN_LENGTH,
   KEYWORD_MAX_LENGTH
 } from "@/shared/trustedRadarSearch";
@@ -6420,23 +6421,6 @@ const TRADE_TO_KEYWORDS: Record<string, string> = {
   'landscaper': 'landscaper landscaping lawn care yard service',
 };
 
-// Validate that cached results actually match the trade (filters out stale/incorrect cache entries)
-const TRADE_BUSINESS_KEYWORDS: Record<string, string[]> = {
-  'landscaper': ['landscape', 'landscaping', 'lawn', 'yard', 'garden', 'outdoor', 'tree', 'turf', 'grass', 'mowing', 'greenscape'],
-  'painter': ['paint', 'painting', 'coatings'],
-  'plumber': ['plumb', 'plumbing', 'pipe', 'drain'],
-  'electrician': ['electric', 'electrical', 'wiring'],
-  'hvac': ['hvac', 'heating', 'cooling', 'air conditioning', 'ac ', 'a/c'],
-  'roofing': ['roof', 'roofing', 'shingle'],
-};
-
-function isValidTradeMatch(businessName: string, trade: string): boolean {
-  const keywords = TRADE_BUSINESS_KEYWORDS[trade];
-  if (!keywords) return true; // No validation for trades without keywords defined
-  const nameLower = businessName.toLowerCase();
-  return keywords.some(kw => nameLower.includes(kw));
-}
-
 // ZIP -> coordinates: local table first (exact, then 3-digit prefix), Google Geocoding last.
 // Returns null when the ZIP can't be resolved; callers decide whether that's fatal.
 async function resolveZipToCoords(zip: string, apiKey: string): Promise<{ lat: number; lng: number } | null> {
@@ -6862,15 +6846,23 @@ app.get("/api/trusted-radar/keyword-search", async (c) => {
     const searchData = await searchRes.json() as { places?: PlacesV1Place[] };
     const now = new Date().toISOString();
 
+    // Only surface results that resolve to one of the 9 trades on the ZIP tab's
+    // trade chips — a free-text Google search otherwise returns any business that
+    // fuzzy-matches the query (pool cleaners, movers, retailers), which isn't what
+    // "search for a contractor" means to a homeowner.
     const contractors = (searchData.places || [])
       .filter(place => place.businessStatus !== 'CLOSED_PERMANENTLY' && !!place.displayName?.text)
       .map(place => {
+        const businessName = place.displayName?.text || '';
+        const trades = resolveTradesForKeywordSearch(businessName, place.types);
+        if (trades.length === 0) return null;
+
         const parsed = parsePlaceAddress(place.formattedAddress, zip);
 
         return {
           id: 0,
           placeId: place.id,
-          businessName: place.displayName?.text || '',
+          businessName,
           phone: place.nationalPhoneNumber || null,
           email: null,
           website: place.websiteUri || null,
@@ -6885,10 +6877,11 @@ app.get("/api/trusted-radar/keyword-search", async (c) => {
           bbbGrade: null,
           licenseStatus: null,
           licenseNumber: null,
-          tradeCategories: mapPlaceTypesToTrades(place.types),
+          tradeCategories: trades,
           cachedAt: now
         };
-      });
+      })
+      .filter((c): c is NonNullable<typeof c> => c !== null);
 
     // Persist so BBB/license enrichment and future ZIP searches benefit.
     // COALESCE on zip_code/trade_categories is deliberate and reversed from the

@@ -110,14 +110,63 @@ export function parsePlaceAddress(
   };
 }
 
-/**
- * Map Google place types onto our trade ids, de-duplicated and order-preserving.
- * Falls back to ['general'] so every contractor carries at least one tag.
- */
-export function mapPlaceTypesToTrades(types: string[] | undefined | null): string[] {
-  const trades = (types || [])
-    .map(t => PLACE_TYPE_TO_TRADE[t])
-    .filter((t): t is string => !!t);
+// Business-name keywords per trade. Two consumers:
+//  1. isValidTradeMatch — does a cached ZIP-search row still belong to the trade
+//     bucket it was cached under (catches stale/misclassified entries).
+//  2. resolveTradesForKeywordSearch — does a keyword-search result belong to any
+//     of the 9 trades at all, when Google's own place `types` don't say so.
+// Every RADAR_TRADE_CATEGORIES id (src/shared/trustedRadarTypes.ts) needs an entry
+// here, or isValidTradeMatch silently stops validating it (see the `!keywords`
+// bail-out below) and resolveTradesForKeywordSearch can never recognize it by name.
+export const TRADE_BUSINESS_KEYWORDS: Record<string, string[]> = {
+  landscaper: ['landscape', 'landscaping', 'lawn', 'yard', 'garden', 'outdoor', 'tree', 'turf', 'grass', 'mowing', 'greenscape'],
+  painter: ['paint', 'painting', 'coatings'],
+  plumber: ['plumb', 'plumbing', 'pipe', 'drain'],
+  electrician: ['electric', 'electrical', 'wiring'],
+  hvac: ['hvac', 'heating', 'cooling', 'air conditioning', 'ac ', 'a/c'],
+  roofing: ['roof', 'roofing', 'shingle'],
+  carpenter: ['carpenter', 'carpentry', 'cabinetry', 'woodwork', 'framing'],
+  handyman: ['handyman', 'handy man', 'home repair'],
+  general_contractor: ['general contractor', 'contracting', 'contractor', 'construction', 'remodeling', 'renovation', 'builders'],
+};
 
-  return trades.length > 0 ? [...new Set(trades)] : ['general'];
+/**
+ * Does a cached contractor's business name still look like the given trade?
+ * Used to filter stale D1 rows (e.g. a construction company that slipped into
+ * landscaper results) out of the ZIP-search cache. Trades with no keyword list
+ * pass unconditionally — there's nothing to validate against.
+ */
+export function isValidTradeMatch(businessName: string, trade: string): boolean {
+  const keywords = TRADE_BUSINESS_KEYWORDS[trade];
+  if (!keywords) return true;
+  const nameLower = businessName.toLowerCase();
+  return keywords.some(kw => nameLower.includes(kw));
+}
+
+/**
+ * Resolve which of the 9 recognized trades a keyword-search result belongs to.
+ *
+ * Google's own place `types` are the authoritative signal when present. Business
+ * name keywords are the fallback for results Google tagged generically (or not at
+ * all). An empty return means neither signal recognized a trade — the caller
+ * should drop the result rather than show it, since a free-text Google search
+ * surfaces plenty of non-contractor businesses (pool cleaners, movers, retailers)
+ * that would otherwise pollute what's supposed to be a contractor lookup.
+ */
+export function resolveTradesForKeywordSearch(
+  businessName: string,
+  placeTypes: string[] | undefined | null
+): string[] {
+  const structural = [...new Set(
+    (placeTypes || [])
+      .map(t => PLACE_TYPE_TO_TRADE[t])
+      .filter((t): t is string => !!t)
+  )];
+
+  if (structural.length > 0) return structural;
+
+  const nameLower = businessName.toLowerCase();
+  return Object.entries(TRADE_BUSINESS_KEYWORDS)
+    .filter(([, keywords]) => keywords.some(kw => nameLower.includes(kw)))
+    .map(([trade]) => trade);
 }
