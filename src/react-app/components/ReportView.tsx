@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { 
   Shield, AlertTriangle, CheckCircle,
   FileWarning,
@@ -123,6 +123,13 @@ export default function ReportView({ bidContent, fileName, userTier = 'anonymous
   const [scopeQuestions, setScopeQuestions] = useState<string[]>([]);
   const [aiQuestions] = useState<Array<{ title: string; detail: string; action?: string }>>([]);
   const [changeOrderQuestions, setChangeOrderQuestions] = useState<string[]>([]);
+
+  // Stable reference: ScopeComparisonCard depends on this callback in a useEffect,
+  // so an inline arrow here would recreate it every render, re-fire that effect every
+  // time, and re-set this state every time it fires — an infinite render loop.
+  const handleScopeQuestionsReady = useCallback((questions: string[]) => {
+    setScopeQuestions(questions.map(q => typeof q === 'string' ? q : q));
+  }, []);
   
   // Propagate change order questions to parent for Talk Track view
   useEffect(() => {
@@ -393,7 +400,7 @@ export default function ReportView({ bidContent, fileName, userTier = 'anonymous
       setDataOverrides(prev => ({ ...prev, bidTotal: bidTotalOverride }));
     }
   }, [bidTotalOverride, dataOverrides.bidTotal]);
-  
+
   useEffect(() => {
     if (squareFootageOverride !== undefined && squareFootageOverride !== dataOverrides.squareFootage) {
       setDataOverrides(prev => ({ ...prev, squareFootage: squareFootageOverride }));
@@ -413,7 +420,7 @@ export default function ReportView({ bidContent, fileName, userTier = 'anonymous
   }, [bidContent, rawBidTotal, uploadOverrides]);
   
   const effectiveBidTotal = dataOverrides.bidTotal ?? rawBidTotal ?? undefined;
-  
+
   const analysis = useMemo(() => {
     // Build contractor trust data including verified license status
     const contractorTrust = contractorResearchData ? {
@@ -1224,9 +1231,7 @@ export default function ReportView({ bidContent, fileName, userTier = 'anonymous
               bidText={bidContent}
               enableAI={isPremium}
               aiQuestionsToAsk={aiAnalysis?.questionsToAsk}
-              onQuestionsReady={(questions) => setScopeQuestions(
-                questions.map(q => typeof q === 'string' ? q : q)
-              )}
+              onQuestionsReady={handleScopeQuestionsReady}
             />
           )}
         </div>
