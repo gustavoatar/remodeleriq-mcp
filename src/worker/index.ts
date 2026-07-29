@@ -1,13 +1,23 @@
 import { Hono } from "hono";
+import type { Context } from "hono";
 import { cors } from "hono/cors";
 import { GoogleGenAI } from "@google/genai";
 import { getCookie } from "hono/cookie";
-import { 
-  getAllSeriesIds, 
-  buildBLSRequestPayload, 
+import {
+  getAllSeriesIds,
+  buildBLSRequestPayload,
   getStateAdjustedWages,
   getStateName
 } from "@/shared/blsLaborRates";
+import {
+  sanitizeKeywordQuery,
+  isValidKeywordQuery,
+  isValidZip,
+  parsePlaceAddress,
+  mapPlaceTypesToTrades,
+  KEYWORD_MIN_LENGTH,
+  KEYWORD_MAX_LENGTH
+} from "@/shared/trustedRadarSearch";
 import analyzeCommunity from './routes/analyze-community';
 import authRoutes from './routes/auth';
 import nextdoorAuthRoutes from './routes/nextdoorAuth';
@@ -6427,10 +6437,63 @@ function isValidTradeMatch(businessName: string, trade: string): boolean {
   return keywords.some(kw => nameLower.includes(kw));
 }
 
+// ZIP -> coordinates: local table first (exact, then 3-digit prefix), Google Geocoding last.
+// Returns null when the ZIP can't be resolved; callers decide whether that's fatal.
+async function resolveZipToCoords(zip: string, apiKey: string): Promise<{ lat: number; lng: number } | null> {
+  if (!zip || zip.length < 5) return null;
+
+  if (RADAR_ZIP_COORDS[zip]) return RADAR_ZIP_COORDS[zip];
+
+  const prefix = zip.slice(0, 3);
+  for (const [key, coords] of Object.entries(RADAR_ZIP_COORDS)) {
+    if (key.startsWith(prefix)) return coords;
+  }
+
+  try {
+    const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)}&key=${apiKey}`;
+    const geocodeRes = await fetch(geocodeUrl);
+    const geocodeData = await geocodeRes.json() as {
+      status: string;
+      results: Array<{ geometry: { location: { lat: number; lng: number } } }>;
+    };
+
+    if (geocodeData.status === 'OK' && geocodeData.results?.[0]) {
+      return {
+        lat: geocodeData.results[0].geometry.location.lat,
+        lng: geocodeData.results[0].geometry.location.lng,
+      };
+    }
+  } catch (e) {
+    console.error('Geocoding error:', e);
+  }
+
+  return null;
+}
+
+// Rate-limit key for the public Trust Radar endpoints. These are unauthenticated and
+// hit paid Google APIs, so anonymous visitors must be bucketed by IP — checkRateLimit's
+// own 'anonymous' fallback would pool every logged-out visitor into a single quota.
+function radarRateLimitKey(c: Context<AppEnv>): string {
+  const sessionToken = getCookie(c, SESSION_COOKIE_NAME);
+  const ip = c.req.header("cf-connecting-ip") || "unknown";
+  return `radar:${sessionToken || ip}`;
+}
+
 app.get("/api/trusted-radar/search", async (c) => {
+  const rateCheck = checkRateLimit(radarRateLimitKey(c));
+  if (!rateCheck.allowed) {
+    return c.json({
+      success: false,
+      error: `Too many searches. Try again in ${Math.ceil(rateCheck.resetIn / 1000)} seconds.`,
+      contractors: [],
+      center: null,
+      totalFound: 0
+    }, 429);
+  }
+
   const apiKey = (c.env as unknown as Record<string, unknown>).GOOGLE_PLACES_API_KEY as string | undefined;
   const db = c.env.DB;
-  
+
   if (!apiKey) {
     return c.json({ 
       success: false, 
@@ -6467,42 +6530,9 @@ app.get("/api/trusted-radar/search", async (c) => {
   
   // Fall back to ZIP-based lookup
   if (!center && zip && zip.length >= 5) {
-    // Try exact match first
-    if (RADAR_ZIP_COORDS[zip]) {
-      center = RADAR_ZIP_COORDS[zip];
-    } else {
-      // Try prefix match
-      const prefix = zip.slice(0, 3);
-      for (const [key, coords] of Object.entries(RADAR_ZIP_COORDS)) {
-        if (key.startsWith(prefix)) {
-          center = coords;
-          break;
-        }
-      }
-    }
-    
-    // If no match, use Google Geocoding API
-    if (!center) {
-      try {
-        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${apiKey}`;
-        const geocodeRes = await fetch(geocodeUrl);
-        const geocodeData = await geocodeRes.json() as { 
-          status: string; 
-          results: Array<{ geometry: { location: { lat: number; lng: number } } }> 
-        };
-        
-        if (geocodeData.status === 'OK' && geocodeData.results?.[0]) {
-          center = {
-            lat: geocodeData.results[0].geometry.location.lat,
-            lng: geocodeData.results[0].geometry.location.lng
-          };
-        }
-      } catch (e) {
-        console.error('Geocoding error:', e);
-      }
-    }
+    center = await resolveZipToCoords(zip, apiKey);
   }
-  
+
   // Require either lat/lng or valid ZIP
   if (!center) {
     return c.json({ 
@@ -6724,12 +6754,222 @@ app.get("/api/trusted-radar/search", async (c) => {
   }
 });
 
+// ==================== TRUSTED RADAR KEYWORD SEARCH ====================
+
+interface PlacesV1Place {
+  id: string;
+  displayName?: { text?: string };
+  formattedAddress?: string;
+  location?: { latitude?: number; longitude?: number };
+  rating?: number;
+  userRatingCount?: number;
+  businessStatus?: string;
+  websiteUri?: string;
+  nationalPhoneNumber?: string;
+  types?: string[];
+}
+
+// Search contractors by business name / keyword rather than ZIP+trade.
+// Deliberately NOT rating-filtered: a homeowner checking the contractor who gave
+// them a bid must find that business even at 3.2 stars. The ZIP tab keeps its 4.0+ floor.
+app.get("/api/trusted-radar/keyword-search", async (c) => {
+  const rateCheck = checkRateLimit(radarRateLimitKey(c));
+  if (!rateCheck.allowed) {
+    return c.json({
+      success: false,
+      error: `Too many searches. Try again in ${Math.ceil(rateCheck.resetIn / 1000)} seconds.`,
+      contractors: [],
+      center: null,
+      totalFound: 0
+    }, 429);
+  }
+
+  const apiKey = (c.env as unknown as Record<string, unknown>).GOOGLE_PLACES_API_KEY as string | undefined;
+  const db = c.env.DB;
+
+  if (!apiKey) {
+    return c.json({
+      success: false,
+      error: "Google Places API not configured",
+      contractors: [],
+      center: null,
+      totalFound: 0
+    }, 200);
+  }
+
+  const q = sanitizeKeywordQuery(c.req.query("q"));
+  if (!isValidKeywordQuery(q)) {
+    return c.json({
+      success: false,
+      error: `Please enter between ${KEYWORD_MIN_LENGTH} and ${KEYWORD_MAX_LENGTH} characters`,
+      contractors: [],
+      center: null,
+      totalFound: 0
+    }, 400);
+  }
+
+  const zip = c.req.query("zip") || "";
+  if (zip && !isValidZip(zip)) {
+    return c.json({
+      success: false,
+      error: "Invalid ZIP code",
+      contractors: [],
+      center: null,
+      totalFound: 0
+    }, 400);
+  }
+
+  // Optional: biases results toward the ZIP but never excludes matches elsewhere.
+  // A failed geocode degrades to a national search rather than erroring.
+  const center = zip ? await resolveZipToCoords(zip, apiKey) : null;
+
+  try {
+    const body: Record<string, unknown> = { textQuery: q, maxResultCount: 20 };
+    if (center) {
+      body.locationBias = {
+        circle: {
+          center: { latitude: center.lat, longitude: center.lng },
+          radius: 50000.0
+        }
+      };
+    }
+
+    const searchRes = await fetch("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        // Lean field mask — no reviews (the detail card fetches those on demand).
+        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.businessStatus,places.websiteUri,places.nationalPhoneNumber,places.types"
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!searchRes.ok) {
+      const errorText = await searchRes.text();
+      console.error('Keyword search Places error:', searchRes.status, errorText);
+      return c.json({
+        success: false,
+        error: searchRes.status === 429
+          ? "Search is busy right now — please try again in a minute"
+          : "Search failed",
+        contractors: [],
+        center,
+        totalFound: 0
+      }, 200);
+    }
+
+    const searchData = await searchRes.json() as { places?: PlacesV1Place[] };
+    const now = new Date().toISOString();
+
+    const contractors = (searchData.places || [])
+      .filter(place => place.businessStatus !== 'CLOSED_PERMANENTLY' && !!place.displayName?.text)
+      .map(place => {
+        const parsed = parsePlaceAddress(place.formattedAddress, zip);
+
+        return {
+          id: 0,
+          placeId: place.id,
+          businessName: place.displayName?.text || '',
+          phone: place.nationalPhoneNumber || null,
+          email: null,
+          website: place.websiteUri || null,
+          address: parsed.address,
+          city: parsed.city,
+          stateCode: parsed.stateCode,
+          zipCode: parsed.zipCode,
+          lat: place.location?.latitude ?? null,
+          lng: place.location?.longitude ?? null,
+          googleRating: place.rating ?? null,
+          googleReviewCount: place.userRatingCount ?? null,
+          bbbGrade: null,
+          licenseStatus: null,
+          licenseNumber: null,
+          tradeCategories: mapPlaceTypesToTrades(place.types),
+          cachedAt: now
+        };
+      });
+
+    // Persist so BBB/license enrichment and future ZIP searches benefit.
+    // COALESCE on zip_code/trade_categories is deliberate and reversed from the
+    // ZIP path's upsert: a keyword hit must never repoint a row's ZIP-cache bucket
+    // or overwrite trade tags the ZIP tab's cache query filters on.
+    for (const contractor of contractors) {
+      try {
+        await db.prepare(`
+          INSERT INTO trusted_contractors (
+            place_id, business_name, phone, email, website, address, city,
+            state_code, zip_code, lat, lng, google_rating, google_review_count,
+            bbb_grade, license_status, license_number, trade_categories, cached_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT(place_id) DO UPDATE SET
+            business_name = excluded.business_name,
+            phone = COALESCE(excluded.phone, trusted_contractors.phone),
+            website = COALESCE(excluded.website, trusted_contractors.website),
+            google_rating = excluded.google_rating,
+            google_review_count = excluded.google_review_count,
+            zip_code = COALESCE(trusted_contractors.zip_code, excluded.zip_code),
+            trade_categories = COALESCE(trusted_contractors.trade_categories, excluded.trade_categories),
+            cached_at = excluded.cached_at,
+            updated_at = CURRENT_TIMESTAMP
+        `).bind(
+          contractor.placeId,
+          contractor.businessName,
+          contractor.phone,
+          contractor.email,
+          contractor.website,
+          contractor.address,
+          contractor.city,
+          contractor.stateCode,
+          contractor.zipCode,
+          contractor.lat,
+          contractor.lng,
+          contractor.googleRating,
+          contractor.googleReviewCount,
+          contractor.bbbGrade,
+          contractor.licenseStatus,
+          contractor.licenseNumber,
+          JSON.stringify(contractor.tradeCategories),
+          contractor.cachedAt
+        ).run();
+      } catch (insertError) {
+        console.error('Keyword search cache insert error for', contractor.placeId, insertError);
+      }
+    }
+
+    return c.json({
+      success: true,
+      contractors,
+      center,
+      totalFound: contractors.length
+    });
+
+  } catch (error) {
+    console.error('Trust Radar keyword search error:', error);
+    return c.json({
+      success: false,
+      error: 'Search failed',
+      contractors: [],
+      center,
+      totalFound: 0
+    }, 500);
+  }
+});
+
 // ==================== TRUSTED RADAR BBB/LICENSE ENRICHMENT ====================
 
 app.post("/api/trusted-radar/enrich", async (c) => {
+  const rateCheck = checkRateLimit(radarRateLimitKey(c));
+  if (!rateCheck.allowed) {
+    return c.json({
+      success: false,
+      error: `Too many requests. Try again in ${Math.ceil(rateCheck.resetIn / 1000)} seconds.`
+    }, 429);
+  }
+
   const geminiKey = (c.env as unknown as Record<string, string>).GEMINI_API_KEY;
   const db = c.env.DB;
-  
+
   if (!geminiKey) {
     return c.json({ success: false, error: "API key not configured" }, 500);
   }

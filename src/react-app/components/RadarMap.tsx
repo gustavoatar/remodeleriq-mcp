@@ -31,7 +31,16 @@ interface RadarMapProps {
   onMarkerClick?: (contractor: ContractorMarker) => void;
   onBoundsChange?: (bounds: MapBounds) => void;
   isSearching?: boolean;
+  /** Frame all markers instead of flying to `center`. For keyword results, which
+   *  can be spread nationally and may have no center at all. */
+  fitToContractors?: boolean;
+  emptyMessage?: string;
 }
+
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, ch => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch] as string
+  ));
 
 // ZIP code to approximate coordinates (simplified - will use geocoding API in production)
 const ZIP_COORDINATES: Record<string, { lat: number; lng: number; name: string }> = {
@@ -89,12 +98,14 @@ function calculateRadiusFromBounds(map: L.Map): number {
   return Math.max(5, Math.min(100, Math.round(distanceMiles * 0.7)));
 }
 
-export default function RadarMap({ 
-  center, 
+export default function RadarMap({
+  center,
   contractors = [],
   onMarkerClick,
   onBoundsChange,
-  isSearching = false
+  isSearching = false,
+  fitToContractors = false,
+  emptyMessage
 }: RadarMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -186,10 +197,10 @@ export default function RadarMap({
     };
   }, [handleBoundsChange]);
 
-  // Update center when ZIP changes
+  // Update center when ZIP changes (skipped in fit mode — bounds win there)
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !center) return;
+    if (!map || !center || fitToContractors) return;
 
     // Mark as initial move so we don't trigger search
     isInitialMoveRef.current = true;
@@ -199,7 +210,7 @@ export default function RadarMap({
     map.flyTo([center.lat, center.lng], 10, {
       duration: 1,
     });
-  }, [center]);
+  }, [center, fitToContractors]);
 
   // Update contractor markers
   useEffect(() => {
@@ -239,7 +250,7 @@ export default function RadarMap({
       const marker = L.marker([contractor.lat, contractor.lng], { icon: customIcon })
         .bindPopup(`
           <div style="padding: 4px;">
-            <strong>${contractor.name}</strong>
+            <strong>${escapeHtml(contractor.name)}</strong>
             ${contractor.rating ? `<br><span style="color: #10b981;">★ ${contractor.rating.toFixed(1)}</span>` : ''}
           </div>
         `)
@@ -251,15 +262,21 @@ export default function RadarMap({
 
       markersRef.current.push(marker);
     });
-  }, [contractors, onMarkerClick]);
+
+    // Keyword results have no meaningful center, so frame the markers instead.
+    if (fitToContractors && markersRef.current.length > 0) {
+      isInitialMoveRef.current = true; // programmatic move, not a user pan
+      map.fitBounds(L.featureGroup(markersRef.current).getBounds().pad(0.2), { maxZoom: 13 });
+    }
+  }, [contractors, onMarkerClick, fitToContractors]);
 
   return (
     <div className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden">
-      {!center && (
+      {!center && contractors.length === 0 && (
         <div className="absolute inset-0 z-10 bg-gray-100 flex items-center justify-center">
           <div className="text-center p-8">
             <Radar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 font-medium">Enter a ZIP code to search</p>
+            <p className="text-gray-600 font-medium">{emptyMessage || 'Enter a ZIP code to search'}</p>
             <p className="text-gray-500 text-sm mt-2">Map will display trusted contractors in your area</p>
           </div>
         </div>

@@ -48,6 +48,17 @@ export interface RadarSearchResult {
   fromCache: boolean;
 }
 
+// Keyword/business-name search. Unlike RadarSearchResult, center is nullable
+// (no ZIP supplied = national search) and results are not rating-filtered:
+// a homeowner checking a specific bid must find that contractor at any rating.
+export interface KeywordSearchResult {
+  success: boolean;
+  contractors: TrustedContractor[];
+  center: { lat: number; lng: number } | null;
+  totalFound: number;
+  error?: string;
+}
+
 // Trade categories for filtering
 export const RADAR_TRADE_CATEGORIES = [
   { id: 'all', label: 'All Trades', googleTypes: [] },

@@ -6,7 +6,7 @@ import PageSEO from '@/react-app/components/PageSEO';
 import { BreadcrumbSchema, BREADCRUMBS } from '@/react-app/components/StructuredData';
 import RadarMap, { type ContractorMarker, type MapBounds } from '@/react-app/components/RadarMap';
 import ContractorDetailCard from '@/react-app/components/ContractorDetailCard';
-import { RADAR_TRADE_CATEGORIES, type TradeCategory, type TrustedContractor } from '@/shared/trustedRadarTypes';
+import { RADAR_TRADE_CATEGORIES, type TradeCategory, type TrustedContractor, type KeywordSearchResult } from '@/shared/trustedRadarTypes';
 import { useUserLocation } from '@/react-app/hooks/useGeolocation';
 
 // Schema.org structured data for contractor search service
@@ -25,6 +25,7 @@ function TrustRadarSchema() {
       "priceCurrency": "USD"
     },
     "featureList": [
+      "Contractor search by business name",
       "License verification",
       "BBB rating lookup",
       "Google reviews integration",
@@ -99,8 +100,28 @@ const STATE_DEFAULT_ZIPS: Record<string, string> = {
 // Key for storing last analyzed project ZIP
 const LAST_PROJECT_ZIP_KEY = 'remodeleriq_last_project_zip';
 
+type RadarTab = 'contractor' | 'zip';
+
+const RADAR_TABS: { id: RadarTab; label: string; icon: typeof Search }[] = [
+  { id: 'contractor', label: 'Contractor Search', icon: Search },
+  { id: 'zip', label: 'Zip Code Search', icon: MapPin },
+];
+
+function trackRadarEvent(event: string, params: Record<string, unknown>) {
+  (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag?.('event', event, params);
+}
+
 export default function TrustedRadarPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<RadarTab>(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'zip' || tab === 'contractor') return tab;
+    // The home-page CTA deep-links with ?zip= — keep it landing on the ZIP flow.
+    if (searchParams.get('zip')) return 'zip';
+    return 'contractor';
+  });
+  const [keyword, setKeyword] = useState(() => searchParams.get('q') || '');
+  const [activeKeyword, setActiveKeyword] = useState('');
   const [searchZip, setSearchZip] = useState('');
   const [activeZip, setActiveZip] = useState('');
   const [selectedTrade, setSelectedTrade] = useState<TradeCategory>('all');
@@ -116,6 +137,7 @@ export default function TrustedRadarPage() {
   const lastSearchCenterRef = useRef<{ lat: number; lng: number } | null>(null);
   // Track if we should auto-search on load (from home page navigation)
   const autoSearchTriggeredRef = useRef(false);
+  const keywordAutoSearchRef = useRef(false);
   
   // Get user's saved location
   const { stateCode } = useUserLocation();
@@ -292,6 +314,7 @@ export default function TrustedRadarPage() {
   
   // Auto-search when navigating from home page with ZIP param
   useEffect(() => {
+    if (activeTab !== 'zip') return;
     const urlZip = searchParams.get('zip');
     if (urlZip && urlZip.length === 5 && !autoSearchTriggeredRef.current && searchZip === urlZip) {
       autoSearchTriggeredRef.current = true;
@@ -300,7 +323,91 @@ export default function TrustedRadarPage() {
         handleSearch(undefined, undefined, undefined, true); // useZipOnly=true
       }, 100);
     }
-  }, [searchZip, searchParams, handleSearch]);
+  }, [activeTab, searchZip, searchParams, handleSearch]);
+
+  // Keyword/business-name search. Results feed the same list, map and detail modal
+  // as the ZIP flow, so nothing downstream needs to know which tab produced them.
+  const handleKeywordSearch = useCallback(async () => {
+    const q = keyword.trim();
+    if (q.length < 3) {
+      setSearchError('Enter at least 3 characters to search');
+      return;
+    }
+
+    // Consume the one-shot deep-link trigger. A successful search writes ?q= back
+    // to the URL, which would otherwise re-satisfy the auto-search effect below
+    // and fire the whole search a second time.
+    keywordAutoSearchRef.current = true;
+
+    setIsSearching(true);
+    setSearchError(null);
+    setSelectedContractor(null);
+    setActiveKeyword(q);
+
+    try {
+      const params = new URLSearchParams({ q });
+      if (searchZip && searchZip.length === 5) {
+        params.set('zip', searchZip);
+      }
+
+      const res = await fetch(`/api/trusted-radar/keyword-search?${params}`);
+      const data = await res.json() as KeywordSearchResult;
+
+      if (data.success) {
+        setContractors(data.contractors || []);
+        setEnrichmentStatus('idle');
+        setMapCenter(data.center || undefined);
+        if (data.center) {
+          lastSearchCenterRef.current = data.center;
+        }
+        setSearchParams({ tab: 'contractor', q }, { replace: true });
+        trackRadarEvent('radar_keyword_search', {
+          has_zip: searchZip.length === 5,
+          result_count: data.contractors?.length ?? 0,
+        });
+      } else {
+        setSearchError(data.error || 'Search failed');
+        setContractors([]);
+      }
+    } catch (err) {
+      console.error('Keyword search error:', err);
+      setSearchError('Failed to search. Please try again.');
+      setContractors([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [keyword, searchZip, setSearchParams]);
+
+  // Auto-search when arriving with ?q= (shared link)
+  useEffect(() => {
+    const urlQuery = searchParams.get('q');
+    if (
+      activeTab === 'contractor' &&
+      urlQuery &&
+      urlQuery.trim().length >= 3 &&
+      !keywordAutoSearchRef.current &&
+      keyword === urlQuery
+    ) {
+      keywordAutoSearchRef.current = true;
+      handleKeywordSearch();
+    }
+  }, [activeTab, keyword, searchParams, handleKeywordSearch]);
+
+  // Switching tabs clears results: the ZIP tab's radius/trade framing doesn't
+  // describe keyword hits, and stale mixed results read as a bug.
+  const handleTabChange = (tab: RadarTab) => {
+    if (tab === activeTab) return;
+    setActiveTab(tab);
+    setContractors([]);
+    setSelectedContractor(null);
+    setSearchError(null);
+    setMapCenter(undefined);
+    setActiveZip('');
+    setActiveKeyword('');
+    setEnrichmentStatus('idle');
+    setSearchParams(tab === 'zip' ? { tab } : {}, { replace: true });
+    trackRadarEvent('radar_tab_switch', { tab });
+  };
 
   const handleTradeChange = (trade: TradeCategory) => {
     setSelectedTrade(trade);
@@ -324,9 +431,9 @@ export default function TrustedRadarPage() {
       <TrustRadarSchema />
       <PageSEO
         title="Find Trusted Contractors Near You | Free License & Review Check"
-        description="Search 500,000+ contractors with verified licenses, Google reviews, and BBB ratings on one map. Compare roofers, plumbers, electricians & more in your ZIP code."
+        description="Look up any contractor by name or search your ZIP code. See verified licenses, Google reviews, and BBB ratings for roofers, plumbers, electricians & more — free."
         path="/trusted-radar"
-        keywords="find local contractors, verified contractors near me, contractor license lookup, contractor reviews, BBB rated contractors, licensed roofers plumbers electricians"
+        keywords="contractor lookup by name, find local contractors, verified contractors near me, contractor license lookup, contractor reviews, BBB rated contractors, licensed roofers plumbers electricians"
       />
       <BreadcrumbSchema items={BREADCRUMBS.trustRadar} />
       <Header />
@@ -347,57 +454,127 @@ export default function TrustedRadarPage() {
           </div>
         </div>
         
+        {/* Search Mode Tabs */}
+        <div className="bg-white border-b border-gray-200 pt-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex gap-1 bg-gray-100 rounded-xl p-1 max-w-md" role="tablist">
+              {RADAR_TABS.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                      isActive
+                        ? 'bg-white text-emerald-700 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         {/* Search Bar Section - White Background */}
         <div className="bg-white border-b border-gray-200 py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1 relative">
-                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Enter ZIP code"
-                  value={searchZip}
-                  onChange={(e) => setSearchZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch(undefined, undefined, undefined, true)}
-                  className="w-full pl-12 pr-4 py-4 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg"
-                />
+            {activeTab === 'zip' ? (
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Enter ZIP code"
+                    value={searchZip}
+                    onChange={(e) => setSearchZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch(undefined, undefined, undefined, true)}
+                    className="w-full pl-12 pr-4 py-4 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg"
+                  />
+                </div>
+                <button
+                  onClick={() => handleSearch(undefined, undefined, undefined, true)}
+                  disabled={!searchZip || searchZip.length < 5 || isSearching}
+                  className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Search className="w-5 h-5" />
+                  {isSearching ? 'Searching...' : 'Search'}
+                </button>
               </div>
-              <button
-                onClick={() => handleSearch(undefined, undefined, undefined, true)}
-                disabled={!searchZip || searchZip.length < 5 || isSearching}
-                className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors"
-              >
-                <Search className="w-5 h-5" />
-                {isSearching ? 'Searching...' : 'Search'}
-              </button>
-            </div>
-            {mapCenter && (
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder='Business name or keyword — e.g. "ABC Roofing"'
+                    value={keyword}
+                    maxLength={80}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleKeywordSearch()}
+                    className="w-full pl-12 pr-4 py-4 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg"
+                  />
+                </div>
+                <div className="relative w-full sm:w-40">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Near ZIP"
+                    value={searchZip}
+                    onChange={(e) => setSearchZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                    onKeyDown={(e) => e.key === 'Enter' && handleKeywordSearch()}
+                    className="w-full pl-12 pr-4 py-4 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg"
+                  />
+                </div>
+                <button
+                  onClick={() => handleKeywordSearch()}
+                  disabled={keyword.trim().length < 3 || isSearching}
+                  className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Search className="w-5 h-5" />
+                  {isSearching ? 'Searching...' : 'Search'}
+                </button>
+              </div>
+            )}
+            {activeTab === 'contractor' ? (
+              <p className="text-sm text-gray-500 mt-3">
+                Search any contractor by name. Add a ZIP to prefer nearby matches — leave it blank to search nationwide.
+              </p>
+            ) : mapCenter && (
               <p className="text-sm text-gray-500 mt-3">Drag the map to search different areas</p>
             )}
           </div>
         </div>
-        
-        {/* Trade Tabs */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex gap-2 py-4 overflow-x-auto scrollbar-hide">
-              {RADAR_TRADE_CATEGORIES.map((trade) => (
-                <button
-                  key={trade.id}
-                  onClick={() => handleTradeChange(trade.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                    selectedTrade === trade.id
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {trade.label}
-                </button>
-              ))}
+
+        {/* Trade Tabs — ZIP search only; on the contractor tab the keyword is the filter */}
+        {activeTab === 'zip' && (
+          <div className="bg-white border-b border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex gap-2 py-4 overflow-x-auto scrollbar-hide">
+                {RADAR_TRADE_CATEGORIES.map((trade) => (
+                  <button
+                    key={trade.id}
+                    onClick={() => handleTradeChange(trade.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                      selectedTrade === trade.id
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {trade.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-        
+        )}
+
         {/* Main Content - Map + List */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row gap-6 min-h-[600px]">
@@ -409,6 +586,8 @@ export default function TrustedRadarPage() {
                 onMarkerClick={handleMarkerClick}
                 onBoundsChange={handleBoundsChange}
                 isSearching={isSearching}
+                fitToContractors={activeTab === 'contractor'}
+                emptyMessage={activeTab === 'contractor' ? 'Search for a contractor by name' : undefined}
               />
               {/* Load PROs button removed - see todo.md #121 */}
             </div>
@@ -434,7 +613,10 @@ export default function TrustedRadarPage() {
                       : 'Trusted PROs'
                   }
                 </h2>
-                {mapCenter && !isSearching && <p className="text-sm text-gray-500">Showing results within ~{Math.round(currentRadius)} miles</p>}
+                {activeTab === 'zip' && mapCenter && !isSearching && <p className="text-sm text-gray-500">Showing results within ~{Math.round(currentRadius)} miles</p>}
+                {activeTab === 'contractor' && activeKeyword && !isSearching && contractors.length > 0 && (
+                  <p className="text-sm text-gray-500">Matching "{activeKeyword}"</p>
+                )}
                 {isSearching && <p className="text-sm text-gray-400">Looking for contractors in your area...</p>}
               </div>
               
@@ -472,7 +654,9 @@ export default function TrustedRadarPage() {
                     <p className="text-gray-900 font-medium mb-2">Something went wrong</p>
                     <p className="text-gray-500 text-sm mb-4">{searchError}</p>
                     <button
-                      onClick={() => handleSearch(undefined, undefined, undefined, true)}
+                      onClick={() => activeTab === 'contractor'
+                        ? handleKeywordSearch()
+                        : handleSearch(undefined, undefined, undefined, true)}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
                     >
                       <RefreshCw className="w-4 h-4" />
@@ -481,8 +665,8 @@ export default function TrustedRadarPage() {
                   </div>
                 )}
                 
-                {/* Empty state - no search yet */}
-                {!searchError && contractors.length === 0 && !isSearching && !activeZip && (
+                {/* Empty state - no search yet (ZIP tab) */}
+                {activeTab === 'zip' && !searchError && contractors.length === 0 && !isSearching && !activeZip && (
                   <div className="p-8 text-center">
                     <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
                       <Users className="w-8 h-8 text-emerald-600" />
@@ -514,9 +698,45 @@ export default function TrustedRadarPage() {
                     </div>
                   </div>
                 )}
-                
-                {/* Empty state - no results found */}
-                {!searchError && contractors.length === 0 && !isSearching && activeZip && (
+
+                {/* Empty state - no search yet (Contractor tab) */}
+                {activeTab === 'contractor' && !searchError && contractors.length === 0 && !isSearching && !activeKeyword && (
+                  <div className="p-8 text-center">
+                    <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+                      <Search className="w-8 h-8 text-emerald-600" />
+                    </div>
+                    <p className="text-gray-900 font-medium mb-2">Look Up a Contractor</p>
+                    <p className="text-gray-500 text-sm mb-4">
+                      Type a business name from a bid, flyer, or referral to check them out
+                    </p>
+                    <div className="bg-gray-50 rounded-xl p-4 text-left max-w-xs mx-auto">
+                      <p className="text-xs font-medium text-gray-700 mb-3">What you'll see:</p>
+                      <ul className="space-y-2">
+                        <li className="flex items-center gap-2 text-sm text-gray-600">
+                          <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                            <Star className="w-3 h-3 text-emerald-600" />
+                          </span>
+                          Google rating &amp; review count
+                        </li>
+                        <li className="flex items-center gap-2 text-sm text-gray-600">
+                          <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                            <CheckCircle className="w-3 h-3 text-emerald-600" />
+                          </span>
+                          License &amp; registration lookup
+                        </li>
+                        <li className="flex items-center gap-2 text-sm text-gray-600">
+                          <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                            <Shield className="w-3 h-3 text-emerald-600" />
+                          </span>
+                          BBB record &amp; complaints
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {/* Empty state - no results found (ZIP tab) */}
+                {activeTab === 'zip' && !searchError && contractors.length === 0 && !isSearching && activeZip && (
                   <div className="p-8 text-center">
                     <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
                       <MapPin className="w-7 h-7 text-amber-600" />
@@ -534,6 +754,24 @@ export default function TrustedRadarPage() {
                       </button>
                       <p className="text-xs text-gray-400">or try a different ZIP code</p>
                     </div>
+                  </div>
+                )}
+
+                {/* Empty state - no results found (Contractor tab) */}
+                {activeTab === 'contractor' && !searchError && contractors.length === 0 && !isSearching && activeKeyword && (
+                  <div className="p-8 text-center">
+                    <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+                      <Search className="w-7 h-7 text-amber-600" />
+                    </div>
+                    <p className="text-gray-900 font-medium mb-2">No contractors found</p>
+                    <p className="text-gray-500 text-sm mb-4">
+                      Nothing matched "{activeKeyword}"
+                    </p>
+                    <ul className="text-sm text-gray-500 text-left max-w-xs mx-auto space-y-1.5">
+                      <li>• Check the spelling of the business name</li>
+                      <li>• Try fewer words, or just the distinctive part</li>
+                      <li>• {searchZip ? 'Clear the ZIP to search nationwide' : 'Add a ZIP code to narrow the area'}</li>
+                    </ul>
                   </div>
                 )}
                 
@@ -578,12 +816,21 @@ export default function TrustedRadarPage() {
                         </div>
                       </div>
                       
+                      {/* Keyword results are not rating-filtered, so flag sub-4.0 instead of hiding it */}
                       {contractor.googleRating && (
-                        <div className="flex items-center gap-1 bg-emerald-100 px-2 py-1 rounded-lg shrink-0">
-                          <Star className="w-4 h-4 text-emerald-600 fill-emerald-600" />
-                          <span className="text-sm font-semibold text-emerald-700">{contractor.googleRating.toFixed(1)}</span>
+                        <div className={`flex items-center gap-1 px-2 py-1 rounded-lg shrink-0 ${
+                          contractor.googleRating < 4.0 ? 'bg-amber-100' : 'bg-emerald-100'
+                        }`}>
+                          <Star className={`w-4 h-4 ${
+                            contractor.googleRating < 4.0 ? 'text-amber-600 fill-amber-600' : 'text-emerald-600 fill-emerald-600'
+                          }`} />
+                          <span className={`text-sm font-semibold ${
+                            contractor.googleRating < 4.0 ? 'text-amber-700' : 'text-emerald-700'
+                          }`}>{contractor.googleRating.toFixed(1)}</span>
                           {contractor.googleReviewCount && (
-                            <span className="text-xs text-emerald-600">({contractor.googleReviewCount})</span>
+                            <span className={`text-xs ${
+                              contractor.googleRating < 4.0 ? 'text-amber-600' : 'text-emerald-600'
+                            }`}>({contractor.googleReviewCount})</span>
                           )}
                         </div>
                       )}
