@@ -129,6 +129,14 @@ export default function TrustedRadarPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [contractors, setContractors] = useState<TrustedContractor[]>([]);
   const [selectedContractor, setSelectedContractor] = useState<TrustedContractor | null>(null);
+  // Background enrichment (enrichContractors) updates `contractors` in place but never
+  // touches `selectedContractor` — without this, a modal opened before enrichment lands
+  // for that contractor stays frozen on its pre-enrichment (null bbbGrade/licenseStatus)
+  // snapshot forever, even after the list quietly gets the real data moments later.
+  const liveSelectedContractor = useMemo(() => {
+    if (!selectedContractor) return null;
+    return contractors.find(c => c.placeId === selectedContractor.placeId) || selectedContractor;
+  }, [selectedContractor, contractors]);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | undefined>();
   const [searchError, setSearchError] = useState<string | null>(null);
   const [enrichmentStatus, setEnrichmentStatus] = useState<'idle' | 'loading' | 'done'>('idle');
@@ -595,9 +603,9 @@ export default function TrustedRadarPage() {
             {/* Results List */}
             <div className="lg:w-2/5 space-y-4">
               {/* Selected Contractor Detail Card */}
-              {selectedContractor && (
-                <ContractorDetailCard 
-                  contractor={selectedContractor}
+              {liveSelectedContractor && (
+                <ContractorDetailCard
+                  contractor={liveSelectedContractor}
                   onClose={() => setSelectedContractor(null)}
                 />
               )}

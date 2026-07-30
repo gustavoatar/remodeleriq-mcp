@@ -4603,6 +4603,7 @@ interface ContractorResearchResult {
     snippet: string;
   }>;
   bbbStatus: string | null;
+  bbbProfileUrl: string | null;
   bbbComplaints: {
     total: number | null;
     lastThreeYears: number | null;
@@ -4613,6 +4614,8 @@ interface ContractorResearchResult {
     status: 'active' | 'inactive' | 'dissolved' | 'unknown';
     entity: string | null;
     registeredState: string | null;
+    licenseNumber: string | null;
+    licenseVerificationUrl: string | null;
     notes: string | null;
   } | null;
   permitHistory: {
@@ -4711,6 +4714,7 @@ Based on your search findings, return ONLY this JSON object (no markdown, no tex
     "concerns": ["specific concern from search"]
   },
   "bbbStatus": "The exact BBB rating/grade you found (A+, A, B, etc.) or 'Not Accredited' or 'Not Found'",
+  "bbbProfileUrl": "The exact bbb.org URL of this business's BBB profile page if you found one during search (e.g. https://www.bbb.org/us/ga/roswell/profile/general-contractor/example-0221-12345678), or null if not found",
   "bbbComplaints": {
     "total": "Total number of complaints ever filed, or null if not found",
     "lastThreeYears": "Number of complaints closed in last 3 years (BBB usually shows this), or null",
@@ -4722,6 +4726,7 @@ Based on your search findings, return ONLY this JSON object (no markdown, no tex
     "entity": "Exact entity name from state records or null",
     "registeredState": "${state || 'null'}",
     "licenseNumber": "IMPORTANT: Extract the actual license/registration number here (e.g. RBCO006955, GCCO123456, CR123456). This is the alphanumeric ID. Put it here, not in notes.",
+    "licenseVerificationUrl": "The exact URL where this license can be directly verified - the state licensing board's own page for this record, or this business's BuildZoom profile page - if found during search, or null if not found",
     "notes": "Other details like issue date, license type name, etc. Do NOT put the license number here."
   },
   "permitHistory": {
@@ -4733,7 +4738,7 @@ Based on your search findings, return ONLY this JSON object (no markdown, no tex
   "redFlags": ["Serious warning signs only"]
 }
 
-IMPORTANT: Return actual data you find via search. Do not fabricate or assume - if you can't find something, use null.`;
+IMPORTANT: Return actual data you find via search. Do not fabricate or assume - if you can't find something, use null. Do not state a BBB accreditation claim, license verification claim, or "active"/"verified" status claim in "summary" or "reputation.highlights" unless that same claim is also reflected in "bbbStatus" (not "Not Found" or "Not Accredited") or "businessRegistration.status" (not "unknown", "inactive", or "dissolved") respectively - those two fields are the authoritative source elsewhere in this app, and a highlight or summary sentence that contradicts them will visibly conflict with what the user sees on screen.`;
 
     // Note: Cannot use responseMimeType: "application/json" with googleSearch tool
     // They are mutually exclusive in the Gemini API
@@ -4833,6 +4838,7 @@ IMPORTANT: Return actual data you find via search. Do not fabricate or assume - 
           },
           sources: [],
           bbbStatus: null,
+          bbbProfileUrl: null,
           newsItems: [],
           redFlags: [],
           rawResponse: responseText.slice(0, 500),
@@ -4848,6 +4854,7 @@ IMPORTANT: Return actual data you find via search. Do not fabricate or assume - 
         reputation: researchData.reputation || { score: 'unknown', highlights: [], concerns: [] },
         sources: sources.length > 0 ? sources : (researchData.sources || []),
         bbbStatus: researchData.bbbStatus || null,
+        bbbProfileUrl: researchData.bbbProfileUrl || null,
         bbbComplaints: researchData.bbbComplaints || null,
         businessRegistration: researchData.businessRegistration || null,
         permitHistory: researchData.permitHistory || null,

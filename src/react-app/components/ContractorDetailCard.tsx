@@ -32,10 +32,11 @@ interface AIResearchData {
   summary: string;
   findings: string[];
   verdict: 'excellent' | 'good' | 'fair' | 'concerning' | null;
-  businessRegistration?: { status: string; entity?: string; registeredState?: string; licenseNumber?: string; notes?: string };
+  businessRegistration?: { status: string; entity?: string; registeredState?: string; licenseNumber?: string; licenseVerificationUrl?: string | null; notes?: string };
   permitHistory?: { recentPermits?: string | null; totalValue?: string | null; notes?: string | null };
   bbbComplaints?: BBBComplaintsData | null;
   bbbStatus?: string | null;
+  bbbProfileUrl?: string | null;
   reputation?: { score: string; highlights: string[]; concerns: string[] };
 }
 
@@ -87,12 +88,18 @@ export default function ContractorDetailCard({ contractor, onClose }: Contractor
           const json = await res.json();
           if (json.success && json.data) {
             const result = json.data;
-            // Build findings from reputation highlights
+            // Build findings from reputation highlights, excluding any BBB/license
+            // claim: those already have dedicated, structured badges above (parsed
+            // from bbbStatus / businessRegistration), and a bulleted "finding"
+            // repeating the claim risks contradicting those badges if this response's
+            // own fields disagree with each other.
             const findings: string[] = [];
             if (result.reputation?.highlights) {
-              findings.push(...result.reputation.highlights);
+              findings.push(...result.reputation.highlights.filter(
+                (h: string) => !/\bbbb\b|better business bureau|\blicens/i.test(h)
+              ));
             }
-            
+
             setAiResearch({
               summary: result.summary || '',
               findings: findings,
@@ -101,6 +108,7 @@ export default function ContractorDetailCard({ contractor, onClose }: Contractor
               permitHistory: result.permitHistory,
               bbbComplaints: result.bbbComplaints,
               bbbStatus: result.bbbStatus,
+              bbbProfileUrl: result.bbbProfileUrl,
               reputation: result.reputation
             });
           }
@@ -152,17 +160,47 @@ export default function ContractorDetailCard({ contractor, onClose }: Contractor
     if (!status) return null;
     // Look for grade patterns like A+, A-, A, B+, B-, B, C+, C-, C, D, F
     const gradeMatch = status.match(/\b([A-F][+-]?)\b/i);
-    return gradeMatch ? gradeMatch[1].toUpperCase() : null;
+    if (gradeMatch) return gradeMatch[1].toUpperCase();
+    // Many real BBB profiles show accreditation without posting a public letter
+    // grade. Recognize that as positive too, guarding against "Not Accredited"
+    // matching on the bare word.
+    if (/\baccredited\b/i.test(status) && !/\bnot\s+accredited\b/i.test(status)) {
+      return 'Accredited';
+    }
+    return null;
   };
-  
+
   const bbbGradeFromResearch = parseBbbGrade(aiResearch?.bbbStatus);
   const effectiveBbbGrade = bbbGradeFromResearch || contractor.bbbGrade;
-  
-  const bbbStatus = effectiveBbbGrade 
-    ? `Accredited (${effectiveBbbGrade})` 
+
+  const bbbStatus = effectiveBbbGrade
+    ? (effectiveBbbGrade === 'Accredited' ? 'Accredited' : `Accredited (${effectiveBbbGrade})`)
     : (isLoadingResearch ? 'Checking...' : 'Not Listed');
   const bbbIsPositive = !!effectiveBbbGrade;
-  
+
+  // Prefer a deep link straight to this business's actual BBB profile when Gemini's
+  // search found one; fall back to a generic bbb.org search. Domain-check before
+  // trusting it as a link target — this is model-sourced content, not something we
+  // fully control.
+  const bbbSearchUrl = `https://www.bbb.org/search?find_text=${encodeURIComponent(contractor.businessName)}&find_loc=${contractor.stateCode || ''}`;
+  const bbbHref = (aiResearch?.bbbProfileUrl && /^https:\/\/www\.bbb\.org\//.test(aiResearch.bbbProfileUrl))
+    ? aiResearch.bbbProfileUrl
+    : bbbSearchUrl;
+
+  // Same idea for the license badge: prefer a deep link to the actual verification
+  // page (state licensing board or BuildZoom) when found, restricted to domains we
+  // recognize as legitimate for this purpose.
+  const licenseDeepLink = aiResearch?.businessRegistration?.licenseVerificationUrl;
+  const isTrustedLicenseDomain = (url: string): boolean => {
+    try {
+      const host = new URL(url).hostname;
+      return host.endsWith('buildzoom.com') || (!!stateInfo && host === new URL(stateInfo.url).hostname);
+    } catch {
+      return false;
+    }
+  };
+  const trustedLicenseDeepLink = licenseDeepLink && isTrustedLicenseDomain(licenseDeepLink) ? licenseDeepLink : null;
+
   return (
     <>
       {/* Backdrop overlay - always visible */}
@@ -263,8 +301,8 @@ export default function ContractorDetailCard({ contractor, onClose }: Contractor
               </div>
               <div className="mt-1.5">
                 <div className="text-xs font-medium text-gray-700">BBB</div>
-                <a 
-                  href={`https://www.bbb.org/search?find_text=${encodeURIComponent(contractor.businessName)}&find_loc=${contractor.stateCode || ''}`}
+                <a
+                  href={bbbHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[10px] text-gray-400 hover:text-emerald-600 block"
@@ -290,9 +328,20 @@ export default function ContractorDetailCard({ contractor, onClose }: Contractor
                 {isLoadingResearch ? (
                   <span className="text-[10px] text-gray-400 block">Checking...</span>
                 ) : licenseIsPositive && aiResearch?.businessRegistration?.licenseNumber ? (
-                  <span className="text-[10px] text-emerald-600 block">#{aiResearch.businessRegistration.licenseNumber}</span>
+                  trustedLicenseDeepLink ? (
+                    <a
+                      href={trustedLicenseDeepLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] text-emerald-600 hover:underline block"
+                    >
+                      #{aiResearch.businessRegistration.licenseNumber}
+                    </a>
+                  ) : (
+                    <span className="text-[10px] text-emerald-600 block">#{aiResearch.businessRegistration.licenseNumber}</span>
+                  )
                 ) : stateInfo ? (
-                  <a 
+                  <a
                     href={stateInfo.url}
                     target="_blank"
                     rel="noopener noreferrer"
