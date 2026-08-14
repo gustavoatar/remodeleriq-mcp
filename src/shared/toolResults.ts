@@ -89,7 +89,7 @@ const FLAG_ID_MAP: Record<string, string> = {
   "qol-final-walkthrough": "QOL_FINAL_WALKTHROUGH",
 };
 
-function toStableFlagId(rawId: string): string {
+export function toStableFlagId(rawId: string): string {
   if (!rawId) return "UNKNOWN";
   return FLAG_ID_MAP[rawId] ?? rawId.toUpperCase().replace(/-/g, "_");
 }

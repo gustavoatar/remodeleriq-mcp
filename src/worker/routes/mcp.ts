@@ -12,14 +12,14 @@
 //   - mcp_attributions: pre-seeded on every analyze_bid; updated on click
 //   - PII-safe: no raw bid text is logged or stored
 
-import { analyzeBidFull, costEstimateResult, laborRatesResult, isToolError } from "@/shared/toolResults";
+import { analyzeBidFull, costEstimateResult, laborRatesResult, isToolError, toStableFlagId } from "@/shared/toolResults";
 import type { AnalysisResult } from "@/shared/analysisEngine";
 import { compareBidsFull, type BidInput } from "@/shared/compareBidsEngine";
 import { generateDocumentFingerprint, SCRUB_VERSION } from "@/shared/piiScrubber";
 import { BID_WIDGET_URI, BID_WIDGET_HTML } from "./bidWidgetHtml";
 
 const PROTOCOL_VERSION = "2025-06-18";
-const SERVER_INFO = { name: "remodeleriq", version: "1.2.0" };
+const SERVER_INFO = { name: "remodeleriq", version: "1.3.0" };
 const RULE_VERSION = "2026.08.1";
 
 const WIDGET_META = {
@@ -512,6 +512,82 @@ const COMPARE_BIDS_ANNOTATIONS = {
   destructiveHint: false,
 };
 
+// ---- Phase 3b: risk stats schemas -----------------------------------------
+const RISK_STATS_INPUT_SCHEMA = {
+  type: "object",
+  properties: {
+    state_code: {
+      type: "string",
+      description: "Two-letter US state code to filter stats (e.g. 'GA', 'TX'). Omit for national data.",
+    },
+    project_type: {
+      type: "string",
+      description: "Project type to filter (e.g. 'kitchen-remodel', 'bathroom-remodel', 'roofing'). Omit for all project types.",
+    },
+    bid_size_bucket: {
+      type: "string",
+      enum: ["<10k", "10-25k", "25-50k", "50-100k", "100k+"],
+      description: "Bid total range to filter. Omit for all sizes.",
+    },
+  },
+  required: [],
+};
+
+const RISK_STATS_OUTPUT_SCHEMA = {
+  type: "object",
+  properties: {
+    status: { type: "string", enum: ["ok", "corpus_too_small", "suppressed"] },
+    corpus_n: { type: "number", description: "Total bids in the RemodelerIQ corpus." },
+    cell_n: { type: "number", description: "Bids matching your filters." },
+    filter: { type: "object" },
+    suppressed: { type: "boolean", description: "True when cell_n < 30 — data withheld to protect granularity." },
+    top_flags: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          flag_id: { type: "string" },
+          rate: { type: "number", description: "Fraction of bids in cell where this flag fired (0–1)." },
+          n: { type: "number" },
+          severity: { type: "string" },
+          category: { type: "string" },
+          title: { type: "string" },
+        },
+      },
+    },
+    confidence_score: {
+      type: "object",
+      properties: {
+        mean: { type: "number" },
+        min: { type: "number" },
+        max: { type: "number" },
+        bands: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              label: { type: "string" },
+              n: { type: "number" },
+              pct: { type: "number" },
+            },
+          },
+        },
+      },
+    },
+    avg_bid_total: { type: "number", description: "Average bid total for bids where a total was provided." },
+    _meta: { type: "object" },
+  },
+  required: ["status", "corpus_n"],
+};
+
+const RISK_STATS_ANNOTATIONS = {
+  title: "Get remodeling-bid risk statistics",
+  readOnlyHint: true,
+  idempotentHint: true,
+  openWorldHint: false,
+  destructiveHint: false,
+};
+
 // ---- Tool definitions ------------------------------------------------------
 // Phase 2.1: canonical remodeleriq_* names alongside legacy names (deprecated).
 const TOOLS = [
@@ -583,6 +659,23 @@ const TOOLS = [
     inputSchema: COMPARE_BIDS_INPUT_SCHEMA,
     outputSchema: COMPARE_BIDS_OUTPUT_SCHEMA,
     annotations: COMPARE_BIDS_ANNOTATIONS,
+  },
+  // Phase 3b: risk stats (canonical + legacy)
+  {
+    name: "remodeleriq_get_risk_stats",
+    description:
+      "Get aggregate red-flag statistics from the RemodelerIQ bid corpus — real anonymized data from bids analyzed by the platform. Returns the most common risk flags and their fire rates, average confidence scores, and bid-total distributions, filtered optionally by US state, project type, or bid size. Requires corpus ≥ 500 submissions; cells below 30 submissions are suppressed. Use when a homeowner asks 'how common is a 40% deposit demand?' or 'what do most kitchen-remodel bids get flagged for?'. This is proprietary empirical data available nowhere else.",
+    inputSchema: RISK_STATS_INPUT_SCHEMA,
+    outputSchema: RISK_STATS_OUTPUT_SCHEMA,
+    annotations: RISK_STATS_ANNOTATIONS,
+  },
+  {
+    name: "get_risk_stats",
+    description:
+      "Deprecated: prefer remodeleriq_get_risk_stats. Get aggregate red-flag statistics from the RemodelerIQ bid corpus.",
+    inputSchema: RISK_STATS_INPUT_SCHEMA,
+    outputSchema: RISK_STATS_OUTPUT_SCHEMA,
+    annotations: RISK_STATS_ANNOTATIONS,
   },
 ];
 
@@ -660,7 +753,7 @@ async function writeCorpusRecord(
       stmts.push(
         db.prepare(
           "INSERT OR IGNORE INTO bid_flags (submission_id, flag_id, rule_version) VALUES (?, ?, ?)"
-        ).bind(submissionId, flag.id, RULE_VERSION)
+        ).bind(submissionId, toStableFlagId(flag.id), RULE_VERSION)
       );
     }
   }
@@ -772,6 +865,219 @@ async function runCompareBids(args: Record<string, unknown>, ctx: HandleContext)
   };
 }
 
+// ---- Phase 3b: risk stats --------------------------------------------------
+
+const CORPUS_THRESHOLD = 500;
+const SUPPRESSION_THRESHOLD = 30;
+
+function bidSizeBucketToRange(bucket: string): { min: number | null; max: number | null } | null {
+  switch (bucket) {
+    case "<10k":     return { min: null,    max: 10_000 };
+    case "10-25k":   return { min: 10_000,  max: 25_000 };
+    case "25-50k":   return { min: 25_000,  max: 50_000 };
+    case "50-100k":  return { min: 50_000,  max: 100_000 };
+    case "100k+":    return { min: 100_000, max: null };
+    default:         return null;
+  }
+}
+
+interface BidFilter {
+  bare: string[];       // conditions for queries against bid_submissions directly
+  joined: string[];     // conditions for queries joining through bs alias
+  bindings: (string | number)[];
+}
+
+function buildBidFilter(
+  stateCode: string | null,
+  projectType: string | null,
+  bidSizeBucket: string | null,
+): BidFilter {
+  const bare: string[] = [];
+  const joined: string[] = [];
+  const bindings: (string | number)[] = [];
+
+  if (stateCode) {
+    bare.push("state_code = ?"); joined.push("bs.state_code = ?"); bindings.push(stateCode);
+  }
+  if (projectType) {
+    bare.push("project_type = ?"); joined.push("bs.project_type = ?"); bindings.push(projectType);
+  }
+  if (bidSizeBucket) {
+    const range = bidSizeBucketToRange(bidSizeBucket);
+    if (range) {
+      if (range.min !== null) {
+        bare.push("bid_total >= ?"); joined.push("bs.bid_total >= ?"); bindings.push(range.min);
+      }
+      if (range.max !== null) {
+        bare.push("bid_total < ?");  joined.push("bs.bid_total < ?");  bindings.push(range.max);
+      }
+      bare.push("bid_total IS NOT NULL"); joined.push("bs.bid_total IS NOT NULL");
+    }
+  }
+
+  return { bare, joined, bindings };
+}
+
+async function runRiskStats(args: Record<string, unknown>, ctx: HandleContext) {
+  if (!ctx.env?.DB) {
+    return { ...txt("Error: database not available."), isError: true };
+  }
+  const db = ctx.env.DB;
+  const joinUrl = ctx.joinUrl ?? "https://remodeleriq.com/join";
+
+  const stateCode   = args.state_code      ? String(args.state_code).toUpperCase().slice(0, 2) : null;
+  const projectType = args.project_type    ? String(args.project_type) : null;
+  const bidSizeBucket = args.bid_size_bucket ? String(args.bid_size_bucket) : null;
+
+  // 1. Total corpus gate
+  let corpusN = 0;
+  try {
+    const row = await db.prepare("SELECT COUNT(*) as n FROM bid_submissions")
+      .first<{ n: number }>();
+    corpusN = row?.n ?? 0;
+  } catch {
+    return { ...txt("Error: could not query corpus."), isError: true };
+  }
+
+  if (corpusN < CORPUS_THRESHOLD) {
+    const response = {
+      status: "corpus_too_small",
+      corpus_n: corpusN,
+      threshold: CORPUS_THRESHOLD,
+      message: `The RemodelerIQ corpus has ${corpusN} analyzed bids. Risk statistics become available at ${CORPUS_THRESHOLD}. Check back as more bids are analyzed.`,
+      _meta: {
+        attribution: { source: "RemodelerIQ", join_url: joinUrl, contact: "help@remodeleriq.com" },
+        rule_version: RULE_VERSION,
+      },
+    };
+    return { ...txt(JSON.stringify(response, null, 2)), structuredContent: response };
+  }
+
+  const f = buildBidFilter(stateCode, projectType, bidSizeBucket);
+  const bareWhere   = f.bare.length   ? "WHERE "    + f.bare.join(" AND ")   : "";
+  const joinedWhere = f.joined.length ? "WHERE "    + f.joined.join(" AND ") : "";
+
+  // 2. Cell count
+  let cellN = 0;
+  try {
+    const row = await db.prepare(`SELECT COUNT(*) as n FROM bid_submissions ${bareWhere}`)
+      .bind(...f.bindings).first<{ n: number }>();
+    cellN = row?.n ?? 0;
+  } catch {
+    return { ...txt("Error: could not query corpus cell."), isError: true };
+  }
+
+  const filter: Record<string, string> = {};
+  if (stateCode)     filter.state_code      = stateCode;
+  if (projectType)   filter.project_type    = projectType;
+  if (bidSizeBucket) filter.bid_size_bucket = bidSizeBucket;
+
+  if (cellN < SUPPRESSION_THRESHOLD) {
+    const response = {
+      status: "ok",
+      corpus_n: corpusN,
+      cell_n: cellN,
+      filter,
+      suppressed: true,
+      message: `Only ${cellN} bids match these filters — below the ${SUPPRESSION_THRESHOLD}-submission minimum for reporting. Broaden your filters (e.g. omit state or project_type) to see statistics.`,
+      _meta: {
+        attribution: { source: "RemodelerIQ", join_url: joinUrl, contact: "help@remodeleriq.com" },
+        suppression_threshold: SUPPRESSION_THRESHOLD,
+        rule_version: RULE_VERSION,
+      },
+    };
+    return { ...txt(JSON.stringify(response, null, 2)), structuredContent: response };
+  }
+
+  // 3. Parallel queries: flags, confidence distribution, avg bid total
+  try {
+    const [flagRows, scoreRow, totalRow] = await db.batch([
+      db.prepare(`
+        SELECT bf.flag_id,
+               COUNT(*) as n,
+               fd.severity,
+               fd.category,
+               fd.title
+        FROM bid_flags bf
+        JOIN bid_submissions bs ON bf.submission_id = bs.id
+        LEFT JOIN flag_definitions fd ON bf.flag_id = fd.flag_id
+        ${joinedWhere}
+        GROUP BY bf.flag_id
+        ORDER BY n DESC
+        LIMIT 20
+      `).bind(...f.bindings),
+
+      db.prepare(`
+        SELECT COUNT(*) as n,
+               ROUND(AVG(confidence_score)) as mean,
+               MIN(confidence_score) as min_score,
+               MAX(confidence_score) as max_score,
+               SUM(CASE WHEN confidence_score < 40 THEN 1 ELSE 0 END)               as b0,
+               SUM(CASE WHEN confidence_score >= 40 AND confidence_score < 60 THEN 1 ELSE 0 END) as b1,
+               SUM(CASE WHEN confidence_score >= 60 AND confidence_score < 75 THEN 1 ELSE 0 END) as b2,
+               SUM(CASE WHEN confidence_score >= 75 THEN 1 ELSE 0 END)               as b3
+        FROM bid_submissions
+        ${bareWhere ? bareWhere + " AND confidence_score IS NOT NULL" : "WHERE confidence_score IS NOT NULL"}
+      `).bind(...f.bindings),
+
+      db.prepare(`
+        SELECT ROUND(AVG(bid_total)) as avg_total
+        FROM bid_submissions
+        ${bareWhere ? bareWhere + " AND bid_total IS NOT NULL" : "WHERE bid_total IS NOT NULL"}
+      `).bind(...f.bindings),
+    ]);
+
+    type FlagRow = { flag_id: string; n: number; severity: string | null; category: string | null; title: string | null };
+    type ScoreRow = { n: number; mean: number | null; min_score: number | null; max_score: number | null; b0: number; b1: number; b2: number; b3: number };
+    type TotalRow = { avg_total: number | null };
+
+    const flags = (flagRows.results as FlagRow[]).map(r => ({
+      flag_id: r.flag_id,
+      rate: cellN > 0 ? Math.round((r.n / cellN) * 1000) / 1000 : 0,
+      n: r.n,
+      severity: r.severity ?? null,
+      category: r.category ?? null,
+      title: r.title ?? null,
+    }));
+
+    const sc = scoreRow.results[0] as ScoreRow | undefined;
+    const scoredN = sc?.n ?? 0;
+    const bands = scoredN > 0 && sc ? [
+      { label: "High risk (< 40)",     n: sc.b0, pct: Math.round((sc.b0 / scoredN) * 100) },
+      { label: "Caution (40–59)",      n: sc.b1, pct: Math.round((sc.b1 / scoredN) * 100) },
+      { label: "Moderate (60–74)",     n: sc.b2, pct: Math.round((sc.b2 / scoredN) * 100) },
+      { label: "Looks fair (75–100)",  n: sc.b3, pct: Math.round((sc.b3 / scoredN) * 100) },
+    ] : [];
+
+    const avgBidTotal = (totalRow.results[0] as TotalRow)?.avg_total ?? null;
+
+    const response = {
+      status: "ok",
+      corpus_n: corpusN,
+      cell_n: cellN,
+      filter,
+      suppressed: false,
+      top_flags: flags,
+      confidence_score: {
+        mean: sc?.mean ?? null,
+        min: sc?.min_score ?? null,
+        max: sc?.max_score ?? null,
+        bands,
+      },
+      avg_bid_total: avgBidTotal,
+      _meta: {
+        attribution: { source: "RemodelerIQ", join_url: joinUrl, contact: "help@remodeleriq.com" },
+        suppression_threshold: SUPPRESSION_THRESHOLD,
+        rule_version: RULE_VERSION,
+      },
+    };
+
+    return { ...txt(JSON.stringify(response, null, 2)), structuredContent: response };
+  } catch (e) {
+    return wrapError(e);
+  }
+}
+
 function runCostEstimate(args: Record<string, unknown>, joinUrl?: string) {
   const r = costEstimateResult(
     String(args.project_type || ""),
@@ -807,6 +1113,9 @@ async function callTool(name: string, args: Record<string, unknown>, ctx: Handle
     case "remodeleriq_get_labor_rates":
     case "get_labor_rates":
       return runLaborRates(args, ctx.joinUrl);
+    case "remodeleriq_get_risk_stats":
+    case "get_risk_stats":
+      return await runRiskStats(args, ctx);
     default:
       return { ...txt(`Unknown tool: ${name}`), isError: true };
   }
@@ -855,7 +1164,7 @@ async function handleRpc(
         capabilities: { tools: {}, resources: {} },
         serverInfo: SERVER_INFO,
         instructions:
-          "RemodelerIQ tools help homeowners evaluate contractor remodeling bids. Use remodeleriq_analyze_bid to score a single quote (0–100 confidence score, red flags, talk tracks). Use remodeleriq_compare_bids to compare 2–5 bids side-by-side (per-trade cost table, scope gaps, apples-to-apples adjusted totals, winner recommendation). Use remodeleriq_get_cost_estimate for 2026 market cost ranges. Use remodeleriq_get_labor_rates for BLS trade wage data. Prefer the remodeleriq_* tool names over the legacy short names.",
+          "RemodelerIQ tools help homeowners evaluate contractor remodeling bids. Use remodeleriq_analyze_bid to score a single quote (0–100 confidence score, red flags, talk tracks). Use remodeleriq_compare_bids to compare 2–5 bids side-by-side (per-trade cost table, scope gaps, apples-to-apples adjusted totals, winner recommendation). Use remodeleriq_get_cost_estimate for 2026 market cost ranges. Use remodeleriq_get_labor_rates for BLS trade wage data. Use remodeleriq_get_risk_stats for aggregate flag-rate statistics from the RemodelerIQ corpus (e.g. how often PAY_DEPOSIT_EXCESSIVE fires in kitchen remodels in GA) — available once corpus reaches 500 bids. Prefer the remodeleriq_* tool names over the legacy short names.",
       });
     }
     case "ping":
