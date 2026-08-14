@@ -36,11 +36,13 @@ import blogPublishRoutes, {
   BLOG_DRAFTING_STATUS,
   type BlogDraftJobMessage,
 } from './routes/blogPublish';
+import updateVisualizerHeroRoutes from './routes/updateVisualizerHero';
 import inboundEmailRoutes from './routes/inboundEmail';
 import facebookWebhookRoutes from './routes/facebookWebhook';
 import facebookPublishRoutes from './routes/facebookPublish';
-import { mcpFetch } from './routes/mcp';
+import { mcpFetch, verifyRid } from './routes/mcp';
 import conciergeRoutes from './routes/concierge';
+import adminMcpRoutes from './routes/adminMcp';
 import { EMBED_LOADER_JS } from './routes/embed';
 import { analyzeBidResult, isToolError } from '@/shared/toolResults';
 import { isBetaUser } from '@/shared/betaUsers';
@@ -401,10 +403,42 @@ app.route('/api/admin/inbox', inboxRoutes);
 app.route('/api/admin/reddit', redditDraftsRoutes);
 app.route('/api/admin/nextdoor', nextdoorDraftsRoutes);
 app.route('/api/admin/blog', blogPublishRoutes);
+app.route('/api/admin/update-visualizer-hero', updateVisualizerHeroRoutes);
 app.route('/api/webhooks', inboundEmailRoutes);
 app.route('/api/webhooks', facebookWebhookRoutes);
 app.route('/api/admin/facebook', facebookPublishRoutes);
+app.route('/api/admin/mcp', adminMcpRoutes);
 app.route('/api/concierge', conciergeRoutes);
+
+// Attribution redirect: MCP tool responses include ?rid= links that land here.
+// Records the click in mcp_attributions then redirects to the intended page.
+app.get('/api/mcp/attribution', async (c) => {
+  const rid = c.req.query('rid') ?? '';
+  const lp = c.req.query('lp') ?? '/join';
+  const dest = `https://remodeleriq.com${lp}`;
+
+  if (!rid) return c.redirect(dest);
+
+  // Verify signature if MCP_RID_SECRET is set
+  const callId = c.env.MCP_RID_SECRET
+    ? await verifyRid(rid, c.env.MCP_RID_SECRET)
+    : rid.split('_')[0] ?? null; // fallback: accept unsigned (dev/no-secret mode)
+
+  if (callId) {
+    try {
+      await c.env.DB.prepare(`
+        UPDATE mcp_attributions
+        SET landed_at = datetime('now'), referrer = ?
+        WHERE rid_token = ? AND landed_at IS NULL
+      `)
+        .bind(c.req.header('referer') ?? null, rid)
+        .run();
+    } catch { /* best-effort */ }
+  }
+
+  return c.redirect(dest);
+});
+
 app.all('/mcp', (c) => mcpFetch(c.req.raw, c.env));
 app.all('/mcp/*', (c) => mcpFetch(c.req.raw, c.env));
 

@@ -24,6 +24,11 @@ declare global {
     NEXTDOOR_CLIENT_SECRET?: string;
     REDDIT_CLIENT_ID?: string;
     REDDIT_CLIENT_SECRET?: string;
+    // MCP attribution: HMAC secret for signing rid tokens on outbound URLs.
+    // Set via: wrangler secret put MCP_RID_SECRET
+    MCP_RID_SECRET?: string;
+    // Comma-separated list of admin email addresses. Defaults to gustavo.atar@gmail.com.
+    ADMIN_EMAILS?: string;
     // Service binding to the remodeleriq-visualizer Worker (photo -> estimate).
     // Requests to /api/visualizer/* are forwarded here, keeping them same-origin.
     VISUALIZER: Fetcher;

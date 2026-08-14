@@ -27,6 +27,7 @@ import MagicLinkVerifyPage from "@/react-app/pages/MagicLinkVerify";
 import LoginPage from "@/react-app/pages/Login";
 import WebhookStatusPage from "@/react-app/pages/WebhookStatus";
 import AdminPage from "@/react-app/pages/Admin";
+import AdminMcpPage from "@/react-app/pages/AdminMcp";
 import ContentDashboardPage from "@/react-app/pages/ContentDashboard";
 import InboxPage from "@/react-app/pages/Inbox";
 import RedditKitPage from "@/react-app/pages/RedditKit";
@@ -136,6 +137,7 @@ export default function App() {
           <Route path="/auth/verify" element={<MagicLinkVerifyPage />} />
           <Route path="/webhook-status" element={<WebhookStatusPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/mcp" element={<AdminMcpPage />} />
           <Route path="/admin/content" element={<ContentDashboardPage />} />
           <Route path="/admin/inbox" element={<InboxPage />} />
           <Route path="/admin/reddit" element={<RedditKitPage />} />

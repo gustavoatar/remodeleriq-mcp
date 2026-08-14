@@ -1,19 +1,27 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+
+# Wrangler local state
 .wrangler/
+
+# Internal / runtime DBs
+agentdb.rvf
+agentdb.rvf.lock
+ruvector.db
+graphify-out/
+
+# Draft content (not source code)
+blog-drafts/
+tmp-r2-migration/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local env overrides (secrets go in `wrangler secret put`, not files)
 .env
 .env.local
 .dev.vars
-*.log
-.DS_Store
-worker-configuration.d.ts
-
-# AI-tooling local state — never commit (and never let into public/)
-ruvector.db
-**/ruvector.db
-agentdb.rvf
-agentdb.rvf.lock
-.plugin-state/
-
-# One-off migration scratch (contains contact lists / licensed data exports)
-tmp-r2-migration/

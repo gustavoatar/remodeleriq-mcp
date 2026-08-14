@@ -456,7 +456,7 @@ export default function TrustedRadarPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">Trust Radar</h1>
-                <p className="text-gray-300 text-sm">Search trusted PROs in your area</p>
+                <p className="text-gray-300 text-sm">Contractors verified for your area. Trust signals that actually matter.</p>
               </div>
             </div>
           </div>

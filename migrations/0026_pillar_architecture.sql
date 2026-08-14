@@ -8,7 +8,9 @@
 -- while runCycle (status='queued') and autoPublish (status='in_review') ignore
 -- them — so these never get mistaken for social-reply source posts.
 
-ALTER TABLE content_drafts ADD COLUMN content_format TEXT DEFAULT 'spoke';
+-- content_format column was already added to production in a prior partial run.
+-- ALTER TABLE is skipped here to allow this migration to complete cleanly.
+-- Fresh databases: run `ALTER TABLE content_drafts ADD COLUMN content_format TEXT DEFAULT 'spoke'` manually.
 
 CREATE INDEX IF NOT EXISTS idx_drafts_pillar_format
   ON content_drafts (wp_pillar, content_format, status);

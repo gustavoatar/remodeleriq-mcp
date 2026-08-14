@@ -139,6 +139,23 @@ export interface CostBenchmark {
   homewysePath?: string;
 }
 
+export type CorpusTradeKey =
+  | 'demolition' | 'framing' | 'electrical' | 'plumbing' | 'hvac'
+  | 'cabinetry' | 'countertops' | 'flooring' | 'tile' | 'drywall'
+  | 'paint' | 'roofing' | 'windows' | 'doors' | 'appliances'
+  | 'permits' | 'general_conditions' | 'overhead_profit' | 'other';
+
+export interface CorpusLineItem {
+  trade: CorpusTradeKey;
+  description_normalized: string;
+  quantity: number | null;
+  unit: string | null;
+  unit_price: number | null;
+  extended_price: number | null;
+  price_type: 'fixed' | 'allowance' | 'unit_rate' | 'tbd' | 'not_priced';
+  extraction_confidence: number;
+}
+
 export interface AnalysisResult {
   confidenceScore: number;
   flags: AnalysisFlag[];
@@ -163,6 +180,10 @@ export interface AnalysisResult {
   squareFootage?: number;
   totalPrice?: number;
   projectType?: string;
+  finishTier?: string;
+  scopeDepth?: string;
+  lineItems?: CorpusLineItem[];
+  extractionCoverage?: number | null;
 }
 
 // Re-export vague term types for consumers
@@ -185,6 +206,89 @@ const SCORE_DEDUCTIONS = {
   low: 2
 };
 
+// ---- Corpus line-item extraction -------------------------------------------
+
+const TRADE_MAP: Record<string, CorpusTradeKey> = {
+  painting: 'paint', electrical: 'electrical', plumbing: 'plumbing',
+  drywall: 'drywall', roofing: 'roofing', tile: 'tile', hvac: 'hvac',
+  flooring: 'flooring', cabinets: 'cabinetry', windows: 'windows',
+  countertops: 'countertops', framing: 'framing', appliances: 'appliances',
+};
+
+function mapToCorpusTrade(rawTrade: string | undefined, lower: string): CorpusTradeKey {
+  if (rawTrade && TRADE_MAP[rawTrade]) return TRADE_MAP[rawTrade];
+  if (/demo|demolit/.test(lower)) return 'demolition';
+  if (/permit/.test(lower)) return 'permits';
+  if (/\bdoor/.test(lower)) return 'doors';
+  if (/general[\s_]?cond|cleanup|dumpster|supervision|mobiliz/.test(lower)) return 'general_conditions';
+  if (/overhead|markup|profit/.test(lower)) return 'overhead_profit';
+  return 'other';
+}
+
+const LINE_ITEM_RE = /^[ \t]*[-•*]?[ \t]*(.+?)[ \t]*[\$:][ \t]*\$?([\d,]+(?:\.\d{2})?)[ \t]*$/gm;
+const QTY_UNIT_RE = /(\d+(?:\.\d+)?)\s*(sf|sq\.?\s*ft\.?|lf|lin(?:eal)?\s*ft\.?|each|ea|unit|hr|hours?|days?|lb|ton|cy|gal)/i;
+const UNIT_RATE_RE = /@\s*\$?([\d,]+(?:\.\d+)?)\s*(?:per\s*|\/)(sf|sq\.?\s*ft\.?|lf|lin\s*ft\.?|each|ea|hr|hours?|days?)/i;
+
+function extractCorpusLineItems(bidText: string, bidTotal: number | undefined): {
+  items: CorpusLineItem[];
+  coverage: number | null;
+} {
+  const items: CorpusLineItem[] = [];
+  let priceSum = 0;
+  let m: RegExpExecArray | null;
+  const re = new RegExp(LINE_ITEM_RE.source, LINE_ITEM_RE.flags);
+
+  while ((m = re.exec(bidText)) !== null) {
+    const raw = m[1].trim();
+    const amount = parseFloat(m[2].replace(/,/g, ''));
+    if (!isFinite(amount) || amount <= 0 || raw.length < 3) continue;
+
+    const lower = raw.toLowerCase();
+
+    let priceType: CorpusLineItem['price_type'] = 'fixed';
+    if (/allowance/i.test(raw)) priceType = 'allowance';
+    else if (/\btbd\b|to be determined|to be quoted/i.test(raw)) priceType = 'tbd';
+    else if (/not included|by owner|excluded|not priced/i.test(raw)) priceType = 'not_priced';
+    else if (UNIT_RATE_RE.test(raw)) priceType = 'unit_rate';
+
+    let quantity: number | null = null;
+    let unit: string | null = null;
+    let unitPrice: number | null = null;
+
+    const qm = raw.match(QTY_UNIT_RE);
+    if (qm) {
+      quantity = parseFloat(qm[1]);
+      unit = qm[2].toLowerCase().replace(/\s+/g, '').replace(/\./g, '');
+    }
+    const um = raw.match(UNIT_RATE_RE);
+    if (um) {
+      unitPrice = parseFloat(um[1].replace(/,/g, ''));
+      priceType = 'unit_rate';
+    }
+
+    const rawTrade = detectTradeFromLineItem(raw);
+    const confidence = priceType === 'not_priced' ? 0.3
+      : (priceType === 'allowance' || priceType === 'tbd') ? 0.5
+      : (priceType === 'unit_rate' && quantity !== null) ? 0.9
+      : 0.7;
+
+    items.push({
+      trade: mapToCorpusTrade(rawTrade, lower),
+      description_normalized: lower.replace(/\s+/g, ' ').trim(),
+      quantity,
+      unit,
+      unit_price: unitPrice,
+      extended_price: amount,
+      price_type: priceType,
+      extraction_confidence: confidence,
+    });
+    priceSum += amount;
+  }
+
+  const coverage = bidTotal && bidTotal > 0 ? Math.min(1, priceSum / bidTotal) : null;
+  return { items, coverage };
+}
+
 function extractSnippet(text: string, match: RegExpMatchArray, contextChars: number = 40): string {
   const startIndex = Math.max(0, (match.index || 0) - contextChars);
   const endIndex = Math.min(text.length, (match.index || 0) + match[0].length + contextChars);
@@ -206,12 +310,15 @@ function extractSnippet(text: string, match: RegExpMatchArray, contextChars: num
  * @param yearBuilt - Year the home was built (optional, for lead safety check)
  */
 export function analyzeBid(
-  bidText: string, 
-  bidTotal?: number, 
+  bidText: string,
+  bidTotal?: number,
   stateCode: string = 'GA',
   marketEstimate?: number,
   contractorTrust?: ContractorTrustData,
-  yearBuilt?: number
+  yearBuilt?: number,
+  squareFootage?: number,
+  finishTier?: string,
+  scopeDepth?: string
 ): AnalysisResult {
   const flags: AnalysisFlag[] = [];
   const talkTrack: string[] = [];
@@ -621,6 +728,8 @@ export function analyzeBid(
     return levelOrder[a.level] - levelOrder[b.level];
   });
   
+  const { items: lineItems, coverage: extractionCoverage } = extractCorpusLineItems(bidText, bidTotal);
+
   return {
     confidenceScore,
     flags: finalSortedFlags,
@@ -641,7 +750,14 @@ export function analyzeBid(
     scopeGapCosts,
     tierMismatch,
     vagueTerms,
-    costAllocation
+    costAllocation,
+    squareFootage,
+    totalPrice: bidTotal,
+    projectType: tradeDetection.primaryTrade,
+    finishTier,
+    scopeDepth,
+    lineItems,
+    extractionCoverage,
   };
 }
 
