@@ -102,6 +102,6 @@ INSERT OR IGNORE INTO flag_definitions (flag_id, severity, category, title, intr
   ('INS_NO_WORKERS_COMP',        'critical', 'insurance',      'Workers compensation not confirmed',                    '2026.08.1'),
   ('PERMIT_RESPONSIBILITY_UNCLEAR','high',   'permits',        'Who pulls permits is not stated',                       '2026.08.1'),
   ('WARR_NONE_STATED',           'medium',   'scope',          'No warranty terms stated',                              '2026.08.1'),
-  ('SCHED_NO_DATES',             'medium',   'scope',          'No start or completion dates provided',                 '2026.08.1'),
+  ('SCHED_NO_DATES',             'high',     'scope',          'No start or completion dates provided',                 '2026.08.1'),
   ('CO_MARKUP_HIGH',             'high',     'payment_terms',  'Change order markup rate above norm',                   '2026.08.1'),
   ('SAFE_GFCI_UNCONFIRMED',      'medium',   'safety',         'GFCI protection not confirmed for wet areas',           '2026.08.1');

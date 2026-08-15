@@ -168,7 +168,7 @@ Timeline: 10–12 weeks`,
 });
 
 // ---- Eval 4: No start date, no completion date, no schedule -----------------
-// SCHED_NO_DATES fires at medium severity (not in red_flags); check rawResult.
+// SCHED_NO_DATES fires at high severity and appears in red_flags.
 // The bid has no timeline whatsoever — no dates, no duration, no schedule.
 describe('EVAL-04: No project dates or timeline', () => {
   const result = analyzeBidFull(
@@ -192,9 +192,8 @@ Permits: All permits included in contract price.`,
     'GA',
   );
 
-  it('fires missing-timeline flag (in rawResult — medium severity)', () => {
-    const allFlags = result.rawResult?.flags ?? [];
-    expect(allFlags.some(f => f.id === 'missing-timeline')).toBe(true);
+  it('fires SCHED_NO_DATES flag (high severity — appears in red_flags)', () => {
+    expect(flagIds(result)).toContain('SCHED_NO_DATES');
   });
 
   it('includes timeline in missing_items', () => {
@@ -268,9 +267,8 @@ Timeline: 16 weeks from permit approval.`,
 });
 
 // ---- Eval 7: Permit issue flagged in structural work ------------------------
-// When permits are absent from a structural bid, the smart-pricing engine fires
-// PERMIT_CHECK (raw id 'permit-check') at critical severity. The medium-level
-// 'permit-not-mentioned' → PERMIT_RESPONSIBILITY_UNCLEAR also fires in rawResult.
+// When permits are absent from a structural bid, 'permit-not-mentioned' fires
+// at high severity → PERMIT_RESPONSIBILITY_UNCLEAR appears in red_flags.
 describe('EVAL-07: Permit issue in structural/electrical remodel', () => {
   const result = analyzeBidFull(
     `KITCHEN & STRUCTURAL RENOVATION
@@ -293,9 +291,8 @@ Timeline: 12 weeks start to finish.`,
     'GA',
   );
 
-  it('records permit-not-mentioned in rawResult flags (medium severity — filtered from red_flags)', () => {
-    const allFlags = result.rawResult?.flags ?? [];
-    expect(allFlags.some(f => f.id === 'permit-not-mentioned')).toBe(true);
+  it('fires PERMIT_RESPONSIBILITY_UNCLEAR (high severity — appears in red_flags)', () => {
+    expect(flagIds(result)).toContain('PERMIT_RESPONSIBILITY_UNCLEAR');
   });
 
   it('includes permit responsibility in missing_items', () => {

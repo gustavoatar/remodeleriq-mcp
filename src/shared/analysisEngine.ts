@@ -370,6 +370,7 @@ export function analyzeBid(
   if (bidTotal && bidTotal > stateLaws.licenseThreshold) {
     const hasLicenseNumber = /(?:ga|fl|ca|tx|ny)?\s*(license|lic|contractor)\s*(#|no|number)?\s*:?\s*\d{4,}/i.test(bidText) ||
                             /license\s*(#|no|number)?\s*:?\s*\d{4,}/i.test(bidText) ||
+                            /(?:license|lic|contractor)\s*(?:#|no|number)?\s*:?\s*[A-Za-z]{1,3}[-]\d{4,}/i.test(bidText) ||
                             /grbc\s*#?\s*\d+/i.test(bidText) ||
                             /cslb\s*#?\s*\d+/i.test(bidText);
     
@@ -1125,7 +1126,7 @@ function analyzeWorkSpecsAndTimeline(
     flags.push({
       id: 'missing-timeline',
       category: 'scope',
-      level: 'medium',
+      level: 'high',
       title: 'No Project Timeline',
       description: "This bid doesn't specify start date, completion date, or duration.",
       whyItMatters: 'Without a timeline, projects can drag on indefinitely.',
@@ -1201,7 +1202,7 @@ function analyzePermitRequirements(
       flags.push({
         id: 'permit-not-mentioned',
         category: 'permit',
-        level: 'medium',
+        level: 'high',
         title: 'Permit Responsibility Not Addressed',
         description: 'This type of project typically requires a building permit, but permits are not mentioned in the bid.',
         whyItMatters: 'Unpermitted work can result in fines, forced removal, and problems when selling.',

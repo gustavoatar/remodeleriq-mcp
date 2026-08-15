@@ -545,8 +545,9 @@ function detectPaymentSchedule(textLower: string): boolean {
     // Multiple payment stages
     /(?:first|initial|1st).*(?:payment|due).*(?:second|next|2nd|upon|at)/i,
     /payment\s*(?:#\s*)?\d.*payment\s*(?:#\s*)?\d/i,
-    // Milestone-based
+    // Milestone-based — with or without at/upon prefix
     /(?:at|upon)\s*(?:completion|substantial\s*completion|final\s*walkthrough|rough-in|framing)/i,
+    /\d+%\s*(?:at|upon|when)?\s*(?:rough-in|framing|drywall|foundation|footings|inspection|walkthrough)/i,
     // Progress payments
     /progress\s*payment/i,
     /milestone\s*payment/i,
