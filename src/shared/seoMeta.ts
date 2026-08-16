@@ -50,7 +50,9 @@ export const SEO_META: Record<string, SeoMeta> = {
       'contractor labor rates, electrician rates, plumber rates, carpenter rates, HVAC rates, construction labor costs',
   },
   '/trusted-radar': {
-    title: 'Find Trusted Contractors Near You | Free License & Review Check',
+    // Dropped a leading "Find " — with the brand suffix this ran 77 chars and
+    // truncated in results. seoTagContract.test.ts holds the line at 75.
+    title: 'Trusted Contractors Near You | Free License & Review Check',
     description:
       'Look up any contractor by name or search your ZIP code. See verified licenses, Google reviews, and BBB ratings for roofers, plumbers, electricians & more — free.',
     keywords:
@@ -93,3 +95,66 @@ export function seoForPath(pathname: string): SeoMeta | undefined {
     (clean.length > 1 ? SEO_META[clean.replace(/\/+$/, '')] : undefined)
   );
 }
+
+// ---- index.html [data-default] tag contract ---------------------------------
+// The Worker rewrites index.html's fallback tags in place before streaming the
+// SPA shell. Each tag is addressed by the key below — "title" for the title
+// element, otherwise "<attr>=<value>" of whichever of name/property/rel it
+// carries. seoTagContract.test.ts fails if a [data-default] tag that PageSEO
+// also emits is missing from both tables, which is the drift that would
+// otherwise ship a generic value to scrapers with no test going red.
+
+/** Identity of a head tag, shared by the Worker, the client strip, and the test. */
+export function seoTagKey(
+  tag: string,
+  attrs: { name?: string | null; property?: string | null; rel?: string | null }
+): string {
+  if (tag.toLowerCase() === 'title') return 'title';
+  if (attrs.name) return `name=${attrs.name}`;
+  if (attrs.property) return `property=${attrs.property}`;
+  return `rel=${attrs.rel ?? ''}`;
+}
+
+/**
+ * Fallback tags that stay generic on purpose — they say the same thing on every
+ * page, so there is nothing per-route to substitute.
+ */
+export const SEO_INTENTIONALLY_GENERIC = new Set([
+  'property=og:image',
+  'property=og:type',
+  'property=og:site_name',
+  'name=twitter:card',
+  'name=twitter:site',
+  'name=twitter:image',
+]);
+
+export interface SeoTagOverride {
+  value: string;
+  /** Where the value goes: an attribute name, or the element's text. */
+  attr: 'content' | 'href' | 'text';
+}
+
+/** Per-route replacements for index.html's [data-default] tags. */
+export function seoTagOverrides(
+  pathname: string,
+  meta: SeoMeta
+): Map<string, SeoTagOverride> {
+  const canonical = `${SEO_BASE_URL}${pathname}`;
+  const out = new Map<string, SeoTagOverride>([
+    ['title', { value: seoFullTitle(pathname, meta.title), attr: 'text' }],
+    ['rel=canonical', { value: canonical, attr: 'href' }],
+    ['property=og:url', { value: canonical, attr: 'content' }],
+    ['property=og:title', { value: meta.title, attr: 'content' }],
+    ['name=twitter:title', { value: meta.title, attr: 'content' }],
+    ['name=description', { value: meta.description, attr: 'content' }],
+    ['property=og:description', { value: meta.description, attr: 'content' }],
+    ['name=twitter:description', { value: meta.description, attr: 'content' }],
+  ]);
+  if (meta.keywords) out.set('name=keywords', { value: meta.keywords, attr: 'content' });
+  return out;
+}
+
+/** Keys seoTagOverrides can personalize, independent of any one route's data. */
+export const SEO_PERSONALIZED_TAGS: ReadonlySet<string> = new Set(
+  seoTagOverrides('/x', { title: 't', description: 'd', keywords: 'k' }).keys()
+);
