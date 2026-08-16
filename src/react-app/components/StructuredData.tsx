@@ -364,6 +364,11 @@ export const BREADCRUMBS = {
     { name: 'Use RemodelerIQ With Your AI', path: '/use-with-ai' },
     { name: 'ChatGPT', path: '/use-with-chatgpt' },
   ],
+  chatGptPlugin: [
+    { name: 'Home', path: '/' },
+    { name: 'Use RemodelerIQ With Your AI', path: '/use-with-ai' },
+    { name: 'ChatGPT Plugin', path: '/chat-gpt-plugin' },
+  ],
   vsBidCompareAI: [
     { name: 'Home', path: '/' },
     { name: 'RemodelerIQ vs BidCompareAI', path: '/vs/bidcompare-ai' },

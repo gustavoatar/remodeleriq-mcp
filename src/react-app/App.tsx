@@ -19,6 +19,7 @@ import VsChatGPTPage from "@/react-app/pages/VsChatGPT";
 import UseWithAIPage from "@/react-app/pages/UseWithAI";
 import UseWithClaudePage from "@/react-app/pages/UseWithClaude";
 import UseWithChatGPTPage from "@/react-app/pages/UseWithChatGPT";
+import ChatGPTPluginPage from "@/react-app/pages/ChatGPTPlugin";
 import VsBidCompareAIPage from "@/react-app/pages/VsBidCompareAI";
 import VsEstimateHawkPage from "@/react-app/pages/VsEstimateHawk";
 import GlossaryPage from "@/react-app/pages/Glossary";
@@ -135,6 +136,7 @@ export default function App() {
           <Route path="/use-with-ai" element={<UseWithAIPage />} />
           <Route path="/use-with-claude" element={<UseWithClaudePage />} />
           <Route path="/use-with-chatgpt" element={<UseWithChatGPTPage />} />
+          <Route path="/chat-gpt-plugin" element={<ChatGPTPluginPage />} />
           <Route path="/vs/bidcompare-ai" element={<VsBidCompareAIPage />} />
           <Route path="/vs/estimatehawk" element={<VsEstimateHawkPage />} />
           <Route path="/glossary" element={<GlossaryPage />} />

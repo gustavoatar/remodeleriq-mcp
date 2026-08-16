@@ -26,6 +26,7 @@ const ROUTES = [
   "/use-with-ai",
   "/use-with-claude",
   "/use-with-chatgpt",
+  "/chat-gpt-plugin",
 ];
 const PORT = 5099;
 

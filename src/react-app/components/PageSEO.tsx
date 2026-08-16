@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { stripDefaultMeta } from '@/react-app/lib/stripDefaultMeta';
 
 interface PageSEOProps {
   title: string;
@@ -26,6 +28,13 @@ export default function PageSEO({
   const fullTitle = path === '/' ? title : `${title} | RemodelerIQ`;
   // Social scrapers require absolute og:image URLs.
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${BASE_URL}${ogImage}`;
+
+  // Clear index.html's static fallbacks once Helmet has injected this page's
+  // tags, so JS-executing crawlers don't see two of each. Deferred a microtask
+  // because Helmet commits in its own effect, which may not have run yet.
+  useEffect(() => {
+    queueMicrotask(stripDefaultMeta);
+  }, [fullTitle, description, fullUrl]);
 
   return (
     <Helmet>

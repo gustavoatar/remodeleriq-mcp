@@ -222,6 +222,10 @@ export default function UseWithChatGPTPage() {
             </p>
             <p className="mt-2">
               Weighing it up first?{' '}
+              <Link to="/chat-gpt-plugin" className="font-medium text-emerald-700 hover:underline">
+                what the plugin does
+              </Link>{' '}
+              ·{' '}
               <Link to="/vs/chatgpt" className="font-medium text-emerald-700 hover:underline">
                 RemodelerIQ vs ChatGPT, compared
               </Link>{' '}

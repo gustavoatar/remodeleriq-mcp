@@ -289,6 +289,10 @@ export default function UseWithAIPage() {
           <section className="text-center text-sm text-navy-500">
             <p>
               Weighing it up first?{' '}
+              <Link to="/chat-gpt-plugin" className="font-medium text-emerald-700 hover:underline">
+                what the ChatGPT plugin does
+              </Link>{' '}
+              ·{' '}
               <Link to="/vs/chatgpt" className="font-medium text-emerald-700 hover:underline">
                 RemodelerIQ vs ChatGPT, compared
               </Link>{' '}
