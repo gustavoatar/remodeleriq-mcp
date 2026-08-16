@@ -31,6 +31,9 @@ export default function Footer() {
             <Link to="/vs/chatgpt" className="text-gray-400 hover:text-white transition-colors">
               vs ChatGPT
             </Link>
+            <Link to="/use-with-ai" className="text-gray-400 hover:text-white transition-colors">
+              Use With Your AI
+            </Link>
             <Link to="/glossary" className="text-gray-400 hover:text-white transition-colors">
               Glossary
             </Link>

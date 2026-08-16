@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router';
 import { useAuth } from '@/react-app/lib/auth';
 import Header from '@/react-app/components/Header';
 import Hero from '@/react-app/components/Hero';
@@ -907,6 +907,74 @@ export default function HomePage({ howItWorksTour = false }: { howItWorksTour?: 
               >
                 Estimate your project from a photo →
               </a>
+            </div>
+          </section>
+
+          {/* Use it inside Claude / ChatGPT — funnels to the connector how-tos */}
+          <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 border-y border-slate-200">
+            <div className="max-w-4xl mx-auto text-center">
+              <span className="inline-block rounded-full bg-emerald-100 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-emerald-700">
+                Free connector · no signup
+              </span>
+              <h2 className="mt-5 text-3xl font-bold text-slate-900 tracking-tight">
+                Already asking AI about your remodel?
+              </h2>
+              <p className="mt-3 text-lg text-slate-600 max-w-2xl mx-auto">
+                Add RemodelerIQ to Claude or ChatGPT and your assistant stops guessing from
+                national averages. Paste a bid, ask if it's fair, and get it scored against
+                real wage data for your metro — without leaving the chat.
+              </p>
+
+              <ol className="mt-10 grid gap-5 md:grid-cols-3 text-left">
+                {[
+                  {
+                    n: '1',
+                    title: 'Copy the URL',
+                    body: 'https://remodeleriq.com/mcp — that\'s the whole connector.',
+                  },
+                  {
+                    n: '2',
+                    title: 'Paste it into settings',
+                    body: 'Connectors in Claude, or Apps & Connectors in ChatGPT. No login, no API key.',
+                  },
+                  {
+                    n: '3',
+                    title: 'Ask about your bid',
+                    body: 'Your assistant calls the real analyzer and hands back a 0–100 score.',
+                  },
+                ].map((step) => (
+                  <li key={step.n} className="rounded-xl border border-slate-200 bg-white p-5">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1F9C4C] text-sm font-bold text-white">
+                      {step.n}
+                    </span>
+                    <h3 className="mt-3 font-bold text-slate-900">{step.title}</h3>
+                    <p className="mt-1 text-sm text-slate-600 break-words">{step.body}</p>
+                  </li>
+                ))}
+              </ol>
+
+              <div className="mt-10 flex flex-wrap justify-center gap-3">
+                <Link
+                  to="/use-with-claude"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#1F9C4C] px-7 py-3.5 text-base font-bold text-white shadow-md transition-colors hover:bg-[#18813e]"
+                >
+                  Set up in Claude
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  to="/use-with-chatgpt"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#1F9C4C] px-7 py-3.5 text-base font-bold text-white shadow-md transition-colors hover:bg-[#18813e]"
+                >
+                  Set up in ChatGPT
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  to="/use-with-ai"
+                  className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-7 py-3.5 text-base font-bold text-slate-700 transition-colors hover:border-[#1F9C4C] hover:text-[#1F9C4C]"
+                >
+                  Compare all options
+                </Link>
+              </div>
             </div>
           </section>
 

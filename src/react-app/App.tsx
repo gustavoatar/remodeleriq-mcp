@@ -16,6 +16,9 @@ import GraveyardPage from "@/react-app/pages/Graveyard";
 import HowWeScorePage from "@/react-app/pages/HowWeScore";
 import QuoteFairnessPage from "@/react-app/pages/QuoteFairness";
 import VsChatGPTPage from "@/react-app/pages/VsChatGPT";
+import UseWithAIPage from "@/react-app/pages/UseWithAI";
+import UseWithClaudePage from "@/react-app/pages/UseWithClaude";
+import UseWithChatGPTPage from "@/react-app/pages/UseWithChatGPT";
 import VsBidCompareAIPage from "@/react-app/pages/VsBidCompareAI";
 import VsEstimateHawkPage from "@/react-app/pages/VsEstimateHawk";
 import GlossaryPage from "@/react-app/pages/Glossary";
@@ -128,6 +131,10 @@ export default function App() {
           <Route path="/how-we-score" element={<HowWeScorePage />} />
           <Route path="/is-my-contractor-quote-fair" element={<QuoteFairnessPage />} />
           <Route path="/vs/chatgpt" element={<VsChatGPTPage />} />
+          {/* Connector how-tos: a hub plus one page per assistant */}
+          <Route path="/use-with-ai" element={<UseWithAIPage />} />
+          <Route path="/use-with-claude" element={<UseWithClaudePage />} />
+          <Route path="/use-with-chatgpt" element={<UseWithChatGPTPage />} />
           <Route path="/vs/bidcompare-ai" element={<VsBidCompareAIPage />} />
           <Route path="/vs/estimatehawk" element={<VsEstimateHawkPage />} />
           <Route path="/glossary" element={<GlossaryPage />} />

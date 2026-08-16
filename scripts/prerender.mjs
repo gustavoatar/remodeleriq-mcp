@@ -23,6 +23,9 @@ const ROUTES = [
   "/vs/chatgpt",
   "/vs/bidcompare-ai",
   "/vs/estimatehawk",
+  "/use-with-ai",
+  "/use-with-claude",
+  "/use-with-chatgpt",
 ];
 const PORT = 5099;
 
