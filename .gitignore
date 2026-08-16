@@ -13,6 +13,9 @@ agentdb.rvf.lock
 ruvector.db
 graphify-out/
 
+# Local plugin caches (RuVector index DBs — regenerated on demand)
+.plugin-state/
+
 # Draft content (not source code)
 blog-drafts/
 tmp-r2-migration/

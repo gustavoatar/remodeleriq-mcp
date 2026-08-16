@@ -69,23 +69,41 @@ for (const route of ROUTES) {
       },
       { timeout: 30000 }
     );
-    let html = await page.content();
-    // index.html hardcodes a canonical to the homepage; Helmet adds the route's
-    // own canonical at runtime but doesn't remove the static one, so prerendered
-    // pages shipped TWO canonicals (and Google may fold the page into "/").
-    // Strip the static homepage canonical — every prerendered route carries its
-    // own Helmet-managed canonical (data-rh).
-    html = html.replace(
-      /<link rel="canonical" href="https:\/\/remodeleriq\.com\/">\s*/g,
-      ""
-    );
+    // index.html ships static SEO fallbacks (marked [data-default]) for the
+    // routes we don't prerender, where crawlers get no JS. Helmet adds this
+    // route's own tags at runtime but never removes the static ones, so the
+    // captured HTML carried two of everything — and since the two families land
+    // in opposite orders, scrapers read the page title off Helmet's tag but the
+    // og:* preview off the generic fallback, pointing every share at "/".
+    // Drop each fallback that Helmet superseded; leave the rest as real defaults.
+    const dropped = await page.evaluate(() => {
+      const idOf = (el) =>
+        el.tagName === "TITLE"
+          ? "title"
+          : `${el.getAttribute("name") ? "name" : el.getAttribute("property") ? "property" : "rel"}=${
+              el.getAttribute("name") || el.getAttribute("property") || el.getAttribute("rel")
+            }`;
+      const all = [...document.head.querySelectorAll("title, meta, link")];
+      const supersededIds = new Set(all.filter((el) => !el.hasAttribute("data-default")).map(idOf));
+      const removed = [];
+      for (const el of all) {
+        if (el.hasAttribute("data-default") && supersededIds.has(idOf(el))) {
+          removed.push(idOf(el));
+          el.remove();
+        }
+      }
+      return removed;
+    });
+    const html = await page.content();
     // Write as "<route>.html" (NOT "<route>/index.html") so Cloudflare serves it
     // at the clean, no-trailing-slash URL the app + internal links use — a
     // directory index.html forces a 307 to the trailing-slash variant.
     const outFile = join(DIST, `${route.replace(/^\//, "")}.html`);
     await mkdir(dirname(outFile), { recursive: true });
     await writeFile(outFile, html);
-    console.log(`  ✓ prerendered ${route} -> ${route.replace(/^\//, "")}.html (${(html.length / 1024).toFixed(0)} KB)`);
+    console.log(
+      `  ✓ prerendered ${route} -> ${route.replace(/^\//, "")}.html (${(html.length / 1024).toFixed(0)} KB, ${dropped.length} dup tags dropped)`
+    );
     ok++;
   } catch (e) {
     console.error(`  ✗ failed ${route}: ${e.message}`);
