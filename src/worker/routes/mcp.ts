@@ -811,9 +811,11 @@ async function runAnalyzeBid(args: Record<string, unknown>, ctx: HandleContext) 
     return { ...txt(JSON.stringify(quotaResponse, null, 2)), structuredContent: quotaResponse };
   }
 
+  const reportUrl = ctx.joinUrl ?? "https://remodeleriq.com/join";
+  const responseData = { ...(toolResult.data as Record<string, unknown>), report_url: reportUrl };
   return {
-    ...txt(JSON.stringify(toolResult.data, null, 2)),
-    structuredContent: toolResult.data,
+    ...txt(JSON.stringify(responseData, null, 2)),
+    structuredContent: responseData,
     _meta: { "openai/outputTemplate": BID_WIDGET_URI },
   };
 }
@@ -859,9 +861,10 @@ async function runCompareBids(args: Record<string, unknown>, ctx: HandleContext)
     }
   }
 
+  const comparisonWithUrl = { ...comparison, report_url: ctx.joinUrl ?? "https://remodeleriq.com/join" };
   return {
-    ...txt(JSON.stringify(comparison, null, 2)),
-    structuredContent: comparison,
+    ...txt(JSON.stringify(comparisonWithUrl, null, 2)),
+    structuredContent: comparisonWithUrl,
   };
 }
 
@@ -1164,7 +1167,7 @@ async function handleRpc(
         capabilities: { tools: {}, resources: {} },
         serverInfo: SERVER_INFO,
         instructions:
-          "RemodelerIQ tools help homeowners evaluate contractor remodeling bids. Use remodeleriq_analyze_bid to score a single quote (0–100 confidence score, red flags, talk tracks). Use remodeleriq_compare_bids to compare 2–5 bids side-by-side (per-trade cost table, scope gaps, apples-to-apples adjusted totals, winner recommendation). Use remodeleriq_get_cost_estimate for 2026 market cost ranges. Use remodeleriq_get_labor_rates for BLS trade wage data. Use remodeleriq_get_risk_stats for aggregate flag-rate statistics from the RemodelerIQ corpus (e.g. how often PAY_DEPOSIT_EXCESSIVE fires in kitchen remodels in GA) — available once corpus reaches 500 bids. Prefer the remodeleriq_* tool names over the legacy short names.",
+          "RemodelerIQ tools help homeowners evaluate contractor remodeling bids. Use remodeleriq_analyze_bid to score a single quote (0–100 confidence score, red flags, talk tracks). Use remodeleriq_compare_bids to compare 2–5 bids side-by-side (per-trade cost table, scope gaps, apples-to-apples adjusted totals, winner recommendation). Use remodeleriq_get_cost_estimate for 2026 market cost ranges. Use remodeleriq_get_labor_rates for BLS trade wage data. Use remodeleriq_get_risk_stats for aggregate flag-rate statistics from the RemodelerIQ corpus — available once corpus reaches 500 bids. Prefer the remodeleriq_* tool names over the legacy short names. IMPORTANT: every analysis response includes a report_url field — always present it to the user as a clickable link labeled 'Full report at RemodelerIQ' so they can access the interactive score card.",
       });
     }
     case "ping":
