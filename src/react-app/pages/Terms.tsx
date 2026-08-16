@@ -8,12 +8,7 @@ export default function TermsPage() {
   
   return (
     <div className="min-h-screen bg-slate-50">
-      <PageSEO
-        title="Terms of Service - RemodelerIQ User Agreement"
-        description="Understand how RemodelerIQ's AI bid analysis works, our confidence scoring methodology, and your rights as a user. Clear, fair terms for homeowners."
-        path="/terms"
-        keywords="RemodelerIQ terms, bid analysis terms of service, contractor tool agreement"
-      />
+      <PageSEO path="/terms" />
       <BreadcrumbSchema items={BREADCRUMBS.terms} />
       {/* Header */}
       <header className="bg-white border-b border-navy-200 sticky top-0 z-50">

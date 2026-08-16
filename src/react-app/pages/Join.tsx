@@ -112,12 +112,7 @@ export default function JoinPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <PageSEO
-        title="Pricing & Plans | RemodelerIQ"
-        description="Start with 3 free bid analyses. Upgrade to unlimited access with Project Pass ($19.99/mo), Remodeler Pass ($39.99/3mo), or Lifetime Pass ($99.99). No commitment, cancel anytime."
-        path="/join"
-        keywords="contractor bid analysis pricing, RemodelerIQ plans, home renovation tool subscription"
-      />
+      <PageSEO path="/join" />
       <FAQSchema faqs={JOIN_FAQS} />
       <BreadcrumbSchema items={BREADCRUMBS.join} />
       <Header />

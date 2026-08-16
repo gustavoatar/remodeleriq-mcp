@@ -8,12 +8,7 @@ export default function PrivacyPage() {
   
   return (
     <div className="min-h-screen bg-slate-50">
-      <PageSEO
-        title="Privacy Policy - How RemodelerIQ Protects Your Data"
-        description="Your contractor bids and personal data are never sold. Learn how RemodelerIQ uses bank-level encryption and strict data policies to keep your renovation plans private."
-        path="/privacy"
-        keywords="RemodelerIQ privacy, data protection, contractor bid confidentiality"
-      />
+      <PageSEO path="/privacy" />
       <BreadcrumbSchema items={BREADCRUMBS.privacy} />
       {/* Header */}
       <header className="bg-white border-b border-navy-200 sticky top-0 z-50">

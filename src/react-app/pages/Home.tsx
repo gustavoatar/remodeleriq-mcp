@@ -811,19 +811,9 @@ export default function HomePage({ howItWorksTour = false }: { howItWorksTour?: 
   return (
     <div className="min-h-screen bg-slate-50">
       {howItWorksTour ? (
-        <PageSEO
-          title="How It Works — Explore a Live Sample Bid Analysis"
-          description="Walk through a real RemodelerIQ analysis with every module unlocked: confidence score, red flags, market comparison against BLS and Zonda 2026 data, contractor verification, and negotiation scripts. Then run your own bid free."
-          path="/how-it-works"
-          keywords="how RemodelerIQ works, contractor bid analysis demo, sample bid analysis, AI bid checker walkthrough"
-        />
+        <PageSEO path="/how-it-works" />
       ) : (
-        <PageSEO
-          title="RemodelerIQ - Stop Overpaying for Home Renovations | Free AI Bid Analysis"
-          description="Upload your contractor bid and get instant AI analysis. See if you're being overcharged, spot hidden risks, and get expert negotiation scripts. Trusted by 10,000+ homeowners."
-          path="/"
-          keywords="contractor bid analysis, home remodeling costs, renovation estimate checker, contractor price comparison, home improvement savings, construction bid review"
-        />
+        <PageSEO path="/" />
       )}
       <FAQSchema faqs={HOME_FAQS} />
       <OrganizationSchema />

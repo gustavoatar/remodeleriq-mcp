@@ -436,12 +436,7 @@ export default function LaborRatesPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <PageSEO
-        title="Contractor Labor Rates by Trade and Location"
-        description="Compare contractor labor rates by trade and ZIP code. See what electricians, plumbers, carpenters, and other tradespeople charge in your area based on BLS data."
-        path="/labor-rates"
-        keywords="contractor labor rates, electrician rates, plumber rates, carpenter rates, HVAC rates, construction labor costs"
-      />
+      <PageSEO path="/labor-rates" />
       <Header />
 
       {/* Hero Section */}

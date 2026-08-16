@@ -46,6 +46,7 @@ import adminMcpRoutes from './routes/adminMcp';
 import { EMBED_LOADER_JS } from './routes/embed';
 import { analyzeBidResult, isToolError } from '@/shared/toolResults';
 import { isBetaUser } from '@/shared/betaUsers';
+import { SEO_BASE_URL, seoForPath, seoFullTitle } from '@/shared/seoMeta';
 import { generateAndScheduleFbBatch } from './lib/fbContentGenerator';
 import { scoutRedditRss } from './lib/redditScout';
 import { authMiddleware } from './middleware/auth';
@@ -7134,13 +7135,56 @@ app.notFound(async (c) => {
   if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/assets/')) {
     return c.text('Not Found', 404);
   }
-  // Fetch the SPA shell from Workers Assets and return it
+  // Fetch the SPA shell from Workers Assets and return it.
   const shellUrl = new URL('/', url);
   const shellRes = await env.ASSETS.fetch(new Request(shellUrl.toString(), { method: 'GET' }));
-  return new Response(shellRes.body, {
-    status: 200,
-    headers: shellRes.headers,
-  });
+
+  // The shell is index.html, whose SEO tags describe the homepage. Scrapers
+  // don't run JS, so without this every non-prerendered route — /labor-rates,
+  // /studio, /join — previewed as the homepage. Rewrite the [data-default]
+  // tags in flight from the same map PageSEO resolves from on the client.
+  // Prerendered routes never get here; Workers Assets serves their built HTML.
+  const meta = seoForPath(url.pathname);
+  if (!meta) {
+    return new Response(shellRes.body, { status: 200, headers: shellRes.headers });
+  }
+
+  const canonical = `${SEO_BASE_URL}${url.pathname}`;
+  // Keys match the [data-default] tags in index.html. Leaving a tag out of this
+  // map keeps its generic value, which is correct for og:image and og:site_name.
+  const rewrites: Record<string, string> = {
+    'name=description': meta.description,
+    'property=og:description': meta.description,
+    'name=twitter:description': meta.description,
+    'property=og:title': meta.title,
+    'name=twitter:title': meta.title,
+    'property=og:url': canonical,
+  };
+  if (meta.keywords) rewrites['name=keywords'] = meta.keywords;
+
+  const rewritten = new HTMLRewriter()
+    .on('title[data-default]', {
+      element(el) {
+        el.setInnerContent(seoFullTitle(url.pathname, meta.title));
+      },
+    })
+    .on('link[data-default][rel="canonical"]', {
+      element(el) {
+        el.setAttribute('href', canonical);
+      },
+    })
+    .on('meta[data-default]', {
+      element(el) {
+        const key = el.getAttribute('name')
+          ? `name=${el.getAttribute('name')}`
+          : `property=${el.getAttribute('property')}`;
+        const value = rewrites[key];
+        if (value !== undefined) el.setAttribute('content', value);
+      },
+    })
+    .transform(new Response(shellRes.body, { status: 200, headers: shellRes.headers }));
+
+  return rewritten;
 });
 
 async function scheduledHandler(

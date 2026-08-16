@@ -771,12 +771,7 @@ export default function StudioPage() {
   if (currentStep === 1) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
-        <PageSEO
-          title="Free Remodel Cost Calculator | Kitchen, Bathroom & More"
-          description="Get instant cost estimates for your kitchen, bathroom, basement, or home addition. Powered by Houzz, Zonda, and BLS data. Adjust for finishes, timeline, and your ZIP code."
-          path="/studio"
-          keywords="remodel cost calculator, kitchen remodel estimate, bathroom renovation cost, home addition calculator, basement finishing cost"
-        />
+        <PageSEO path="/studio" />
         <FAQSchema faqs={STUDIO_FAQS} />
         <BreadcrumbSchema items={BREADCRUMBS.studio} />
         <HowToSchema {...HOWTO_COST_ESTIMATE} />

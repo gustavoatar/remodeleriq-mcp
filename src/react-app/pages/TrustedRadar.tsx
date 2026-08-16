@@ -437,12 +437,7 @@ export default function TrustedRadarPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <TrustRadarSchema />
-      <PageSEO
-        title="Find Trusted Contractors Near You | Free License & Review Check"
-        description="Look up any contractor by name or search your ZIP code. See verified licenses, Google reviews, and BBB ratings for roofers, plumbers, electricians & more — free."
-        path="/trusted-radar"
-        keywords="contractor lookup by name, find local contractors, verified contractors near me, contractor license lookup, contractor reviews, BBB rated contractors, licensed roofers plumbers electricians"
-      />
+      <PageSEO path="/trusted-radar" />
       <BreadcrumbSchema items={BREADCRUMBS.trustRadar} />
       <Header />
       

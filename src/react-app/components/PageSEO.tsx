@@ -1,10 +1,18 @@
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { stripDefaultMeta } from '@/react-app/lib/stripDefaultMeta';
+import {
+  SEO_BASE_URL,
+  SEO_DEFAULT_OG_IMAGE,
+  seoForPath,
+  seoFullTitle,
+} from '@/shared/seoMeta';
 
 interface PageSEOProps {
-  title: string;
-  description: string;
+  /** Omit for routes listed in SEO_META — the shared map supplies it. */
+  title?: string;
+  /** Omit for routes listed in SEO_META — the shared map supplies it. */
+  description?: string;
   path: string;
   keywords?: string;
   ogImage?: string;
@@ -12,20 +20,28 @@ interface PageSEOProps {
   noindex?: boolean;
 }
 
-const BASE_URL = 'https://remodeleriq.com';
-const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
+const BASE_URL = SEO_BASE_URL;
+const DEFAULT_OG_IMAGE = SEO_DEFAULT_OG_IMAGE;
 
 export default function PageSEO({
-  title,
-  description,
+  title: titleProp,
+  description: descriptionProp,
   path,
-  keywords,
+  keywords: keywordsProp,
   ogImage = DEFAULT_OG_IMAGE,
   ogType = 'website',
   noindex = false,
 }: PageSEOProps) {
+  // Routes the Worker also renders resolve from the shared map, so the tags it
+  // streams into the SPA shell and the tags Helmet swaps in can't diverge.
+  // Explicit props still win, for pages not worth adding to the map.
+  const fromMap = seoForPath(path);
+  const title = titleProp ?? fromMap?.title ?? '';
+  const description = descriptionProp ?? fromMap?.description ?? '';
+  const keywords = keywordsProp ?? fromMap?.keywords;
+
   const fullUrl = `${BASE_URL}${path}`;
-  const fullTitle = path === '/' ? title : `${title} | RemodelerIQ`;
+  const fullTitle = seoFullTitle(path, title);
   // Social scrapers require absolute og:image URLs.
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${BASE_URL}${ogImage}`;
 
