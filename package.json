@@ -46,6 +46,8 @@
   },
   "scripts": {
     "build": "tsc -b && vite build && node scripts/prerender.mjs",
+    "deploy": "npm run build && wrangler deploy && npm run smoke",
+    "smoke": "node scripts/smoke-check.mjs",
     "prerender": "node scripts/prerender.mjs",
     "cf-typegen": "wrangler types",
     "check": "tsc && vite build && wrangler deploy --dry-run",
