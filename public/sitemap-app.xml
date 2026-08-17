@@ -103,18 +103,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://remodeleriq.com/how-it-works</loc>
-    <lastmod>2026-07-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://remodeleriq.com/login</loc>
-    <lastmod>2026-05-28</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://remodeleriq.com/terms</loc>
     <lastmod>2026-05-28</lastmod>
     <changefreq>yearly</changefreq>

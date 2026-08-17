@@ -2,10 +2,26 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>https://remodeleriq.com/sitemap-app.xml</loc>
-    <lastmod>2026-07-13</lastmod>
+    <lastmod>2026-08-16</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://remodeleriq.com/remodeling-cost-guides/sitemap.xml</loc>
-    <lastmod>2026-05-28</lastmod>
+    <loc>https://remodeleriq.com/remodeling-cost-guides/sitemap-national.xml</loc>
+    <lastmod>2026-08-16</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://remodeleriq.com/remodeling-cost-guides/sitemap-compare.xml</loc>
+    <lastmod>2026-08-16</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://remodeleriq.com/remodeling-cost-guides/sitemap-permits.xml</loc>
+    <lastmod>2026-08-16</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://remodeleriq.com/remodeling-cost-guides/sitemap-city-hubs.xml</loc>
+    <lastmod>2026-08-16</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://remodeleriq.com/remodeling-cost-guides/sitemap-city-projects.xml</loc>
+    <lastmod>2026-08-16</lastmod>
   </sitemap>
 </sitemapindex>

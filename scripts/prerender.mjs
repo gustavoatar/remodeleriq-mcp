@@ -14,7 +14,15 @@ import puppeteer from "puppeteer";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, "..", "dist", "client");
+// Data-backed routes (homepage upload limits, FRED inflation factor, labor
+// rates) fetch /api/* at render time; the local static server proxies those
+// calls to production so the prerender captures real content, not spinners.
+const API_ORIGIN = process.env.PRERENDER_API_ORIGIN || "https://remodeleriq.com";
 const ROUTES = [
+  "/", // homepage — written to home.html; worker serves it via run_worker_first
+  "/trusted-radar",
+  "/labor-rates",
+  "/studio",
   "/how-we-score",
   "/glossary",
   "/tools",
@@ -42,6 +50,23 @@ const MIME = {
 const server = http.createServer(async (req, res) => {
   try {
     const p = decodeURIComponent((req.url || "/").split("?")[0]);
+    // Proxy API calls to production so data-backed routes render real content.
+    if (p.startsWith("/api/")) {
+      try {
+        const upstream = await fetch(`${API_ORIGIN}${req.url}`, {
+          headers: { accept: "application/json" },
+        });
+        const body = Buffer.from(await upstream.arrayBuffer());
+        res.writeHead(upstream.status, {
+          "Content-Type": upstream.headers.get("content-type") || "application/json",
+        });
+        res.end(body);
+      } catch {
+        res.writeHead(502);
+        res.end("{}");
+      }
+      return;
+    }
     let filePath = join(DIST, p);
     if (p.endsWith("/")) filePath = join(filePath, "index.html");
     if (!extname(filePath) || !existsSync(filePath)) filePath = join(DIST, "index.html");
@@ -99,7 +124,16 @@ for (const route of ROUTES) {
     // Write as "<route>.html" (NOT "<route>/index.html") so Cloudflare serves it
     // at the clean, no-trailing-slash URL the app + internal links use — a
     // directory index.html forces a 307 to the trailing-slash variant.
-    const outFile = join(DIST, `${route.replace(/^\//, "")}.html`);
+    // "/" cannot overwrite index.html — that file doubles as the SPA shell the
+    // worker serves (and meta-rewrites) for every non-prerendered route. It
+    // goes to __prerender-home.html instead; the worker maps "/" to it via
+    // run_worker_first. The dunder name matters: "home.html" collided with the
+    // "/home → /" rule in _redirects (asset clean-URL 307 → /home → 301 → /),
+    // so the worker's redirect-following fetch looped back to the bare shell.
+    const outFile =
+      route === "/"
+        ? join(DIST, "__prerender-home.html")
+        : join(DIST, `${route.replace(/^\//, "")}.html`);
     await mkdir(dirname(outFile), { recursive: true });
     await writeFile(outFile, html);
     console.log(

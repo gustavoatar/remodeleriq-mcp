@@ -52,7 +52,7 @@ export default function Footer() {
             <a href="https://intelligence.remodeleriq.com/blog/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
               Blog
             </a>
-            <a href="https://intelligence.remodeleriq.com/remodeling-cost-guides/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+            <a href="/remodeling-cost-guides/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
               Remodeling Guides
             </a>
             <a href="/partners" className="text-gray-400 hover:text-white transition-colors">

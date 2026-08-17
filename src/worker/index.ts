@@ -186,6 +186,26 @@ app.use('*', async (c, next) => {
   await next();
 });
 
+// SEO: host + protocol canonicalization. One canonical origin —
+// https://remodeleriq.com — everything else 301s there. Fixes the GSC
+// "Page with redirect" / duplicate-host crawl waste flagged in the Aug 2026
+// audit: http:// served 200 on both hosts and www served a Mocha-era 410.
+// Skips API/auth/webhook paths so in-flight integrations never bounce.
+app.use('*', async (c, next) => {
+  const url = new URL(c.req.url);
+  const host = (c.req.header('host') || url.hostname).toLowerCase();
+  // cf-visitor reports the scheme the visitor actually used, even when the
+  // edge-to-worker leg is https.
+  const cfVisitor = c.req.header('cf-visitor') || '';
+  const isHttp = url.protocol === 'http:' || cfVisitor.includes('"scheme":"http"');
+  const isWww = host === 'www.remodeleriq.com';
+  if ((isHttp || isWww) && !url.pathname.startsWith('/api/') && !url.pathname.startsWith('/auth/')) {
+    const canonicalHost = isWww ? 'remodeleriq.com' : host;
+    return c.redirect(`https://${canonicalHost}${url.pathname}${url.search}`, 301);
+  }
+  await next();
+});
+
 // CORS: restrict to known origins
 app.use('*', cors({
   origin: ['https://remodeleriq.com', 'https://www.remodeleriq.com', 'https://remodeleriq.remodeleriq.workers.dev'],
@@ -228,6 +248,22 @@ app.use('*', async (c, next) => {
   const target = STALE_URL_REDIRECTS[url.pathname];
   if (target) {
     return c.redirect(target, 301);
+  }
+  await next();
+});
+
+// SEO: pruned cost-guide project types (Aug 2026 audit — 912 pages, 206
+// impressions, 3 clicks in 90 days). The pages are removed from the static
+// export, so requests fall through to the worker; 301 each to its city hub
+// so inbound links and index entries consolidate instead of 404ing.
+const PRUNED_PROJECT_RE =
+  /^\/remodeling-cost-guides\/([a-z0-9-]+-remodeling-cost-guide)\/(deck|siding-replacement|window-replacement|fence-installation|roof-replacement|hvac-replacement)\/?$/;
+
+app.use('*', async (c, next) => {
+  const url = new URL(c.req.url);
+  const m = url.pathname.match(PRUNED_PROJECT_RE);
+  if (m) {
+    return c.redirect(`/remodeling-cost-guides/${m[1]}/`, 301);
   }
   await next();
 });
@@ -7120,6 +7156,31 @@ Only return grades/licenses that are definitely for this exact business. If unce
   }
   
   return c.json({ success: true, enriched });
+});
+
+// Homepage: serve the prerendered home.html (real content + internal links for
+// crawlers; React hydrates over it). "/" is routed to the worker via
+// assets.run_worker_first because index.html must stay a generic SPA shell —
+// it is what the notFound fallback below serves (and meta-rewrites) for every
+// non-prerendered route.
+app.get('/', async (c) => {
+  const env = c.env as unknown as { ASSETS?: { fetch: (req: Request) => Promise<Response> } };
+  if (env.ASSETS) {
+    // Clean-URL path (no .html): the assets layer 307s "*.html" to its clean
+    // URL and this fetch follows redirects, so requesting the .html path can
+    // chain through _redirects rules and land on the wrong asset.
+    const homeUrl = new URL('/__prerender-home', c.req.url);
+    const res = await env.ASSETS.fetch(new Request(homeUrl.toString(), { method: 'GET' }));
+    if (res.ok) {
+      const headers = new Headers(res.headers);
+      headers.set('Content-Type', 'text/html; charset=utf-8');
+      return new Response(res.body, { status: 200, headers });
+    }
+    // home.html missing from the build — fall back to the SPA shell.
+    const shellRes = await env.ASSETS.fetch(new Request(new URL('/index.html', c.req.url).toString(), { method: 'GET' }));
+    return new Response(shellRes.body, { status: shellRes.status, headers: shellRes.headers });
+  }
+  return c.text('Not Found', 404);
 });
 
 // SPA fallback: serve index.html for any unmatched route so React Router

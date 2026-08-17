@@ -251,7 +251,7 @@ export default function Header({ onHomeClick, onAnalyzeClick, onNavigateAway }: 
                     
                     {/* Remodeling Cost Guides */}
                     <a
-                      href="https://intelligence.remodeleriq.com/remodeling-cost-guides/"
+                      href="/remodeling-cost-guides/"
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => setToolsMenuOpen(false)}
@@ -547,7 +547,7 @@ export default function Header({ onHomeClick, onAnalyzeClick, onNavigateAway }: 
                     <span className="font-medium">Insights & Perspective</span>
                   </a>
                   <a
-                    href="https://intelligence.remodeleriq.com/remodeling-cost-guides/"
+                    href="/remodeling-cost-guides/"
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileMenuOpen(false)}

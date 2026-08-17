@@ -21,11 +21,11 @@
   "upload_source_maps": true,
   "assets": {
     "binding": "ASSETS",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/"]
   },
   "custom_domains": [
-    { "pattern": "remodeleriq.com", "zone_name": "remodeleriq.com" },
-    { "pattern": "www.remodeleriq.com", "zone_name": "remodeleriq.com" }
+    { "pattern": "remodeleriq.com", "zone_name": "remodeleriq.com" }
   ],
   "d1_databases": [
     {
