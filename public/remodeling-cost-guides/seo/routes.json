@@ -17,19 +17,11 @@
   },
   {
     "city_slug": "akron-oh",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "akron-oh",
     "project_slug": "driveway"
   },
   {
     "city_slug": "akron-oh",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "akron-oh",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "akron-oh",
@@ -41,23 +33,11 @@
   },
   {
     "city_slug": "akron-oh",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "akron-oh",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "akron-oh",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "akron-oh",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "akron-oh",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "akron-oh",
@@ -68,10 +48,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "akron-oh",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "albany-ny",
     "project_slug": "addition"
   },
@@ -89,19 +65,11 @@
   },
   {
     "city_slug": "albany-ny",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "albany-ny",
     "project_slug": "driveway"
   },
   {
     "city_slug": "albany-ny",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "albany-ny",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "albany-ny",
@@ -113,10 +81,6 @@
   },
   {
     "city_slug": "albany-ny",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "albany-ny",
     "project_slug": "interior-painting"
   },
   {
@@ -125,23 +89,11 @@
   },
   {
     "city_slug": "albany-ny",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "albany-ny",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "albany-ny",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "albany-ny",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "albany-ny",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "albuquerque-nm",
@@ -161,19 +113,11 @@
   },
   {
     "city_slug": "albuquerque-nm",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "albuquerque-nm",
     "project_slug": "driveway"
   },
   {
     "city_slug": "albuquerque-nm",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "albuquerque-nm",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "albuquerque-nm",
@@ -185,23 +129,11 @@
   },
   {
     "city_slug": "albuquerque-nm",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "albuquerque-nm",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "albuquerque-nm",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "albuquerque-nm",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "albuquerque-nm",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "albuquerque-nm",
@@ -212,10 +144,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "albuquerque-nm",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "allentown-pa",
     "project_slug": "addition"
   },
@@ -233,19 +161,11 @@
   },
   {
     "city_slug": "allentown-pa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "allentown-pa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "allentown-pa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "allentown-pa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "allentown-pa",
@@ -257,10 +177,6 @@
   },
   {
     "city_slug": "allentown-pa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "allentown-pa",
     "project_slug": "interior-painting"
   },
   {
@@ -269,23 +185,11 @@
   },
   {
     "city_slug": "allentown-pa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "allentown-pa",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "allentown-pa",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "allentown-pa",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "allentown-pa",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "amarillo-tx",
@@ -305,19 +209,11 @@
   },
   {
     "city_slug": "amarillo-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "amarillo-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "amarillo-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "amarillo-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "amarillo-tx",
@@ -329,23 +225,11 @@
   },
   {
     "city_slug": "amarillo-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "amarillo-tx",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "amarillo-tx",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "amarillo-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "amarillo-tx",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "amarillo-tx",
@@ -356,10 +240,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "amarillo-tx",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "ann-arbor-mi",
     "project_slug": "addition"
   },
@@ -377,19 +257,11 @@
   },
   {
     "city_slug": "ann-arbor-mi",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "ann-arbor-mi",
     "project_slug": "driveway"
   },
   {
     "city_slug": "ann-arbor-mi",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "ann-arbor-mi",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "ann-arbor-mi",
@@ -401,10 +273,6 @@
   },
   {
     "city_slug": "ann-arbor-mi",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "ann-arbor-mi",
     "project_slug": "interior-painting"
   },
   {
@@ -413,23 +281,11 @@
   },
   {
     "city_slug": "ann-arbor-mi",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "ann-arbor-mi",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "ann-arbor-mi",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "ann-arbor-mi",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "ann-arbor-mi",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "appleton-wi",
@@ -449,19 +305,11 @@
   },
   {
     "city_slug": "appleton-wi",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "appleton-wi",
     "project_slug": "driveway"
   },
   {
     "city_slug": "appleton-wi",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "appleton-wi",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "appleton-wi",
@@ -473,23 +321,11 @@
   },
   {
     "city_slug": "appleton-wi",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "appleton-wi",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "appleton-wi",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "appleton-wi",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "appleton-wi",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "appleton-wi",
@@ -500,10 +336,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "appleton-wi",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "asheville-nc",
     "project_slug": "addition"
   },
@@ -521,19 +353,11 @@
   },
   {
     "city_slug": "asheville-nc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "asheville-nc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "asheville-nc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "asheville-nc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "asheville-nc",
@@ -545,10 +369,6 @@
   },
   {
     "city_slug": "asheville-nc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "asheville-nc",
     "project_slug": "interior-painting"
   },
   {
@@ -557,23 +377,11 @@
   },
   {
     "city_slug": "asheville-nc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "asheville-nc",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "asheville-nc",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "asheville-nc",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "asheville-nc",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "atlanta-ga",
@@ -593,19 +401,11 @@
   },
   {
     "city_slug": "atlanta-ga",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "atlanta-ga",
     "project_slug": "driveway"
   },
   {
     "city_slug": "atlanta-ga",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "atlanta-ga",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "atlanta-ga",
@@ -617,23 +417,11 @@
   },
   {
     "city_slug": "atlanta-ga",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "atlanta-ga",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "atlanta-ga",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "atlanta-ga",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "atlanta-ga",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "atlanta-ga",
@@ -644,10 +432,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "atlanta-ga",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "augusta-ga",
     "project_slug": "addition"
   },
@@ -665,19 +449,11 @@
   },
   {
     "city_slug": "augusta-ga",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "augusta-ga",
     "project_slug": "driveway"
   },
   {
     "city_slug": "augusta-ga",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "augusta-ga",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "augusta-ga",
@@ -689,10 +465,6 @@
   },
   {
     "city_slug": "augusta-ga",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "augusta-ga",
     "project_slug": "interior-painting"
   },
   {
@@ -701,23 +473,11 @@
   },
   {
     "city_slug": "augusta-ga",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "augusta-ga",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "augusta-ga",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "augusta-ga",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "augusta-ga",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "austin-tx",
@@ -737,19 +497,11 @@
   },
   {
     "city_slug": "austin-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "austin-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "austin-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "austin-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "austin-tx",
@@ -761,23 +513,11 @@
   },
   {
     "city_slug": "austin-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "austin-tx",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "austin-tx",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "austin-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "austin-tx",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "austin-tx",
@@ -788,10 +528,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "austin-tx",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "baltimore-md",
     "project_slug": "addition"
   },
@@ -809,19 +545,11 @@
   },
   {
     "city_slug": "baltimore-md",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "baltimore-md",
     "project_slug": "driveway"
   },
   {
     "city_slug": "baltimore-md",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "baltimore-md",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "baltimore-md",
@@ -833,10 +561,6 @@
   },
   {
     "city_slug": "baltimore-md",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "baltimore-md",
     "project_slug": "interior-painting"
   },
   {
@@ -845,23 +569,11 @@
   },
   {
     "city_slug": "baltimore-md",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "baltimore-md",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "baltimore-md",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "baltimore-md",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "baltimore-md",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "baton-rouge-la",
@@ -881,19 +593,11 @@
   },
   {
     "city_slug": "baton-rouge-la",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "baton-rouge-la",
     "project_slug": "driveway"
   },
   {
     "city_slug": "baton-rouge-la",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "baton-rouge-la",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "baton-rouge-la",
@@ -905,23 +609,11 @@
   },
   {
     "city_slug": "baton-rouge-la",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "baton-rouge-la",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "baton-rouge-la",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "baton-rouge-la",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "baton-rouge-la",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "baton-rouge-la",
@@ -932,10 +624,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "baton-rouge-la",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "bellingham-wa",
     "project_slug": "addition"
   },
@@ -953,19 +641,11 @@
   },
   {
     "city_slug": "bellingham-wa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "bellingham-wa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "bellingham-wa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "bellingham-wa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "bellingham-wa",
@@ -977,10 +657,6 @@
   },
   {
     "city_slug": "bellingham-wa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "bellingham-wa",
     "project_slug": "interior-painting"
   },
   {
@@ -989,23 +665,11 @@
   },
   {
     "city_slug": "bellingham-wa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "bellingham-wa",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "bellingham-wa",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "bellingham-wa",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "bellingham-wa",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "bend-or",
@@ -1025,19 +689,11 @@
   },
   {
     "city_slug": "bend-or",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "bend-or",
     "project_slug": "driveway"
   },
   {
     "city_slug": "bend-or",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "bend-or",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "bend-or",
@@ -1049,23 +705,11 @@
   },
   {
     "city_slug": "bend-or",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "bend-or",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "bend-or",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "bend-or",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "bend-or",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "bend-or",
@@ -1076,10 +720,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "bend-or",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "billings-mt",
     "project_slug": "addition"
   },
@@ -1097,19 +737,11 @@
   },
   {
     "city_slug": "billings-mt",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "billings-mt",
     "project_slug": "driveway"
   },
   {
     "city_slug": "billings-mt",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "billings-mt",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "billings-mt",
@@ -1121,10 +753,6 @@
   },
   {
     "city_slug": "billings-mt",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "billings-mt",
     "project_slug": "interior-painting"
   },
   {
@@ -1133,23 +761,11 @@
   },
   {
     "city_slug": "billings-mt",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "billings-mt",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "billings-mt",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "billings-mt",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "billings-mt",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "birmingham-al",
@@ -1169,19 +785,11 @@
   },
   {
     "city_slug": "birmingham-al",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "birmingham-al",
     "project_slug": "driveway"
   },
   {
     "city_slug": "birmingham-al",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "birmingham-al",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "birmingham-al",
@@ -1193,23 +801,11 @@
   },
   {
     "city_slug": "birmingham-al",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "birmingham-al",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "birmingham-al",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "birmingham-al",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "birmingham-al",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "birmingham-al",
@@ -1220,10 +816,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "birmingham-al",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "boise-id",
     "project_slug": "addition"
   },
@@ -1241,19 +833,11 @@
   },
   {
     "city_slug": "boise-id",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "boise-id",
     "project_slug": "driveway"
   },
   {
     "city_slug": "boise-id",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "boise-id",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "boise-id",
@@ -1265,10 +849,6 @@
   },
   {
     "city_slug": "boise-id",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "boise-id",
     "project_slug": "interior-painting"
   },
   {
@@ -1277,23 +857,11 @@
   },
   {
     "city_slug": "boise-id",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "boise-id",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "boise-id",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "boise-id",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "boise-id",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "boston-ma",
@@ -1313,19 +881,11 @@
   },
   {
     "city_slug": "boston-ma",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "boston-ma",
     "project_slug": "driveway"
   },
   {
     "city_slug": "boston-ma",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "boston-ma",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "boston-ma",
@@ -1337,23 +897,11 @@
   },
   {
     "city_slug": "boston-ma",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "boston-ma",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "boston-ma",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "boston-ma",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "boston-ma",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "boston-ma",
@@ -1364,10 +912,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "boston-ma",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "boulder-co",
     "project_slug": "addition"
   },
@@ -1385,19 +929,11 @@
   },
   {
     "city_slug": "boulder-co",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "boulder-co",
     "project_slug": "driveway"
   },
   {
     "city_slug": "boulder-co",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "boulder-co",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "boulder-co",
@@ -1409,10 +945,6 @@
   },
   {
     "city_slug": "boulder-co",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "boulder-co",
     "project_slug": "interior-painting"
   },
   {
@@ -1421,23 +953,11 @@
   },
   {
     "city_slug": "boulder-co",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "boulder-co",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "boulder-co",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "boulder-co",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "boulder-co",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "bridgeport-ct",
@@ -1457,19 +977,11 @@
   },
   {
     "city_slug": "bridgeport-ct",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "bridgeport-ct",
     "project_slug": "driveway"
   },
   {
     "city_slug": "bridgeport-ct",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "bridgeport-ct",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "bridgeport-ct",
@@ -1481,23 +993,11 @@
   },
   {
     "city_slug": "bridgeport-ct",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "bridgeport-ct",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "bridgeport-ct",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "bridgeport-ct",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "bridgeport-ct",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "bridgeport-ct",
@@ -1508,10 +1008,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "bridgeport-ct",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "buffalo-ny",
     "project_slug": "addition"
   },
@@ -1529,19 +1025,11 @@
   },
   {
     "city_slug": "buffalo-ny",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "buffalo-ny",
     "project_slug": "driveway"
   },
   {
     "city_slug": "buffalo-ny",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "buffalo-ny",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "buffalo-ny",
@@ -1553,10 +1041,6 @@
   },
   {
     "city_slug": "buffalo-ny",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "buffalo-ny",
     "project_slug": "interior-painting"
   },
   {
@@ -1565,23 +1049,11 @@
   },
   {
     "city_slug": "buffalo-ny",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "buffalo-ny",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "buffalo-ny",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "buffalo-ny",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "buffalo-ny",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "cape-coral-fl",
@@ -1601,19 +1073,11 @@
   },
   {
     "city_slug": "cape-coral-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "cape-coral-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "cape-coral-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "cape-coral-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "cape-coral-fl",
@@ -1625,23 +1089,11 @@
   },
   {
     "city_slug": "cape-coral-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "cape-coral-fl",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "cape-coral-fl",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "cape-coral-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "cape-coral-fl",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "cape-coral-fl",
@@ -1652,10 +1104,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "cape-coral-fl",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "cedar-rapids-ia",
     "project_slug": "addition"
   },
@@ -1673,19 +1121,11 @@
   },
   {
     "city_slug": "cedar-rapids-ia",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "cedar-rapids-ia",
     "project_slug": "driveway"
   },
   {
     "city_slug": "cedar-rapids-ia",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "cedar-rapids-ia",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "cedar-rapids-ia",
@@ -1697,10 +1137,6 @@
   },
   {
     "city_slug": "cedar-rapids-ia",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "cedar-rapids-ia",
     "project_slug": "interior-painting"
   },
   {
@@ -1709,23 +1145,11 @@
   },
   {
     "city_slug": "cedar-rapids-ia",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "cedar-rapids-ia",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "cedar-rapids-ia",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "cedar-rapids-ia",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "cedar-rapids-ia",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "charleston-sc",
@@ -1745,19 +1169,11 @@
   },
   {
     "city_slug": "charleston-sc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "charleston-sc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "charleston-sc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "charleston-sc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "charleston-sc",
@@ -1769,23 +1185,11 @@
   },
   {
     "city_slug": "charleston-sc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "charleston-sc",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "charleston-sc",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "charleston-sc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "charleston-sc",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "charleston-sc",
@@ -1796,10 +1200,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "charleston-sc",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "charlotte-nc",
     "project_slug": "addition"
   },
@@ -1817,19 +1217,11 @@
   },
   {
     "city_slug": "charlotte-nc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "charlotte-nc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "charlotte-nc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "charlotte-nc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "charlotte-nc",
@@ -1841,10 +1233,6 @@
   },
   {
     "city_slug": "charlotte-nc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "charlotte-nc",
     "project_slug": "interior-painting"
   },
   {
@@ -1853,23 +1241,11 @@
   },
   {
     "city_slug": "charlotte-nc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "charlotte-nc",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "charlotte-nc",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "charlotte-nc",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "charlotte-nc",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "charlottesville-va",
@@ -1889,19 +1265,11 @@
   },
   {
     "city_slug": "charlottesville-va",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "charlottesville-va",
     "project_slug": "driveway"
   },
   {
     "city_slug": "charlottesville-va",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "charlottesville-va",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "charlottesville-va",
@@ -1913,23 +1281,11 @@
   },
   {
     "city_slug": "charlottesville-va",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "charlottesville-va",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "charlottesville-va",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "charlottesville-va",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "charlottesville-va",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "charlottesville-va",
@@ -1940,10 +1296,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "charlottesville-va",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "chattanooga-tn",
     "project_slug": "addition"
   },
@@ -1961,19 +1313,11 @@
   },
   {
     "city_slug": "chattanooga-tn",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "chattanooga-tn",
     "project_slug": "driveway"
   },
   {
     "city_slug": "chattanooga-tn",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "chattanooga-tn",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "chattanooga-tn",
@@ -1985,10 +1329,6 @@
   },
   {
     "city_slug": "chattanooga-tn",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "chattanooga-tn",
     "project_slug": "interior-painting"
   },
   {
@@ -1997,23 +1337,11 @@
   },
   {
     "city_slug": "chattanooga-tn",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "chattanooga-tn",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "chattanooga-tn",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "chattanooga-tn",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "chattanooga-tn",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "chicago-il",
@@ -2033,19 +1361,11 @@
   },
   {
     "city_slug": "chicago-il",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "chicago-il",
     "project_slug": "driveway"
   },
   {
     "city_slug": "chicago-il",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "chicago-il",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "chicago-il",
@@ -2057,23 +1377,11 @@
   },
   {
     "city_slug": "chicago-il",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "chicago-il",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "chicago-il",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "chicago-il",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "chicago-il",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "chicago-il",
@@ -2084,10 +1392,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "chicago-il",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "cincinnati-oh",
     "project_slug": "addition"
   },
@@ -2105,19 +1409,11 @@
   },
   {
     "city_slug": "cincinnati-oh",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "cincinnati-oh",
     "project_slug": "driveway"
   },
   {
     "city_slug": "cincinnati-oh",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "cincinnati-oh",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "cincinnati-oh",
@@ -2129,10 +1425,6 @@
   },
   {
     "city_slug": "cincinnati-oh",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "cincinnati-oh",
     "project_slug": "interior-painting"
   },
   {
@@ -2141,23 +1433,11 @@
   },
   {
     "city_slug": "cincinnati-oh",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "cincinnati-oh",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "cincinnati-oh",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "cincinnati-oh",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "cincinnati-oh",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "cleveland-oh",
@@ -2177,19 +1457,11 @@
   },
   {
     "city_slug": "cleveland-oh",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "cleveland-oh",
     "project_slug": "driveway"
   },
   {
     "city_slug": "cleveland-oh",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "cleveland-oh",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "cleveland-oh",
@@ -2201,23 +1473,11 @@
   },
   {
     "city_slug": "cleveland-oh",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "cleveland-oh",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "cleveland-oh",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "cleveland-oh",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "cleveland-oh",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "cleveland-oh",
@@ -2228,10 +1488,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "cleveland-oh",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "colorado-springs-co",
     "project_slug": "addition"
   },
@@ -2249,19 +1505,11 @@
   },
   {
     "city_slug": "colorado-springs-co",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "colorado-springs-co",
     "project_slug": "driveway"
   },
   {
     "city_slug": "colorado-springs-co",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "colorado-springs-co",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "colorado-springs-co",
@@ -2273,10 +1521,6 @@
   },
   {
     "city_slug": "colorado-springs-co",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "colorado-springs-co",
     "project_slug": "interior-painting"
   },
   {
@@ -2285,23 +1529,11 @@
   },
   {
     "city_slug": "colorado-springs-co",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "colorado-springs-co",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "colorado-springs-co",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "colorado-springs-co",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "colorado-springs-co",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "columbia-sc",
@@ -2321,19 +1553,11 @@
   },
   {
     "city_slug": "columbia-sc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "columbia-sc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "columbia-sc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "columbia-sc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "columbia-sc",
@@ -2345,23 +1569,11 @@
   },
   {
     "city_slug": "columbia-sc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "columbia-sc",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "columbia-sc",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "columbia-sc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "columbia-sc",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "columbia-sc",
@@ -2372,10 +1584,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "columbia-sc",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "columbus-oh",
     "project_slug": "addition"
   },
@@ -2393,19 +1601,11 @@
   },
   {
     "city_slug": "columbus-oh",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "columbus-oh",
     "project_slug": "driveway"
   },
   {
     "city_slug": "columbus-oh",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "columbus-oh",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "columbus-oh",
@@ -2417,10 +1617,6 @@
   },
   {
     "city_slug": "columbus-oh",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "columbus-oh",
     "project_slug": "interior-painting"
   },
   {
@@ -2429,23 +1625,11 @@
   },
   {
     "city_slug": "columbus-oh",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "columbus-oh",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "columbus-oh",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "columbus-oh",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "columbus-oh",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "corpus-christi-tx",
@@ -2465,19 +1649,11 @@
   },
   {
     "city_slug": "corpus-christi-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "corpus-christi-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "corpus-christi-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "corpus-christi-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "corpus-christi-tx",
@@ -2489,23 +1665,11 @@
   },
   {
     "city_slug": "corpus-christi-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "corpus-christi-tx",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "corpus-christi-tx",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "corpus-christi-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "corpus-christi-tx",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "corpus-christi-tx",
@@ -2516,10 +1680,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "corpus-christi-tx",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "dallas-tx",
     "project_slug": "addition"
   },
@@ -2537,19 +1697,11 @@
   },
   {
     "city_slug": "dallas-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "dallas-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "dallas-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "dallas-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "dallas-tx",
@@ -2561,10 +1713,6 @@
   },
   {
     "city_slug": "dallas-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "dallas-tx",
     "project_slug": "interior-painting"
   },
   {
@@ -2573,23 +1721,11 @@
   },
   {
     "city_slug": "dallas-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "dallas-tx",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "dallas-tx",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "dallas-tx",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "dallas-tx",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "dayton-oh",
@@ -2609,19 +1745,11 @@
   },
   {
     "city_slug": "dayton-oh",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "dayton-oh",
     "project_slug": "driveway"
   },
   {
     "city_slug": "dayton-oh",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "dayton-oh",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "dayton-oh",
@@ -2633,23 +1761,11 @@
   },
   {
     "city_slug": "dayton-oh",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "dayton-oh",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "dayton-oh",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "dayton-oh",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "dayton-oh",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "dayton-oh",
@@ -2660,10 +1776,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "dayton-oh",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "deltona-fl",
     "project_slug": "addition"
   },
@@ -2681,19 +1793,11 @@
   },
   {
     "city_slug": "deltona-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "deltona-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "deltona-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "deltona-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "deltona-fl",
@@ -2705,10 +1809,6 @@
   },
   {
     "city_slug": "deltona-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "deltona-fl",
     "project_slug": "interior-painting"
   },
   {
@@ -2717,23 +1817,11 @@
   },
   {
     "city_slug": "deltona-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "deltona-fl",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "deltona-fl",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "deltona-fl",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "deltona-fl",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "denver-co",
@@ -2753,19 +1841,11 @@
   },
   {
     "city_slug": "denver-co",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "denver-co",
     "project_slug": "driveway"
   },
   {
     "city_slug": "denver-co",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "denver-co",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "denver-co",
@@ -2777,23 +1857,11 @@
   },
   {
     "city_slug": "denver-co",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "denver-co",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "denver-co",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "denver-co",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "denver-co",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "denver-co",
@@ -2804,10 +1872,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "denver-co",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "des-moines-ia",
     "project_slug": "addition"
   },
@@ -2825,19 +1889,11 @@
   },
   {
     "city_slug": "des-moines-ia",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "des-moines-ia",
     "project_slug": "driveway"
   },
   {
     "city_slug": "des-moines-ia",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "des-moines-ia",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "des-moines-ia",
@@ -2849,10 +1905,6 @@
   },
   {
     "city_slug": "des-moines-ia",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "des-moines-ia",
     "project_slug": "interior-painting"
   },
   {
@@ -2861,23 +1913,11 @@
   },
   {
     "city_slug": "des-moines-ia",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "des-moines-ia",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "des-moines-ia",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "des-moines-ia",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "des-moines-ia",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "detroit-mi",
@@ -2897,19 +1937,11 @@
   },
   {
     "city_slug": "detroit-mi",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "detroit-mi",
     "project_slug": "driveway"
   },
   {
     "city_slug": "detroit-mi",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "detroit-mi",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "detroit-mi",
@@ -2921,23 +1953,11 @@
   },
   {
     "city_slug": "detroit-mi",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "detroit-mi",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "detroit-mi",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "detroit-mi",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "detroit-mi",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "detroit-mi",
@@ -2948,10 +1968,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "detroit-mi",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "duluth-mn",
     "project_slug": "addition"
   },
@@ -2969,19 +1985,11 @@
   },
   {
     "city_slug": "duluth-mn",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "duluth-mn",
     "project_slug": "driveway"
   },
   {
     "city_slug": "duluth-mn",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "duluth-mn",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "duluth-mn",
@@ -2993,10 +2001,6 @@
   },
   {
     "city_slug": "duluth-mn",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "duluth-mn",
     "project_slug": "interior-painting"
   },
   {
@@ -3005,23 +2009,11 @@
   },
   {
     "city_slug": "duluth-mn",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "duluth-mn",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "duluth-mn",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "duluth-mn",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "duluth-mn",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "durham-nc",
@@ -3041,19 +2033,11 @@
   },
   {
     "city_slug": "durham-nc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "durham-nc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "durham-nc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "durham-nc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "durham-nc",
@@ -3065,23 +2049,11 @@
   },
   {
     "city_slug": "durham-nc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "durham-nc",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "durham-nc",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "durham-nc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "durham-nc",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "durham-nc",
@@ -3092,10 +2064,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "durham-nc",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "el-paso-tx",
     "project_slug": "addition"
   },
@@ -3113,19 +2081,11 @@
   },
   {
     "city_slug": "el-paso-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "el-paso-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "el-paso-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "el-paso-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "el-paso-tx",
@@ -3137,10 +2097,6 @@
   },
   {
     "city_slug": "el-paso-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "el-paso-tx",
     "project_slug": "interior-painting"
   },
   {
@@ -3149,23 +2105,11 @@
   },
   {
     "city_slug": "el-paso-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "el-paso-tx",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "el-paso-tx",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "el-paso-tx",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "el-paso-tx",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "eugene-or",
@@ -3185,19 +2129,11 @@
   },
   {
     "city_slug": "eugene-or",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "eugene-or",
     "project_slug": "driveway"
   },
   {
     "city_slug": "eugene-or",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "eugene-or",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "eugene-or",
@@ -3209,23 +2145,11 @@
   },
   {
     "city_slug": "eugene-or",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "eugene-or",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "eugene-or",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "eugene-or",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "eugene-or",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "eugene-or",
@@ -3236,10 +2160,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "eugene-or",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "evansville-in",
     "project_slug": "addition"
   },
@@ -3257,19 +2177,11 @@
   },
   {
     "city_slug": "evansville-in",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "evansville-in",
     "project_slug": "driveway"
   },
   {
     "city_slug": "evansville-in",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "evansville-in",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "evansville-in",
@@ -3281,10 +2193,6 @@
   },
   {
     "city_slug": "evansville-in",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "evansville-in",
     "project_slug": "interior-painting"
   },
   {
@@ -3293,23 +2201,11 @@
   },
   {
     "city_slug": "evansville-in",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "evansville-in",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "evansville-in",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "evansville-in",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "evansville-in",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "fairbanks-ak",
@@ -3329,19 +2225,11 @@
   },
   {
     "city_slug": "fairbanks-ak",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "fairbanks-ak",
     "project_slug": "driveway"
   },
   {
     "city_slug": "fairbanks-ak",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "fairbanks-ak",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "fairbanks-ak",
@@ -3353,23 +2241,11 @@
   },
   {
     "city_slug": "fairbanks-ak",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "fairbanks-ak",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "fairbanks-ak",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "fairbanks-ak",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "fairbanks-ak",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "fairbanks-ak",
@@ -3380,10 +2256,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "fairbanks-ak",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "fayetteville-ar",
     "project_slug": "addition"
   },
@@ -3401,19 +2273,11 @@
   },
   {
     "city_slug": "fayetteville-ar",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "fayetteville-ar",
     "project_slug": "driveway"
   },
   {
     "city_slug": "fayetteville-ar",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "fayetteville-ar",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "fayetteville-ar",
@@ -3425,10 +2289,6 @@
   },
   {
     "city_slug": "fayetteville-ar",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "fayetteville-ar",
     "project_slug": "interior-painting"
   },
   {
@@ -3437,23 +2297,11 @@
   },
   {
     "city_slug": "fayetteville-ar",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "fayetteville-ar",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "fayetteville-ar",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "fayetteville-ar",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "fayetteville-ar",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "fayetteville-nc",
@@ -3473,19 +2321,11 @@
   },
   {
     "city_slug": "fayetteville-nc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "fayetteville-nc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "fayetteville-nc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "fayetteville-nc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "fayetteville-nc",
@@ -3497,23 +2337,11 @@
   },
   {
     "city_slug": "fayetteville-nc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "fayetteville-nc",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "fayetteville-nc",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "fayetteville-nc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "fayetteville-nc",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "fayetteville-nc",
@@ -3524,10 +2352,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "fayetteville-nc",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "fort-collins-co",
     "project_slug": "addition"
   },
@@ -3545,19 +2369,11 @@
   },
   {
     "city_slug": "fort-collins-co",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "fort-collins-co",
     "project_slug": "driveway"
   },
   {
     "city_slug": "fort-collins-co",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "fort-collins-co",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "fort-collins-co",
@@ -3569,10 +2385,6 @@
   },
   {
     "city_slug": "fort-collins-co",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "fort-collins-co",
     "project_slug": "interior-painting"
   },
   {
@@ -3581,23 +2393,11 @@
   },
   {
     "city_slug": "fort-collins-co",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "fort-collins-co",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "fort-collins-co",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "fort-collins-co",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "fort-collins-co",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "fort-wayne-in",
@@ -3617,19 +2417,11 @@
   },
   {
     "city_slug": "fort-wayne-in",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "fort-wayne-in",
     "project_slug": "driveway"
   },
   {
     "city_slug": "fort-wayne-in",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "fort-wayne-in",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "fort-wayne-in",
@@ -3641,23 +2433,11 @@
   },
   {
     "city_slug": "fort-wayne-in",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "fort-wayne-in",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "fort-wayne-in",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "fort-wayne-in",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "fort-wayne-in",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "fort-wayne-in",
@@ -3668,10 +2448,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "fort-wayne-in",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "fresno-ca",
     "project_slug": "addition"
   },
@@ -3689,19 +2465,11 @@
   },
   {
     "city_slug": "fresno-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "fresno-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "fresno-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "fresno-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "fresno-ca",
@@ -3713,10 +2481,6 @@
   },
   {
     "city_slug": "fresno-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "fresno-ca",
     "project_slug": "interior-painting"
   },
   {
@@ -3725,23 +2489,11 @@
   },
   {
     "city_slug": "fresno-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "fresno-ca",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "fresno-ca",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "fresno-ca",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "fresno-ca",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "gainesville-fl",
@@ -3761,19 +2513,11 @@
   },
   {
     "city_slug": "gainesville-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "gainesville-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "gainesville-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "gainesville-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "gainesville-fl",
@@ -3785,23 +2529,11 @@
   },
   {
     "city_slug": "gainesville-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "gainesville-fl",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "gainesville-fl",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "gainesville-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "gainesville-fl",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "gainesville-fl",
@@ -3812,10 +2544,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "gainesville-fl",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "grand-rapids-mi",
     "project_slug": "addition"
   },
@@ -3833,19 +2561,11 @@
   },
   {
     "city_slug": "grand-rapids-mi",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "grand-rapids-mi",
     "project_slug": "driveway"
   },
   {
     "city_slug": "grand-rapids-mi",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "grand-rapids-mi",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "grand-rapids-mi",
@@ -3857,10 +2577,6 @@
   },
   {
     "city_slug": "grand-rapids-mi",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "grand-rapids-mi",
     "project_slug": "interior-painting"
   },
   {
@@ -3869,23 +2585,11 @@
   },
   {
     "city_slug": "grand-rapids-mi",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "grand-rapids-mi",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "grand-rapids-mi",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "grand-rapids-mi",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "grand-rapids-mi",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "green-bay-wi",
@@ -3905,19 +2609,11 @@
   },
   {
     "city_slug": "green-bay-wi",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "green-bay-wi",
     "project_slug": "driveway"
   },
   {
     "city_slug": "green-bay-wi",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "green-bay-wi",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "green-bay-wi",
@@ -3929,23 +2625,11 @@
   },
   {
     "city_slug": "green-bay-wi",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "green-bay-wi",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "green-bay-wi",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "green-bay-wi",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "green-bay-wi",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "green-bay-wi",
@@ -3956,10 +2640,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "green-bay-wi",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "greensboro-nc",
     "project_slug": "addition"
   },
@@ -3977,19 +2657,11 @@
   },
   {
     "city_slug": "greensboro-nc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "greensboro-nc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "greensboro-nc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "greensboro-nc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "greensboro-nc",
@@ -4001,10 +2673,6 @@
   },
   {
     "city_slug": "greensboro-nc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "greensboro-nc",
     "project_slug": "interior-painting"
   },
   {
@@ -4013,23 +2681,11 @@
   },
   {
     "city_slug": "greensboro-nc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "greensboro-nc",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "greensboro-nc",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "greensboro-nc",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "greensboro-nc",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "greenville-sc",
@@ -4049,19 +2705,11 @@
   },
   {
     "city_slug": "greenville-sc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "greenville-sc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "greenville-sc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "greenville-sc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "greenville-sc",
@@ -4073,23 +2721,11 @@
   },
   {
     "city_slug": "greenville-sc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "greenville-sc",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "greenville-sc",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "greenville-sc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "greenville-sc",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "greenville-sc",
@@ -4100,10 +2736,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "greenville-sc",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "harrisburg-pa",
     "project_slug": "addition"
   },
@@ -4121,19 +2753,11 @@
   },
   {
     "city_slug": "harrisburg-pa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "harrisburg-pa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "harrisburg-pa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "harrisburg-pa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "harrisburg-pa",
@@ -4145,10 +2769,6 @@
   },
   {
     "city_slug": "harrisburg-pa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "harrisburg-pa",
     "project_slug": "interior-painting"
   },
   {
@@ -4157,23 +2777,11 @@
   },
   {
     "city_slug": "harrisburg-pa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "harrisburg-pa",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "harrisburg-pa",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "harrisburg-pa",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "harrisburg-pa",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "hartford-ct",
@@ -4193,19 +2801,11 @@
   },
   {
     "city_slug": "hartford-ct",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "hartford-ct",
     "project_slug": "driveway"
   },
   {
     "city_slug": "hartford-ct",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "hartford-ct",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "hartford-ct",
@@ -4217,23 +2817,11 @@
   },
   {
     "city_slug": "hartford-ct",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "hartford-ct",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "hartford-ct",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "hartford-ct",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "hartford-ct",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "hartford-ct",
@@ -4244,10 +2832,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "hartford-ct",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "honolulu-hi",
     "project_slug": "addition"
   },
@@ -4265,19 +2849,11 @@
   },
   {
     "city_slug": "honolulu-hi",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "honolulu-hi",
     "project_slug": "driveway"
   },
   {
     "city_slug": "honolulu-hi",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "honolulu-hi",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "honolulu-hi",
@@ -4289,10 +2865,6 @@
   },
   {
     "city_slug": "honolulu-hi",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "honolulu-hi",
     "project_slug": "interior-painting"
   },
   {
@@ -4301,23 +2873,11 @@
   },
   {
     "city_slug": "honolulu-hi",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "honolulu-hi",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "honolulu-hi",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "honolulu-hi",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "honolulu-hi",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "houston-tx",
@@ -4337,19 +2897,11 @@
   },
   {
     "city_slug": "houston-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "houston-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "houston-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "houston-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "houston-tx",
@@ -4361,23 +2913,11 @@
   },
   {
     "city_slug": "houston-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "houston-tx",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "houston-tx",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "houston-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "houston-tx",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "houston-tx",
@@ -4388,10 +2928,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "houston-tx",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "huntsville-al",
     "project_slug": "addition"
   },
@@ -4409,19 +2945,11 @@
   },
   {
     "city_slug": "huntsville-al",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "huntsville-al",
     "project_slug": "driveway"
   },
   {
     "city_slug": "huntsville-al",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "huntsville-al",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "huntsville-al",
@@ -4433,10 +2961,6 @@
   },
   {
     "city_slug": "huntsville-al",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "huntsville-al",
     "project_slug": "interior-painting"
   },
   {
@@ -4445,23 +2969,11 @@
   },
   {
     "city_slug": "huntsville-al",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "huntsville-al",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "huntsville-al",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "huntsville-al",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "huntsville-al",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "indianapolis-in",
@@ -4481,19 +2993,11 @@
   },
   {
     "city_slug": "indianapolis-in",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "indianapolis-in",
     "project_slug": "driveway"
   },
   {
     "city_slug": "indianapolis-in",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "indianapolis-in",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "indianapolis-in",
@@ -4505,23 +3009,11 @@
   },
   {
     "city_slug": "indianapolis-in",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "indianapolis-in",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "indianapolis-in",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "indianapolis-in",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "indianapolis-in",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "indianapolis-in",
@@ -4532,10 +3024,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "indianapolis-in",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "jackson-ms",
     "project_slug": "addition"
   },
@@ -4553,19 +3041,11 @@
   },
   {
     "city_slug": "jackson-ms",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "jackson-ms",
     "project_slug": "driveway"
   },
   {
     "city_slug": "jackson-ms",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "jackson-ms",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "jackson-ms",
@@ -4577,10 +3057,6 @@
   },
   {
     "city_slug": "jackson-ms",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "jackson-ms",
     "project_slug": "interior-painting"
   },
   {
@@ -4589,23 +3065,11 @@
   },
   {
     "city_slug": "jackson-ms",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "jackson-ms",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "jackson-ms",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "jackson-ms",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "jackson-ms",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "jacksonville-fl",
@@ -4625,19 +3089,11 @@
   },
   {
     "city_slug": "jacksonville-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "jacksonville-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "jacksonville-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "jacksonville-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "jacksonville-fl",
@@ -4649,23 +3105,11 @@
   },
   {
     "city_slug": "jacksonville-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "jacksonville-fl",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "jacksonville-fl",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "jacksonville-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "jacksonville-fl",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "jacksonville-fl",
@@ -4676,10 +3120,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "jacksonville-fl",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "kansas-city-mo",
     "project_slug": "addition"
   },
@@ -4697,19 +3137,11 @@
   },
   {
     "city_slug": "kansas-city-mo",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "kansas-city-mo",
     "project_slug": "driveway"
   },
   {
     "city_slug": "kansas-city-mo",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "kansas-city-mo",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "kansas-city-mo",
@@ -4721,10 +3153,6 @@
   },
   {
     "city_slug": "kansas-city-mo",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "kansas-city-mo",
     "project_slug": "interior-painting"
   },
   {
@@ -4733,23 +3161,11 @@
   },
   {
     "city_slug": "kansas-city-mo",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "kansas-city-mo",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "kansas-city-mo",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "kansas-city-mo",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "kansas-city-mo",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "knoxville-tn",
@@ -4769,19 +3185,11 @@
   },
   {
     "city_slug": "knoxville-tn",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "knoxville-tn",
     "project_slug": "driveway"
   },
   {
     "city_slug": "knoxville-tn",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "knoxville-tn",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "knoxville-tn",
@@ -4793,23 +3201,11 @@
   },
   {
     "city_slug": "knoxville-tn",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "knoxville-tn",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "knoxville-tn",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "knoxville-tn",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "knoxville-tn",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "knoxville-tn",
@@ -4820,10 +3216,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "knoxville-tn",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "lafayette-la",
     "project_slug": "addition"
   },
@@ -4841,19 +3233,11 @@
   },
   {
     "city_slug": "lafayette-la",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "lafayette-la",
     "project_slug": "driveway"
   },
   {
     "city_slug": "lafayette-la",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "lafayette-la",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "lafayette-la",
@@ -4865,10 +3249,6 @@
   },
   {
     "city_slug": "lafayette-la",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "lafayette-la",
     "project_slug": "interior-painting"
   },
   {
@@ -4877,23 +3257,11 @@
   },
   {
     "city_slug": "lafayette-la",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "lafayette-la",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "lafayette-la",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "lafayette-la",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "lafayette-la",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "lakeland-fl",
@@ -4913,19 +3281,11 @@
   },
   {
     "city_slug": "lakeland-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "lakeland-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "lakeland-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "lakeland-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "lakeland-fl",
@@ -4937,23 +3297,11 @@
   },
   {
     "city_slug": "lakeland-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "lakeland-fl",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "lakeland-fl",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "lakeland-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "lakeland-fl",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "lakeland-fl",
@@ -4964,10 +3312,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "lakeland-fl",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "lancaster-pa",
     "project_slug": "addition"
   },
@@ -4985,19 +3329,11 @@
   },
   {
     "city_slug": "lancaster-pa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "lancaster-pa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "lancaster-pa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "lancaster-pa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "lancaster-pa",
@@ -5009,10 +3345,6 @@
   },
   {
     "city_slug": "lancaster-pa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "lancaster-pa",
     "project_slug": "interior-painting"
   },
   {
@@ -5021,23 +3353,11 @@
   },
   {
     "city_slug": "lancaster-pa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "lancaster-pa",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "lancaster-pa",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "lancaster-pa",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "lancaster-pa",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "lansing-mi",
@@ -5057,19 +3377,11 @@
   },
   {
     "city_slug": "lansing-mi",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "lansing-mi",
     "project_slug": "driveway"
   },
   {
     "city_slug": "lansing-mi",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "lansing-mi",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "lansing-mi",
@@ -5081,23 +3393,11 @@
   },
   {
     "city_slug": "lansing-mi",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "lansing-mi",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "lansing-mi",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "lansing-mi",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "lansing-mi",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "lansing-mi",
@@ -5108,10 +3408,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "lansing-mi",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "las-vegas-nv",
     "project_slug": "addition"
   },
@@ -5129,19 +3425,11 @@
   },
   {
     "city_slug": "las-vegas-nv",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "las-vegas-nv",
     "project_slug": "driveway"
   },
   {
     "city_slug": "las-vegas-nv",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "las-vegas-nv",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "las-vegas-nv",
@@ -5153,10 +3441,6 @@
   },
   {
     "city_slug": "las-vegas-nv",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "las-vegas-nv",
     "project_slug": "interior-painting"
   },
   {
@@ -5165,23 +3449,11 @@
   },
   {
     "city_slug": "las-vegas-nv",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "las-vegas-nv",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "las-vegas-nv",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "las-vegas-nv",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "las-vegas-nv",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "lexington-ky",
@@ -5201,19 +3473,11 @@
   },
   {
     "city_slug": "lexington-ky",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "lexington-ky",
     "project_slug": "driveway"
   },
   {
     "city_slug": "lexington-ky",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "lexington-ky",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "lexington-ky",
@@ -5225,23 +3489,11 @@
   },
   {
     "city_slug": "lexington-ky",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "lexington-ky",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "lexington-ky",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "lexington-ky",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "lexington-ky",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "lexington-ky",
@@ -5252,10 +3504,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "lexington-ky",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "lincoln-ne",
     "project_slug": "addition"
   },
@@ -5273,19 +3521,11 @@
   },
   {
     "city_slug": "lincoln-ne",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "lincoln-ne",
     "project_slug": "driveway"
   },
   {
     "city_slug": "lincoln-ne",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "lincoln-ne",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "lincoln-ne",
@@ -5297,10 +3537,6 @@
   },
   {
     "city_slug": "lincoln-ne",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "lincoln-ne",
     "project_slug": "interior-painting"
   },
   {
@@ -5309,23 +3545,11 @@
   },
   {
     "city_slug": "lincoln-ne",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "lincoln-ne",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "lincoln-ne",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "lincoln-ne",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "lincoln-ne",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "little-rock-ar",
@@ -5345,19 +3569,11 @@
   },
   {
     "city_slug": "little-rock-ar",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "little-rock-ar",
     "project_slug": "driveway"
   },
   {
     "city_slug": "little-rock-ar",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "little-rock-ar",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "little-rock-ar",
@@ -5369,23 +3585,11 @@
   },
   {
     "city_slug": "little-rock-ar",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "little-rock-ar",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "little-rock-ar",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "little-rock-ar",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "little-rock-ar",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "little-rock-ar",
@@ -5396,10 +3600,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "little-rock-ar",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "los-angeles-ca",
     "project_slug": "addition"
   },
@@ -5417,19 +3617,11 @@
   },
   {
     "city_slug": "los-angeles-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "los-angeles-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "los-angeles-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "los-angeles-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "los-angeles-ca",
@@ -5441,10 +3633,6 @@
   },
   {
     "city_slug": "los-angeles-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "los-angeles-ca",
     "project_slug": "interior-painting"
   },
   {
@@ -5453,23 +3641,11 @@
   },
   {
     "city_slug": "los-angeles-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "los-angeles-ca",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "los-angeles-ca",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "los-angeles-ca",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "los-angeles-ca",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "louisville-jefferson-county-ky",
@@ -5489,19 +3665,11 @@
   },
   {
     "city_slug": "louisville-jefferson-county-ky",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "louisville-jefferson-county-ky",
     "project_slug": "driveway"
   },
   {
     "city_slug": "louisville-jefferson-county-ky",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "louisville-jefferson-county-ky",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "louisville-jefferson-county-ky",
@@ -5513,23 +3681,11 @@
   },
   {
     "city_slug": "louisville-jefferson-county-ky",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "louisville-jefferson-county-ky",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "louisville-jefferson-county-ky",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "louisville-jefferson-county-ky",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "louisville-jefferson-county-ky",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "louisville-jefferson-county-ky",
@@ -5540,10 +3696,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "louisville-jefferson-county-ky",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "lubbock-tx",
     "project_slug": "addition"
   },
@@ -5561,19 +3713,11 @@
   },
   {
     "city_slug": "lubbock-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "lubbock-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "lubbock-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "lubbock-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "lubbock-tx",
@@ -5585,10 +3729,6 @@
   },
   {
     "city_slug": "lubbock-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "lubbock-tx",
     "project_slug": "interior-painting"
   },
   {
@@ -5597,23 +3737,11 @@
   },
   {
     "city_slug": "lubbock-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "lubbock-tx",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "lubbock-tx",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "lubbock-tx",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "lubbock-tx",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "madison-wi",
@@ -5633,19 +3761,11 @@
   },
   {
     "city_slug": "madison-wi",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "madison-wi",
     "project_slug": "driveway"
   },
   {
     "city_slug": "madison-wi",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "madison-wi",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "madison-wi",
@@ -5657,23 +3777,11 @@
   },
   {
     "city_slug": "madison-wi",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "madison-wi",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "madison-wi",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "madison-wi",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "madison-wi",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "madison-wi",
@@ -5684,10 +3792,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "madison-wi",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "mcallen-tx",
     "project_slug": "addition"
   },
@@ -5705,19 +3809,11 @@
   },
   {
     "city_slug": "mcallen-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "mcallen-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "mcallen-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "mcallen-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "mcallen-tx",
@@ -5729,10 +3825,6 @@
   },
   {
     "city_slug": "mcallen-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "mcallen-tx",
     "project_slug": "interior-painting"
   },
   {
@@ -5741,23 +3833,11 @@
   },
   {
     "city_slug": "mcallen-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "mcallen-tx",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "mcallen-tx",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "mcallen-tx",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "mcallen-tx",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "memphis-tn",
@@ -5777,19 +3857,11 @@
   },
   {
     "city_slug": "memphis-tn",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "memphis-tn",
     "project_slug": "driveway"
   },
   {
     "city_slug": "memphis-tn",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "memphis-tn",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "memphis-tn",
@@ -5801,23 +3873,11 @@
   },
   {
     "city_slug": "memphis-tn",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "memphis-tn",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "memphis-tn",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "memphis-tn",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "memphis-tn",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "memphis-tn",
@@ -5828,10 +3888,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "memphis-tn",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "miami-fl",
     "project_slug": "addition"
   },
@@ -5849,19 +3905,11 @@
   },
   {
     "city_slug": "miami-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "miami-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "miami-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "miami-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "miami-fl",
@@ -5873,10 +3921,6 @@
   },
   {
     "city_slug": "miami-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "miami-fl",
     "project_slug": "interior-painting"
   },
   {
@@ -5885,23 +3929,11 @@
   },
   {
     "city_slug": "miami-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "miami-fl",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "miami-fl",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "miami-fl",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "miami-fl",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "milwaukee-wi",
@@ -5921,19 +3953,11 @@
   },
   {
     "city_slug": "milwaukee-wi",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "milwaukee-wi",
     "project_slug": "driveway"
   },
   {
     "city_slug": "milwaukee-wi",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "milwaukee-wi",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "milwaukee-wi",
@@ -5945,23 +3969,11 @@
   },
   {
     "city_slug": "milwaukee-wi",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "milwaukee-wi",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "milwaukee-wi",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "milwaukee-wi",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "milwaukee-wi",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "milwaukee-wi",
@@ -5972,10 +3984,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "milwaukee-wi",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "minneapolis-mn",
     "project_slug": "addition"
   },
@@ -5993,19 +4001,11 @@
   },
   {
     "city_slug": "minneapolis-mn",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "minneapolis-mn",
     "project_slug": "driveway"
   },
   {
     "city_slug": "minneapolis-mn",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "minneapolis-mn",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "minneapolis-mn",
@@ -6017,10 +4017,6 @@
   },
   {
     "city_slug": "minneapolis-mn",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "minneapolis-mn",
     "project_slug": "interior-painting"
   },
   {
@@ -6029,23 +4025,11 @@
   },
   {
     "city_slug": "minneapolis-mn",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "minneapolis-mn",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "minneapolis-mn",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "minneapolis-mn",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "minneapolis-mn",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "missoula-mt",
@@ -6065,19 +4049,11 @@
   },
   {
     "city_slug": "missoula-mt",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "missoula-mt",
     "project_slug": "driveway"
   },
   {
     "city_slug": "missoula-mt",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "missoula-mt",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "missoula-mt",
@@ -6089,23 +4065,11 @@
   },
   {
     "city_slug": "missoula-mt",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "missoula-mt",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "missoula-mt",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "missoula-mt",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "missoula-mt",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "missoula-mt",
@@ -6116,10 +4080,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "missoula-mt",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "mobile-al",
     "project_slug": "addition"
   },
@@ -6137,19 +4097,11 @@
   },
   {
     "city_slug": "mobile-al",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "mobile-al",
     "project_slug": "driveway"
   },
   {
     "city_slug": "mobile-al",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "mobile-al",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "mobile-al",
@@ -6161,10 +4113,6 @@
   },
   {
     "city_slug": "mobile-al",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "mobile-al",
     "project_slug": "interior-painting"
   },
   {
@@ -6173,23 +4121,11 @@
   },
   {
     "city_slug": "mobile-al",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "mobile-al",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "mobile-al",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "mobile-al",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "mobile-al",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "modesto-ca",
@@ -6209,19 +4145,11 @@
   },
   {
     "city_slug": "modesto-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "modesto-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "modesto-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "modesto-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "modesto-ca",
@@ -6233,23 +4161,11 @@
   },
   {
     "city_slug": "modesto-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "modesto-ca",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "modesto-ca",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "modesto-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "modesto-ca",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "modesto-ca",
@@ -6260,10 +4176,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "modesto-ca",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "montgomery-al",
     "project_slug": "addition"
   },
@@ -6281,19 +4193,11 @@
   },
   {
     "city_slug": "montgomery-al",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "montgomery-al",
     "project_slug": "driveway"
   },
   {
     "city_slug": "montgomery-al",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "montgomery-al",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "montgomery-al",
@@ -6305,10 +4209,6 @@
   },
   {
     "city_slug": "montgomery-al",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "montgomery-al",
     "project_slug": "interior-painting"
   },
   {
@@ -6317,23 +4217,11 @@
   },
   {
     "city_slug": "montgomery-al",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "montgomery-al",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "montgomery-al",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "montgomery-al",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "montgomery-al",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "myrtle-beach-sc",
@@ -6353,19 +4241,11 @@
   },
   {
     "city_slug": "myrtle-beach-sc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "myrtle-beach-sc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "myrtle-beach-sc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "myrtle-beach-sc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "myrtle-beach-sc",
@@ -6377,23 +4257,11 @@
   },
   {
     "city_slug": "myrtle-beach-sc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "myrtle-beach-sc",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "myrtle-beach-sc",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "myrtle-beach-sc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "myrtle-beach-sc",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "myrtle-beach-sc",
@@ -6404,10 +4272,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "myrtle-beach-sc",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "nashville-tn",
     "project_slug": "addition"
   },
@@ -6425,19 +4289,11 @@
   },
   {
     "city_slug": "nashville-tn",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "nashville-tn",
     "project_slug": "driveway"
   },
   {
     "city_slug": "nashville-tn",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "nashville-tn",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "nashville-tn",
@@ -6449,10 +4305,6 @@
   },
   {
     "city_slug": "nashville-tn",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "nashville-tn",
     "project_slug": "interior-painting"
   },
   {
@@ -6461,23 +4313,11 @@
   },
   {
     "city_slug": "nashville-tn",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "nashville-tn",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "nashville-tn",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "nashville-tn",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "nashville-tn",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "new-haven-ct",
@@ -6497,19 +4337,11 @@
   },
   {
     "city_slug": "new-haven-ct",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "new-haven-ct",
     "project_slug": "driveway"
   },
   {
     "city_slug": "new-haven-ct",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "new-haven-ct",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "new-haven-ct",
@@ -6521,23 +4353,11 @@
   },
   {
     "city_slug": "new-haven-ct",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "new-haven-ct",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "new-haven-ct",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "new-haven-ct",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "new-haven-ct",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "new-haven-ct",
@@ -6548,10 +4368,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "new-haven-ct",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "new-orleans-la",
     "project_slug": "addition"
   },
@@ -6569,19 +4385,11 @@
   },
   {
     "city_slug": "new-orleans-la",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "new-orleans-la",
     "project_slug": "driveway"
   },
   {
     "city_slug": "new-orleans-la",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "new-orleans-la",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "new-orleans-la",
@@ -6593,10 +4401,6 @@
   },
   {
     "city_slug": "new-orleans-la",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "new-orleans-la",
     "project_slug": "interior-painting"
   },
   {
@@ -6605,23 +4409,11 @@
   },
   {
     "city_slug": "new-orleans-la",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "new-orleans-la",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "new-orleans-la",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "new-orleans-la",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "new-orleans-la",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "new-york-ny",
@@ -6641,19 +4433,11 @@
   },
   {
     "city_slug": "new-york-ny",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "new-york-ny",
     "project_slug": "driveway"
   },
   {
     "city_slug": "new-york-ny",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "new-york-ny",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "new-york-ny",
@@ -6665,23 +4449,11 @@
   },
   {
     "city_slug": "new-york-ny",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "new-york-ny",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "new-york-ny",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "new-york-ny",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "new-york-ny",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "new-york-ny",
@@ -6692,10 +4464,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "new-york-ny",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "north-port-fl",
     "project_slug": "addition"
   },
@@ -6713,19 +4481,11 @@
   },
   {
     "city_slug": "north-port-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "north-port-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "north-port-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "north-port-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "north-port-fl",
@@ -6737,10 +4497,6 @@
   },
   {
     "city_slug": "north-port-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "north-port-fl",
     "project_slug": "interior-painting"
   },
   {
@@ -6749,23 +4505,11 @@
   },
   {
     "city_slug": "north-port-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "north-port-fl",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "north-port-fl",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "north-port-fl",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "north-port-fl",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "ogden-ut",
@@ -6785,19 +4529,11 @@
   },
   {
     "city_slug": "ogden-ut",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "ogden-ut",
     "project_slug": "driveway"
   },
   {
     "city_slug": "ogden-ut",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "ogden-ut",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "ogden-ut",
@@ -6809,23 +4545,11 @@
   },
   {
     "city_slug": "ogden-ut",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "ogden-ut",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "ogden-ut",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "ogden-ut",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "ogden-ut",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "ogden-ut",
@@ -6836,10 +4560,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "ogden-ut",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "oklahoma-city-ok",
     "project_slug": "addition"
   },
@@ -6857,19 +4577,11 @@
   },
   {
     "city_slug": "oklahoma-city-ok",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "oklahoma-city-ok",
     "project_slug": "driveway"
   },
   {
     "city_slug": "oklahoma-city-ok",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "oklahoma-city-ok",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "oklahoma-city-ok",
@@ -6881,10 +4593,6 @@
   },
   {
     "city_slug": "oklahoma-city-ok",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "oklahoma-city-ok",
     "project_slug": "interior-painting"
   },
   {
@@ -6893,23 +4601,11 @@
   },
   {
     "city_slug": "oklahoma-city-ok",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "oklahoma-city-ok",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "oklahoma-city-ok",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "oklahoma-city-ok",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "oklahoma-city-ok",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "olympia-wa",
@@ -6929,19 +4625,11 @@
   },
   {
     "city_slug": "olympia-wa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "olympia-wa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "olympia-wa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "olympia-wa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "olympia-wa",
@@ -6953,23 +4641,11 @@
   },
   {
     "city_slug": "olympia-wa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "olympia-wa",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "olympia-wa",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "olympia-wa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "olympia-wa",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "olympia-wa",
@@ -6980,10 +4656,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "olympia-wa",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "omaha-ne",
     "project_slug": "addition"
   },
@@ -7001,19 +4673,11 @@
   },
   {
     "city_slug": "omaha-ne",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "omaha-ne",
     "project_slug": "driveway"
   },
   {
     "city_slug": "omaha-ne",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "omaha-ne",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "omaha-ne",
@@ -7025,10 +4689,6 @@
   },
   {
     "city_slug": "omaha-ne",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "omaha-ne",
     "project_slug": "interior-painting"
   },
   {
@@ -7037,23 +4697,11 @@
   },
   {
     "city_slug": "omaha-ne",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "omaha-ne",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "omaha-ne",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "omaha-ne",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "omaha-ne",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "orlando-fl",
@@ -7073,19 +4721,11 @@
   },
   {
     "city_slug": "orlando-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "orlando-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "orlando-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "orlando-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "orlando-fl",
@@ -7097,23 +4737,11 @@
   },
   {
     "city_slug": "orlando-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "orlando-fl",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "orlando-fl",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "orlando-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "orlando-fl",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "orlando-fl",
@@ -7124,10 +4752,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "orlando-fl",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "oxnard-ca",
     "project_slug": "addition"
   },
@@ -7145,19 +4769,11 @@
   },
   {
     "city_slug": "oxnard-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "oxnard-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "oxnard-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "oxnard-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "oxnard-ca",
@@ -7169,10 +4785,6 @@
   },
   {
     "city_slug": "oxnard-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "oxnard-ca",
     "project_slug": "interior-painting"
   },
   {
@@ -7181,23 +4793,11 @@
   },
   {
     "city_slug": "oxnard-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "oxnard-ca",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "oxnard-ca",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "oxnard-ca",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "oxnard-ca",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "pensacola-fl",
@@ -7217,19 +4817,11 @@
   },
   {
     "city_slug": "pensacola-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "pensacola-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "pensacola-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "pensacola-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "pensacola-fl",
@@ -7241,23 +4833,11 @@
   },
   {
     "city_slug": "pensacola-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "pensacola-fl",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "pensacola-fl",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "pensacola-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "pensacola-fl",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "pensacola-fl",
@@ -7268,10 +4848,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "pensacola-fl",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "philadelphia-pa",
     "project_slug": "addition"
   },
@@ -7289,19 +4865,11 @@
   },
   {
     "city_slug": "philadelphia-pa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "philadelphia-pa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "philadelphia-pa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "philadelphia-pa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "philadelphia-pa",
@@ -7313,10 +4881,6 @@
   },
   {
     "city_slug": "philadelphia-pa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "philadelphia-pa",
     "project_slug": "interior-painting"
   },
   {
@@ -7325,23 +4889,11 @@
   },
   {
     "city_slug": "philadelphia-pa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "philadelphia-pa",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "philadelphia-pa",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "philadelphia-pa",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "philadelphia-pa",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "phoenix-az",
@@ -7361,19 +4913,11 @@
   },
   {
     "city_slug": "phoenix-az",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "phoenix-az",
     "project_slug": "driveway"
   },
   {
     "city_slug": "phoenix-az",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "phoenix-az",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "phoenix-az",
@@ -7385,23 +4929,11 @@
   },
   {
     "city_slug": "phoenix-az",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "phoenix-az",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "phoenix-az",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "phoenix-az",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "phoenix-az",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "phoenix-az",
@@ -7412,10 +4944,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "phoenix-az",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "pittsburgh-pa",
     "project_slug": "addition"
   },
@@ -7433,19 +4961,11 @@
   },
   {
     "city_slug": "pittsburgh-pa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "pittsburgh-pa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "pittsburgh-pa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "pittsburgh-pa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "pittsburgh-pa",
@@ -7457,10 +4977,6 @@
   },
   {
     "city_slug": "pittsburgh-pa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "pittsburgh-pa",
     "project_slug": "interior-painting"
   },
   {
@@ -7469,23 +4985,11 @@
   },
   {
     "city_slug": "pittsburgh-pa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "pittsburgh-pa",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "pittsburgh-pa",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "pittsburgh-pa",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "pittsburgh-pa",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "portland-or",
@@ -7505,19 +5009,11 @@
   },
   {
     "city_slug": "portland-or",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "portland-or",
     "project_slug": "driveway"
   },
   {
     "city_slug": "portland-or",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "portland-or",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "portland-or",
@@ -7529,23 +5025,11 @@
   },
   {
     "city_slug": "portland-or",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "portland-or",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "portland-or",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "portland-or",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "portland-or",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "portland-or",
@@ -7556,10 +5040,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "portland-or",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "poughkeepsie-ny",
     "project_slug": "addition"
   },
@@ -7577,19 +5057,11 @@
   },
   {
     "city_slug": "poughkeepsie-ny",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "poughkeepsie-ny",
     "project_slug": "driveway"
   },
   {
     "city_slug": "poughkeepsie-ny",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "poughkeepsie-ny",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "poughkeepsie-ny",
@@ -7601,10 +5073,6 @@
   },
   {
     "city_slug": "poughkeepsie-ny",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "poughkeepsie-ny",
     "project_slug": "interior-painting"
   },
   {
@@ -7613,23 +5081,11 @@
   },
   {
     "city_slug": "poughkeepsie-ny",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "poughkeepsie-ny",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "poughkeepsie-ny",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "poughkeepsie-ny",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "poughkeepsie-ny",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "providence-ri",
@@ -7649,19 +5105,11 @@
   },
   {
     "city_slug": "providence-ri",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "providence-ri",
     "project_slug": "driveway"
   },
   {
     "city_slug": "providence-ri",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "providence-ri",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "providence-ri",
@@ -7673,23 +5121,11 @@
   },
   {
     "city_slug": "providence-ri",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "providence-ri",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "providence-ri",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "providence-ri",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "providence-ri",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "providence-ri",
@@ -7700,10 +5136,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "providence-ri",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "provo-ut",
     "project_slug": "addition"
   },
@@ -7721,19 +5153,11 @@
   },
   {
     "city_slug": "provo-ut",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "provo-ut",
     "project_slug": "driveway"
   },
   {
     "city_slug": "provo-ut",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "provo-ut",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "provo-ut",
@@ -7745,10 +5169,6 @@
   },
   {
     "city_slug": "provo-ut",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "provo-ut",
     "project_slug": "interior-painting"
   },
   {
@@ -7757,23 +5177,11 @@
   },
   {
     "city_slug": "provo-ut",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "provo-ut",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "provo-ut",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "provo-ut",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "provo-ut",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "raleigh-nc",
@@ -7793,19 +5201,11 @@
   },
   {
     "city_slug": "raleigh-nc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "raleigh-nc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "raleigh-nc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "raleigh-nc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "raleigh-nc",
@@ -7817,23 +5217,11 @@
   },
   {
     "city_slug": "raleigh-nc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "raleigh-nc",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "raleigh-nc",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "raleigh-nc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "raleigh-nc",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "raleigh-nc",
@@ -7844,10 +5232,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "raleigh-nc",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "reno-nv",
     "project_slug": "addition"
   },
@@ -7865,19 +5249,11 @@
   },
   {
     "city_slug": "reno-nv",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "reno-nv",
     "project_slug": "driveway"
   },
   {
     "city_slug": "reno-nv",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "reno-nv",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "reno-nv",
@@ -7889,10 +5265,6 @@
   },
   {
     "city_slug": "reno-nv",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "reno-nv",
     "project_slug": "interior-painting"
   },
   {
@@ -7901,23 +5273,11 @@
   },
   {
     "city_slug": "reno-nv",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "reno-nv",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "reno-nv",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "reno-nv",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "reno-nv",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "richmond-va",
@@ -7937,19 +5297,11 @@
   },
   {
     "city_slug": "richmond-va",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "richmond-va",
     "project_slug": "driveway"
   },
   {
     "city_slug": "richmond-va",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "richmond-va",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "richmond-va",
@@ -7961,23 +5313,11 @@
   },
   {
     "city_slug": "richmond-va",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "richmond-va",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "richmond-va",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "richmond-va",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "richmond-va",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "richmond-va",
@@ -7988,10 +5328,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "richmond-va",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "riverside-ca",
     "project_slug": "addition"
   },
@@ -8009,19 +5345,11 @@
   },
   {
     "city_slug": "riverside-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "riverside-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "riverside-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "riverside-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "riverside-ca",
@@ -8033,10 +5361,6 @@
   },
   {
     "city_slug": "riverside-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "riverside-ca",
     "project_slug": "interior-painting"
   },
   {
@@ -8045,23 +5369,11 @@
   },
   {
     "city_slug": "riverside-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "riverside-ca",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "riverside-ca",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "riverside-ca",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "riverside-ca",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "roanoke-va",
@@ -8081,19 +5393,11 @@
   },
   {
     "city_slug": "roanoke-va",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "roanoke-va",
     "project_slug": "driveway"
   },
   {
     "city_slug": "roanoke-va",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "roanoke-va",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "roanoke-va",
@@ -8105,23 +5409,11 @@
   },
   {
     "city_slug": "roanoke-va",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "roanoke-va",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "roanoke-va",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "roanoke-va",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "roanoke-va",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "roanoke-va",
@@ -8132,10 +5424,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "roanoke-va",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "rochester-mn",
     "project_slug": "addition"
   },
@@ -8153,19 +5441,11 @@
   },
   {
     "city_slug": "rochester-mn",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "rochester-mn",
     "project_slug": "driveway"
   },
   {
     "city_slug": "rochester-mn",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "rochester-mn",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "rochester-mn",
@@ -8177,10 +5457,6 @@
   },
   {
     "city_slug": "rochester-mn",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "rochester-mn",
     "project_slug": "interior-painting"
   },
   {
@@ -8189,23 +5465,11 @@
   },
   {
     "city_slug": "rochester-mn",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "rochester-mn",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "rochester-mn",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "rochester-mn",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "rochester-mn",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "rochester-ny",
@@ -8225,19 +5489,11 @@
   },
   {
     "city_slug": "rochester-ny",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "rochester-ny",
     "project_slug": "driveway"
   },
   {
     "city_slug": "rochester-ny",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "rochester-ny",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "rochester-ny",
@@ -8249,23 +5505,11 @@
   },
   {
     "city_slug": "rochester-ny",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "rochester-ny",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "rochester-ny",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "rochester-ny",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "rochester-ny",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "rochester-ny",
@@ -8276,10 +5520,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "rochester-ny",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "sacramento-ca",
     "project_slug": "addition"
   },
@@ -8297,19 +5537,11 @@
   },
   {
     "city_slug": "sacramento-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "sacramento-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "sacramento-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "sacramento-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "sacramento-ca",
@@ -8321,10 +5553,6 @@
   },
   {
     "city_slug": "sacramento-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "sacramento-ca",
     "project_slug": "interior-painting"
   },
   {
@@ -8333,23 +5561,11 @@
   },
   {
     "city_slug": "sacramento-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "sacramento-ca",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "sacramento-ca",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "sacramento-ca",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "sacramento-ca",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "salem-or",
@@ -8369,19 +5585,11 @@
   },
   {
     "city_slug": "salem-or",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "salem-or",
     "project_slug": "driveway"
   },
   {
     "city_slug": "salem-or",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "salem-or",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "salem-or",
@@ -8393,23 +5601,11 @@
   },
   {
     "city_slug": "salem-or",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "salem-or",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "salem-or",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "salem-or",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "salem-or",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "salem-or",
@@ -8420,10 +5616,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "salem-or",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "salinas-ca",
     "project_slug": "addition"
   },
@@ -8441,19 +5633,11 @@
   },
   {
     "city_slug": "salinas-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "salinas-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "salinas-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "salinas-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "salinas-ca",
@@ -8465,10 +5649,6 @@
   },
   {
     "city_slug": "salinas-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "salinas-ca",
     "project_slug": "interior-painting"
   },
   {
@@ -8477,23 +5657,11 @@
   },
   {
     "city_slug": "salinas-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "salinas-ca",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "salinas-ca",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "salinas-ca",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "salinas-ca",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "salt-lake-city-ut",
@@ -8513,19 +5681,11 @@
   },
   {
     "city_slug": "salt-lake-city-ut",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "salt-lake-city-ut",
     "project_slug": "driveway"
   },
   {
     "city_slug": "salt-lake-city-ut",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "salt-lake-city-ut",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "salt-lake-city-ut",
@@ -8537,23 +5697,11 @@
   },
   {
     "city_slug": "salt-lake-city-ut",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "salt-lake-city-ut",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "salt-lake-city-ut",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "salt-lake-city-ut",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "salt-lake-city-ut",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "salt-lake-city-ut",
@@ -8564,10 +5712,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "salt-lake-city-ut",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "san-antonio-tx",
     "project_slug": "addition"
   },
@@ -8585,19 +5729,11 @@
   },
   {
     "city_slug": "san-antonio-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "san-antonio-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "san-antonio-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "san-antonio-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "san-antonio-tx",
@@ -8609,10 +5745,6 @@
   },
   {
     "city_slug": "san-antonio-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "san-antonio-tx",
     "project_slug": "interior-painting"
   },
   {
@@ -8621,23 +5753,11 @@
   },
   {
     "city_slug": "san-antonio-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "san-antonio-tx",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "san-antonio-tx",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "san-antonio-tx",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "san-antonio-tx",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "san-diego-ca",
@@ -8657,19 +5777,11 @@
   },
   {
     "city_slug": "san-diego-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "san-diego-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "san-diego-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "san-diego-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "san-diego-ca",
@@ -8681,23 +5793,11 @@
   },
   {
     "city_slug": "san-diego-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "san-diego-ca",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "san-diego-ca",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "san-diego-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "san-diego-ca",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "san-diego-ca",
@@ -8708,10 +5808,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "san-diego-ca",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "san-francisco-ca",
     "project_slug": "addition"
   },
@@ -8729,19 +5825,11 @@
   },
   {
     "city_slug": "san-francisco-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "san-francisco-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "san-francisco-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "san-francisco-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "san-francisco-ca",
@@ -8753,10 +5841,6 @@
   },
   {
     "city_slug": "san-francisco-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "san-francisco-ca",
     "project_slug": "interior-painting"
   },
   {
@@ -8765,23 +5849,11 @@
   },
   {
     "city_slug": "san-francisco-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "san-francisco-ca",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "san-francisco-ca",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "san-francisco-ca",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "san-francisco-ca",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "san-jose-ca",
@@ -8801,19 +5873,11 @@
   },
   {
     "city_slug": "san-jose-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "san-jose-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "san-jose-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "san-jose-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "san-jose-ca",
@@ -8825,23 +5889,11 @@
   },
   {
     "city_slug": "san-jose-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "san-jose-ca",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "san-jose-ca",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "san-jose-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "san-jose-ca",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "san-jose-ca",
@@ -8852,10 +5904,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "san-jose-ca",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "santa-barbara-ca",
     "project_slug": "addition"
   },
@@ -8873,19 +5921,11 @@
   },
   {
     "city_slug": "santa-barbara-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "santa-barbara-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "santa-barbara-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "santa-barbara-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "santa-barbara-ca",
@@ -8897,10 +5937,6 @@
   },
   {
     "city_slug": "santa-barbara-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "santa-barbara-ca",
     "project_slug": "interior-painting"
   },
   {
@@ -8909,23 +5945,11 @@
   },
   {
     "city_slug": "santa-barbara-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "santa-barbara-ca",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "santa-barbara-ca",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "santa-barbara-ca",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "santa-barbara-ca",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "santa-cruz-ca",
@@ -8945,19 +5969,11 @@
   },
   {
     "city_slug": "santa-cruz-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "santa-cruz-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "santa-cruz-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "santa-cruz-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "santa-cruz-ca",
@@ -8969,23 +5985,11 @@
   },
   {
     "city_slug": "santa-cruz-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "santa-cruz-ca",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "santa-cruz-ca",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "santa-cruz-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "santa-cruz-ca",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "santa-cruz-ca",
@@ -8996,10 +6000,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "santa-cruz-ca",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "santa-fe-nm",
     "project_slug": "addition"
   },
@@ -9017,19 +6017,11 @@
   },
   {
     "city_slug": "santa-fe-nm",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "santa-fe-nm",
     "project_slug": "driveway"
   },
   {
     "city_slug": "santa-fe-nm",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "santa-fe-nm",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "santa-fe-nm",
@@ -9041,10 +6033,6 @@
   },
   {
     "city_slug": "santa-fe-nm",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "santa-fe-nm",
     "project_slug": "interior-painting"
   },
   {
@@ -9053,23 +6041,11 @@
   },
   {
     "city_slug": "santa-fe-nm",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "santa-fe-nm",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "santa-fe-nm",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "santa-fe-nm",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "santa-fe-nm",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "santa-rosa-ca",
@@ -9089,19 +6065,11 @@
   },
   {
     "city_slug": "santa-rosa-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "santa-rosa-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "santa-rosa-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "santa-rosa-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "santa-rosa-ca",
@@ -9113,23 +6081,11 @@
   },
   {
     "city_slug": "santa-rosa-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "santa-rosa-ca",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "santa-rosa-ca",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "santa-rosa-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "santa-rosa-ca",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "santa-rosa-ca",
@@ -9140,10 +6096,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "santa-rosa-ca",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "savannah-ga",
     "project_slug": "addition"
   },
@@ -9161,19 +6113,11 @@
   },
   {
     "city_slug": "savannah-ga",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "savannah-ga",
     "project_slug": "driveway"
   },
   {
     "city_slug": "savannah-ga",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "savannah-ga",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "savannah-ga",
@@ -9185,10 +6129,6 @@
   },
   {
     "city_slug": "savannah-ga",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "savannah-ga",
     "project_slug": "interior-painting"
   },
   {
@@ -9197,23 +6137,11 @@
   },
   {
     "city_slug": "savannah-ga",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "savannah-ga",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "savannah-ga",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "savannah-ga",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "savannah-ga",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "scranton-pa",
@@ -9233,19 +6161,11 @@
   },
   {
     "city_slug": "scranton-pa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "scranton-pa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "scranton-pa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "scranton-pa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "scranton-pa",
@@ -9257,23 +6177,11 @@
   },
   {
     "city_slug": "scranton-pa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "scranton-pa",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "scranton-pa",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "scranton-pa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "scranton-pa",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "scranton-pa",
@@ -9284,10 +6192,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "scranton-pa",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "seattle-wa",
     "project_slug": "addition"
   },
@@ -9305,19 +6209,11 @@
   },
   {
     "city_slug": "seattle-wa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "seattle-wa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "seattle-wa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "seattle-wa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "seattle-wa",
@@ -9329,10 +6225,6 @@
   },
   {
     "city_slug": "seattle-wa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "seattle-wa",
     "project_slug": "interior-painting"
   },
   {
@@ -9341,23 +6233,11 @@
   },
   {
     "city_slug": "seattle-wa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "seattle-wa",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "seattle-wa",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "seattle-wa",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "seattle-wa",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "shreveport-la",
@@ -9377,19 +6257,11 @@
   },
   {
     "city_slug": "shreveport-la",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "shreveport-la",
     "project_slug": "driveway"
   },
   {
     "city_slug": "shreveport-la",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "shreveport-la",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "shreveport-la",
@@ -9401,23 +6273,11 @@
   },
   {
     "city_slug": "shreveport-la",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "shreveport-la",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "shreveport-la",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "shreveport-la",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "shreveport-la",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "shreveport-la",
@@ -9428,10 +6288,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "shreveport-la",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "south-bend-in",
     "project_slug": "addition"
   },
@@ -9449,19 +6305,11 @@
   },
   {
     "city_slug": "south-bend-in",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "south-bend-in",
     "project_slug": "driveway"
   },
   {
     "city_slug": "south-bend-in",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "south-bend-in",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "south-bend-in",
@@ -9473,10 +6321,6 @@
   },
   {
     "city_slug": "south-bend-in",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "south-bend-in",
     "project_slug": "interior-painting"
   },
   {
@@ -9485,23 +6329,11 @@
   },
   {
     "city_slug": "south-bend-in",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "south-bend-in",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "south-bend-in",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "south-bend-in",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "south-bend-in",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "spokane-wa",
@@ -9521,19 +6353,11 @@
   },
   {
     "city_slug": "spokane-wa",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "spokane-wa",
     "project_slug": "driveway"
   },
   {
     "city_slug": "spokane-wa",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "spokane-wa",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "spokane-wa",
@@ -9545,23 +6369,11 @@
   },
   {
     "city_slug": "spokane-wa",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "spokane-wa",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "spokane-wa",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "spokane-wa",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "spokane-wa",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "spokane-wa",
@@ -9572,10 +6384,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "spokane-wa",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "springfield-ma",
     "project_slug": "addition"
   },
@@ -9593,19 +6401,11 @@
   },
   {
     "city_slug": "springfield-ma",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "springfield-ma",
     "project_slug": "driveway"
   },
   {
     "city_slug": "springfield-ma",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "springfield-ma",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "springfield-ma",
@@ -9617,10 +6417,6 @@
   },
   {
     "city_slug": "springfield-ma",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "springfield-ma",
     "project_slug": "interior-painting"
   },
   {
@@ -9629,23 +6425,11 @@
   },
   {
     "city_slug": "springfield-ma",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "springfield-ma",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "springfield-ma",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "springfield-ma",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "springfield-ma",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "springfield-mo",
@@ -9665,19 +6449,11 @@
   },
   {
     "city_slug": "springfield-mo",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "springfield-mo",
     "project_slug": "driveway"
   },
   {
     "city_slug": "springfield-mo",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "springfield-mo",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "springfield-mo",
@@ -9689,23 +6465,11 @@
   },
   {
     "city_slug": "springfield-mo",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "springfield-mo",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "springfield-mo",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "springfield-mo",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "springfield-mo",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "springfield-mo",
@@ -9716,10 +6480,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "springfield-mo",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "st-louis-mo",
     "project_slug": "addition"
   },
@@ -9737,19 +6497,11 @@
   },
   {
     "city_slug": "st-louis-mo",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "st-louis-mo",
     "project_slug": "driveway"
   },
   {
     "city_slug": "st-louis-mo",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "st-louis-mo",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "st-louis-mo",
@@ -9761,10 +6513,6 @@
   },
   {
     "city_slug": "st-louis-mo",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "st-louis-mo",
     "project_slug": "interior-painting"
   },
   {
@@ -9773,23 +6521,11 @@
   },
   {
     "city_slug": "st-louis-mo",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "st-louis-mo",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "st-louis-mo",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "st-louis-mo",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "st-louis-mo",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "stockton-ca",
@@ -9809,19 +6545,11 @@
   },
   {
     "city_slug": "stockton-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "stockton-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "stockton-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "stockton-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "stockton-ca",
@@ -9833,23 +6561,11 @@
   },
   {
     "city_slug": "stockton-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "stockton-ca",
     "project_slug": "interior-painting"
   },
   {
     "city_slug": "stockton-ca",
     "project_slug": "kitchen-remodel"
-  },
-  {
-    "city_slug": "stockton-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "stockton-ca",
-    "project_slug": "siding-replacement"
   },
   {
     "city_slug": "stockton-ca",
@@ -9860,10 +6576,6 @@
     "project_slug": "whole-house-remodel"
   },
   {
-    "city_slug": "stockton-ca",
-    "project_slug": "window-replacement"
-  },
-  {
     "city_slug": "syracuse-ny",
     "project_slug": "addition"
   },
@@ -9881,19 +6593,11 @@
   },
   {
     "city_slug": "syracuse-ny",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "syracuse-ny",
     "project_slug": "driveway"
   },
   {
     "city_slug": "syracuse-ny",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "syracuse-ny",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "syracuse-ny",
@@ -9905,10 +6609,6 @@
   },
   {
     "city_slug": "syracuse-ny",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "syracuse-ny",
     "project_slug": "interior-painting"
   },
   {
@@ -9917,23 +6617,11 @@
   },
   {
     "city_slug": "syracuse-ny",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "syracuse-ny",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "syracuse-ny",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "syracuse-ny",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "syracuse-ny",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "tallahassee-fl",
@@ -9953,19 +6641,11 @@
   },
   {
     "city_slug": "tallahassee-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "tallahassee-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "tallahassee-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "tallahassee-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "tallahassee-fl",
@@ -9977,10 +6657,6 @@
   },
   {
     "city_slug": "tallahassee-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "tallahassee-fl",
     "project_slug": "interior-painting"
   },
   {
@@ -9989,23 +6665,11 @@
   },
   {
     "city_slug": "tallahassee-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "tallahassee-fl",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "tallahassee-fl",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "tallahassee-fl",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "tallahassee-fl",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "tampa-fl",
@@ -10025,19 +6689,11 @@
   },
   {
     "city_slug": "tampa-fl",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "tampa-fl",
     "project_slug": "driveway"
   },
   {
     "city_slug": "tampa-fl",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "tampa-fl",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "tampa-fl",
@@ -10049,10 +6705,6 @@
   },
   {
     "city_slug": "tampa-fl",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "tampa-fl",
     "project_slug": "interior-painting"
   },
   {
@@ -10061,23 +6713,11 @@
   },
   {
     "city_slug": "tampa-fl",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "tampa-fl",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "tampa-fl",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "tampa-fl",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "tampa-fl",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "toledo-oh",
@@ -10097,19 +6737,11 @@
   },
   {
     "city_slug": "toledo-oh",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "toledo-oh",
     "project_slug": "driveway"
   },
   {
     "city_slug": "toledo-oh",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "toledo-oh",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "toledo-oh",
@@ -10121,10 +6753,6 @@
   },
   {
     "city_slug": "toledo-oh",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "toledo-oh",
     "project_slug": "interior-painting"
   },
   {
@@ -10133,23 +6761,11 @@
   },
   {
     "city_slug": "toledo-oh",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "toledo-oh",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "toledo-oh",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "toledo-oh",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "toledo-oh",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "trenton-nj",
@@ -10169,19 +6785,11 @@
   },
   {
     "city_slug": "trenton-nj",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "trenton-nj",
     "project_slug": "driveway"
   },
   {
     "city_slug": "trenton-nj",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "trenton-nj",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "trenton-nj",
@@ -10193,10 +6801,6 @@
   },
   {
     "city_slug": "trenton-nj",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "trenton-nj",
     "project_slug": "interior-painting"
   },
   {
@@ -10205,23 +6809,11 @@
   },
   {
     "city_slug": "trenton-nj",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "trenton-nj",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "trenton-nj",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "trenton-nj",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "trenton-nj",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "tucson-az",
@@ -10241,19 +6833,11 @@
   },
   {
     "city_slug": "tucson-az",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "tucson-az",
     "project_slug": "driveway"
   },
   {
     "city_slug": "tucson-az",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "tucson-az",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "tucson-az",
@@ -10265,10 +6849,6 @@
   },
   {
     "city_slug": "tucson-az",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "tucson-az",
     "project_slug": "interior-painting"
   },
   {
@@ -10277,23 +6857,11 @@
   },
   {
     "city_slug": "tucson-az",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "tucson-az",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "tucson-az",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "tucson-az",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "tucson-az",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "tulsa-ok",
@@ -10313,19 +6881,11 @@
   },
   {
     "city_slug": "tulsa-ok",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "tulsa-ok",
     "project_slug": "driveway"
   },
   {
     "city_slug": "tulsa-ok",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "tulsa-ok",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "tulsa-ok",
@@ -10337,10 +6897,6 @@
   },
   {
     "city_slug": "tulsa-ok",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "tulsa-ok",
     "project_slug": "interior-painting"
   },
   {
@@ -10349,23 +6905,11 @@
   },
   {
     "city_slug": "tulsa-ok",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "tulsa-ok",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "tulsa-ok",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "tulsa-ok",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "tulsa-ok",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "vallejo-ca",
@@ -10385,19 +6929,11 @@
   },
   {
     "city_slug": "vallejo-ca",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "vallejo-ca",
     "project_slug": "driveway"
   },
   {
     "city_slug": "vallejo-ca",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "vallejo-ca",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "vallejo-ca",
@@ -10409,10 +6945,6 @@
   },
   {
     "city_slug": "vallejo-ca",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "vallejo-ca",
     "project_slug": "interior-painting"
   },
   {
@@ -10421,23 +6953,11 @@
   },
   {
     "city_slug": "vallejo-ca",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "vallejo-ca",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "vallejo-ca",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "vallejo-ca",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "vallejo-ca",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "virginia-beach-va",
@@ -10457,19 +6977,11 @@
   },
   {
     "city_slug": "virginia-beach-va",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "virginia-beach-va",
     "project_slug": "driveway"
   },
   {
     "city_slug": "virginia-beach-va",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "virginia-beach-va",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "virginia-beach-va",
@@ -10481,10 +6993,6 @@
   },
   {
     "city_slug": "virginia-beach-va",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "virginia-beach-va",
     "project_slug": "interior-painting"
   },
   {
@@ -10493,23 +7001,11 @@
   },
   {
     "city_slug": "virginia-beach-va",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "virginia-beach-va",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "virginia-beach-va",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "virginia-beach-va",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "virginia-beach-va",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "waco-tx",
@@ -10529,19 +7025,11 @@
   },
   {
     "city_slug": "waco-tx",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "waco-tx",
     "project_slug": "driveway"
   },
   {
     "city_slug": "waco-tx",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "waco-tx",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "waco-tx",
@@ -10553,10 +7041,6 @@
   },
   {
     "city_slug": "waco-tx",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "waco-tx",
     "project_slug": "interior-painting"
   },
   {
@@ -10565,23 +7049,11 @@
   },
   {
     "city_slug": "waco-tx",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "waco-tx",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "waco-tx",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "waco-tx",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "waco-tx",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "washington-dc",
@@ -10601,19 +7073,11 @@
   },
   {
     "city_slug": "washington-dc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "washington-dc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "washington-dc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "washington-dc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "washington-dc",
@@ -10625,10 +7089,6 @@
   },
   {
     "city_slug": "washington-dc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "washington-dc",
     "project_slug": "interior-painting"
   },
   {
@@ -10637,23 +7097,11 @@
   },
   {
     "city_slug": "washington-dc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "washington-dc",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "washington-dc",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "washington-dc",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "washington-dc",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "wichita-ks",
@@ -10673,19 +7121,11 @@
   },
   {
     "city_slug": "wichita-ks",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "wichita-ks",
     "project_slug": "driveway"
   },
   {
     "city_slug": "wichita-ks",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "wichita-ks",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "wichita-ks",
@@ -10697,10 +7137,6 @@
   },
   {
     "city_slug": "wichita-ks",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "wichita-ks",
     "project_slug": "interior-painting"
   },
   {
@@ -10709,23 +7145,11 @@
   },
   {
     "city_slug": "wichita-ks",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "wichita-ks",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "wichita-ks",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "wichita-ks",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "wichita-ks",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "winston-salem-nc",
@@ -10745,19 +7169,11 @@
   },
   {
     "city_slug": "winston-salem-nc",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "winston-salem-nc",
     "project_slug": "driveway"
   },
   {
     "city_slug": "winston-salem-nc",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "winston-salem-nc",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "winston-salem-nc",
@@ -10769,10 +7185,6 @@
   },
   {
     "city_slug": "winston-salem-nc",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "winston-salem-nc",
     "project_slug": "interior-painting"
   },
   {
@@ -10781,23 +7193,11 @@
   },
   {
     "city_slug": "winston-salem-nc",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "winston-salem-nc",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "winston-salem-nc",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "winston-salem-nc",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "winston-salem-nc",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "worcester-ma",
@@ -10817,19 +7217,11 @@
   },
   {
     "city_slug": "worcester-ma",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "worcester-ma",
     "project_slug": "driveway"
   },
   {
     "city_slug": "worcester-ma",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "worcester-ma",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "worcester-ma",
@@ -10841,10 +7233,6 @@
   },
   {
     "city_slug": "worcester-ma",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "worcester-ma",
     "project_slug": "interior-painting"
   },
   {
@@ -10853,23 +7241,11 @@
   },
   {
     "city_slug": "worcester-ma",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "worcester-ma",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "worcester-ma",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "worcester-ma",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "worcester-ma",
-    "project_slug": "window-replacement"
   },
   {
     "city_slug": "youngstown-oh",
@@ -10889,19 +7265,11 @@
   },
   {
     "city_slug": "youngstown-oh",
-    "project_slug": "deck"
-  },
-  {
-    "city_slug": "youngstown-oh",
     "project_slug": "driveway"
   },
   {
     "city_slug": "youngstown-oh",
     "project_slug": "exterior-painting"
-  },
-  {
-    "city_slug": "youngstown-oh",
-    "project_slug": "fence-installation"
   },
   {
     "city_slug": "youngstown-oh",
@@ -10913,10 +7281,6 @@
   },
   {
     "city_slug": "youngstown-oh",
-    "project_slug": "hvac-replacement"
-  },
-  {
-    "city_slug": "youngstown-oh",
     "project_slug": "interior-painting"
   },
   {
@@ -10925,22 +7289,10 @@
   },
   {
     "city_slug": "youngstown-oh",
-    "project_slug": "roof-replacement"
-  },
-  {
-    "city_slug": "youngstown-oh",
-    "project_slug": "siding-replacement"
-  },
-  {
-    "city_slug": "youngstown-oh",
     "project_slug": "sunroom"
   },
   {
     "city_slug": "youngstown-oh",
     "project_slug": "whole-house-remodel"
-  },
-  {
-    "city_slug": "youngstown-oh",
-    "project_slug": "window-replacement"
   }
 ]
