@@ -4,7 +4,7 @@
 
 RemodelerIQ is a free tool that helps homeowners analyze contractor estimates and bids before signing. Upload a PDF, image, or paste text from any contractor proposal to get instant analysis including price comparison, scope review, contractor verification, and negotiation guidance. Built by Gustavo to protect homeowners from overpaying — what started as a personal spreadsheet during his own renovation became a tool used by thousands.
 
-**Last updated: 2026-06-21**
+**Last updated: 2026-08-16**
 
 ## The Three Pillars Methodology
 
@@ -78,11 +78,19 @@ Tools:
 
 ## Regional Cost Guides
 
-936 city-and-project remodeling cost guides — 52 metros × 18 project types — each with local BLS labor data, FRED material indices, regional cost factors, permit timelines, state-specific gotchas, and an FAQ section (FAQPage schema). Index at [/remodeling-cost-guides/](https://remodeleriq.com/remodeling-cost-guides/).
+1,824 city-and-project remodeling cost guides — 152 metros × 12 project types — each with local BLS labor data, FRED material indices, regional cost factors, a direct-answer cost block, and FAQ + HowTo schema. Index at [/remodeling-cost-guides/](https://remodeleriq.com/remodeling-cost-guides/).
 
-**URL pattern:** `/remodeling-cost-guides/{city}-remodeling-cost-guide/{project}/` — e.g. [Austin roof replacement cost](https://remodeleriq.com/remodeling-cost-guides/austin-tx-remodeling-cost-guide/roof-replacement/), [Atlanta kitchen remodel cost](https://remodeleriq.com/remodeling-cost-guides/atlanta-ga-remodeling-cost-guide/kitchen-remodel/).
+**URL pattern:** `/remodeling-cost-guides/{city}-remodeling-cost-guide/{project}/` — e.g. [Austin kitchen remodel cost](https://remodeleriq.com/remodeling-cost-guides/austin-tx-remodeling-cost-guide/kitchen-remodel/), [Atlanta basement remodel cost](https://remodeleriq.com/remodeling-cost-guides/atlanta-ga-remodeling-cost-guide/basement-remodel/).
 
-**18 project types covered per metro:** kitchen remodel, bathroom remodel, basement remodel, home addition, roof replacement, siding replacement, flooring, deck, whole-house remodel, garage build, sunroom, interior painting, exterior painting, window replacement, HVAC replacement, ADU / garage conversion, driveway replacement, fence installation.
+**12 project types covered per metro:** kitchen remodel, bathroom remodel, basement remodel, home addition, whole-house remodel, garage build, sunroom, interior painting, exterior painting, ADU / garage conversion, driveway replacement, flooring. National cost-by-city pages also cover roof replacement, siding, windows, decks, fences, and HVAC at `/remodeling-cost-guides/cost/{project}/`.
+
+## Building Permit Guides
+
+Permit costs, requirements, and timelines for 152 US metros, plus project-level permit guides (kitchen, bathroom, basement, addition, ADU, deck) for each metro. Fee estimates use a disclosed valuation-based methodology (0.5–2% of localized project value).
+
+- National hub: [How much is a building permit?](https://remodeleriq.com/remodeling-cost-guides/permits/)
+- **City pattern:** `/remodeling-cost-guides/permits/{city}/` — e.g. [Denver permits](https://remodeleriq.com/remodeling-cost-guides/permits/denver-co/)
+- **Project pattern:** `/remodeling-cost-guides/permits/{city}/{project}/` — e.g. [Denver kitchen remodel permits](https://remodeleriq.com/remodeling-cost-guides/permits/denver-co/kitchen-remodel/)
 
 Sample cities:
 
