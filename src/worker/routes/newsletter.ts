@@ -217,11 +217,22 @@ export async function generateNewsletterIssue(
 ): Promise<{ created: boolean; issueId?: number; reason?: string }> {
   const cycleId = currentCycleId();
   const existing = await env.DB.prepare(
-    "SELECT id FROM newsletter_issues WHERE issue_cycle_id = ?"
+    "SELECT id, status FROM newsletter_issues WHERE issue_cycle_id = ?"
   )
     .bind(cycleId)
-    .first<{ id: number }>();
-  if (existing) return { created: false, reason: "issue already exists for cycle" };
+    .first<{ id: number; status: string }>();
+  if (existing) {
+    if (existing.status === "sent") {
+      return { created: false, reason: "This month's issue was already sent." };
+    }
+    if (existing.status === "killed") {
+      // A killed draft shouldn't block a fresh one — remove it and regenerate
+      // (the unique index on issue_cycle_id requires a delete, not a 2nd row).
+      await env.DB.prepare("DELETE FROM newsletter_issues WHERE id = ?").bind(existing.id).run();
+    } else {
+      return { created: false, reason: "A draft already exists for this month — edit or kill it first, then regenerate." };
+    }
+  }
 
   const apiKey = (env as unknown as Record<string, unknown>).GEMINI_API_KEY as string | undefined;
   if (!apiKey) return { created: false, reason: "GEMINI_API_KEY not configured" };
@@ -455,15 +466,19 @@ async function sendConfirmEmail(env: Env, email: string, confirmToken: string) {
   const url = `${APP_ORIGIN}/api/newsletter/confirm?token=${confirmToken}`;
   await sendEmail(env, {
     to: email,
-    subject: "Confirm your RemodelerIQ subscription",
+    subject: "Confirm your RemodelerIQ Newsletter Subscription",
     from: newsletterFrom(env),
     reply_to: newsletterReplyTo(env),
     html_body: emailTemplate(`
-      ${emailHeader("Confirm your subscription")}
+      ${emailHeader("Confirm Subscription")}
       ${emailBody(
-        `<p>Tap below to confirm you'd like the monthly RemodelerIQ newsletter — real remodeling cost data and how to not get overcharged.</p>` +
-          `<div style="text-align:center;margin:28px 0;"><a href="${url}" style="display:inline-block;background:#1F9C4C;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;">Confirm subscription</a></div>` +
-          `<p style="font-size:13px;color:#71717a">If you didn't request this, you can ignore this email — you won't be subscribed.</p>`
+        `<p style="font-size:16px;font-weight:600;color:#18181b;margin:0 0 20px;">Our goal — for you to negotiate like a PRO when remodeling.</p>` +
+          `<p style="margin:0 0 8px;">Tap below to confirm you'd like the monthly RemodelerIQ newsletter.</p>` +
+          `<div style="text-align:center;margin:28px 0;"><a href="${url}" style="display:inline-block;background:#1F9C4C;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:16px;">Confirm subscription</a></div>` +
+          `<p style="margin:0 0 16px;">Our newsletter will provide you real remodeling cost data and insights so you build confidence and avoid the common remodeling traps.</p>` +
+          `<p style="margin:0 0 20px;">Thank you for signing up — we promise to never be annoying or spammy.</p>` +
+          `<p style="margin:0 0 20px;font-weight:600;color:#18181b;">Gustavo Atar<br/><span style="font-weight:400;color:#71717a;">Owner, RemodelerIQ</span></p>` +
+          `<p style="font-size:13px;color:#71717a;">If you didn't request this, you can ignore this email — you won't be subscribed.</p>`
       )}
       ${emailFooter(postalAddress(env))}
     `),
@@ -484,7 +499,7 @@ app.get("/confirm", async (c) => {
   )
     .bind(row.id)
     .run();
-  return c.html(confirmPage("You're subscribed. Talk soon.", true));
+  return c.html(confirmPage("You've been subscribed. Thank you.", true, "RemodelerIQ Newsletter"));
 });
 
 app.on(["GET", "POST"], "/unsubscribe", async (c) => {
@@ -499,9 +514,9 @@ app.on(["GET", "POST"], "/unsubscribe", async (c) => {
   return c.html(confirmPage("You've been unsubscribed. You won't receive further newsletters.", true));
 });
 
-function confirmPage(message: string, ok: boolean): string {
+function confirmPage(message: string, ok: boolean, title?: string): string {
   return emailTemplate(`
-    ${emailHeader(ok ? "RemodelerIQ" : "Something went wrong")}
+    ${emailHeader(title || (ok ? "RemodelerIQ" : "Something went wrong"))}
     ${emailBody(
       `<p style="font-size:16px;">${message}</p><p><a href="${APP_ORIGIN}/">Back to RemodelerIQ →</a></p>`
     )}
