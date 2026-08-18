@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { BarChart3, BookOpen, Target, Radar, HelpCircle, Shield, Wrench, Calculator } from 'lucide-react';
+import { BarChart3, BookOpen, Target, Radar, HelpCircle, Shield, Wrench, Calculator, TrendingUp } from 'lucide-react';
 
 interface RelatedLink {
   path: string;
@@ -46,6 +46,12 @@ const ALL_LINKS: RelatedLink[] = [
     title: 'Labor Rates',
     description: 'Market rates by trade and region',
     icon: <BarChart3 className="w-5 h-5" />
+  },
+  {
+    path: '/labor-cost-index',
+    title: 'Labor Cost Index',
+    description: '2026 BLS labor data across 152 metros',
+    icon: <TrendingUp className="w-5 h-5" />
   },
   {
     path: '/trusted-radar',

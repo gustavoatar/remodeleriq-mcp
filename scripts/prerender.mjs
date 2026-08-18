@@ -22,6 +22,7 @@ const ROUTES = [
   "/", // homepage — written to home.html; worker serves it via run_worker_first
   "/trusted-radar",
   "/labor-rates",
+  "/labor-cost-index",
   "/studio",
   "/how-we-score",
   "/glossary",

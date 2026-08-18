@@ -49,6 +49,13 @@ export const SEO_META: Record<string, SeoMeta> = {
     keywords:
       'contractor labor rates, electrician rates, plumber rates, carpenter rates, HVAC rates, construction labor costs',
   },
+  '/labor-cost-index': {
+    title: 'Construction Labor Cost Index 2026: BLS Wages by Metro',
+    description:
+      'What construction labor actually costs across 152 US metros in 2026, from BLS wage data. See the trade-by-trade breakdown, the 2.7x quote-variance spread, and the regression showing metro cost tracks real wages (R²=0.57).',
+    keywords:
+      'construction labor cost index, contractor labor rates by city, BLS construction wages, remodeling labor cost 2026, trade wages by metro, construction cost data',
+  },
   '/trusted-radar': {
     // Dropped a leading "Find " — with the brand suffix this ran 77 chars and
     // truncated in results. seoTagContract.test.ts holds the line at 75.

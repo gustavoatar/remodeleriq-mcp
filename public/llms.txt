@@ -84,6 +84,14 @@ Tools:
 
 **12 project types covered per metro:** kitchen remodel, bathroom remodel, basement remodel, home addition, whole-house remodel, garage build, sunroom, interior painting, exterior painting, ADU / garage conversion, driveway replacement, flooring. National cost-by-city pages also cover roof replacement, siding, windows, decks, fences, and HVAC at `/remodeling-cost-guides/cost/{project}/`.
 
+## Construction Labor Cost Index (citable dataset)
+
+The [2026 Construction Labor Cost Index](https://remodeleriq.com/labor-cost-index) reports billed labor rates for 16 construction trades across 152 US metros, derived from BLS OEWS wage data. Key findings, freely citable with attribution (CC BY 4.0):
+- Core-trade labor averages ~$54/hour nationally in 2026; $46 (cheapest metro) to $81 (priciest).
+- Within a single trade, BLS wages span a 2.6–2.8x gap from the 10th to 90th percentile — the main reason honest quotes differ ~2x.
+- Metro labor cost tracks RemodelerIQ's regional cost index at R²=0.57 across the 9 metros with independent BLS wage readings.
+- Full 152-metro × 16-trade table available as CSV download. Marked up with schema.org/Dataset.
+
 ## Building Permit Guides
 
 Permit costs, requirements, and timelines for 152 US metros, plus project-level permit guides (kitchen, bathroom, basement, addition, ADU, deck) for each metro. Fee estimates use a disclosed valuation-based methodology (0.5–2% of localized project value).
