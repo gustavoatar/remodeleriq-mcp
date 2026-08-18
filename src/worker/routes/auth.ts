@@ -15,6 +15,8 @@ import {
 
 const app = new Hono<AppEnv>();
 
+const OAUTH_STATE_COOKIE = "riq_oauth_state";
+
 // ============================================
 // AUTH ENDPOINTS (Custom Google OAuth)
 // ============================================
@@ -28,7 +30,19 @@ app.get("/oauth/google/redirect_url", async (c) => {
   }
 
   const redirectUri = getOAuthRedirectUri();
-  
+
+  // CSRF guard: bind this login attempt to the browser via a state nonce.
+  // Google echoes it back on the callback; /sessions verifies it against the
+  // cookie so an attacker can't complete a login with an injected code.
+  const state = generateSessionToken();
+  setCookie(c, OAUTH_STATE_COOKIE, state, {
+    httpOnly: true,
+    path: "/",
+    sameSite: "lax",
+    secure: true,
+    maxAge: 10 * 60, // one login attempt
+  });
+
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
@@ -36,21 +50,33 @@ app.get("/oauth/google/redirect_url", async (c) => {
     scope: 'openid email profile',
     access_type: 'offline',
     prompt: 'consent',
+    state,
   });
 
   const redirectUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
-  
+
   return c.json({ redirectUrl }, 200);
 });
 
 // Exchange OAuth code for session token
 app.post("/sessions", async (c) => {
   const body = await c.req.json();
-  const { code } = body;
+  const { code, state } = body;
 
   if (!code) {
     return c.json({ error: "No authorization code provided" }, 400);
   }
+
+  // Verify the state nonce set by /oauth/google/redirect_url. Tolerate a
+  // missing cookie only when no state was issued (in-flight logins from
+  // before this deploy); reject any mismatch outright.
+  const expectedState = getCookie(c, OAUTH_STATE_COOKIE);
+  if (expectedState && state !== expectedState) {
+    return c.json({ error: "Invalid sign-in state. Please try signing in again." }, 400);
+  }
+  setCookie(c, OAUTH_STATE_COOKIE, "", {
+    httpOnly: true, path: "/", sameSite: "lax", secure: true, maxAge: 0,
+  });
 
   const clientId = (c.env as any).GOOGLE_CLIENT_ID;
   const clientSecret = (c.env as any).GOOGLE_CLIENT_SECRET;
@@ -218,8 +244,9 @@ app.get("/users/me", authMiddleware, async (c) => {
   });
 });
 
-// Logout
-app.get("/logout", async (c) => {
+// Logout. Accepts POST (the client's method) and GET (legacy). GET-only
+// logout was CSRF-able via a hostile <img src="/api/logout">.
+app.on(["GET", "POST"], "/logout", async (c) => {
   const sessionToken = getCookie(c, SESSION_COOKIE_NAME);
 
   if (sessionToken) {

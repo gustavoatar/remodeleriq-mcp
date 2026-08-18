@@ -706,6 +706,13 @@ export default function HomePage({ howItWorksTour = false }: { howItWorksTour?: 
         })
       });
       
+      if (response.status === 429) {
+        // Server says the free limit is spent — stop here instead of running
+        // the analysis anyway (the old behavior silently ignored the 429).
+        setUploadLimits({ canUpload: false, remaining: 0, isLoading: false });
+        setShowLimitBanner(true);
+        return;
+      }
       if (response.ok) {
         const data = await response.json();
         // Update local upload limits state with server response

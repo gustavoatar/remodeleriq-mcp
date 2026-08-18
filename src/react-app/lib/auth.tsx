@@ -90,19 +90,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    await apiFetch("/api/logout");
+    await apiFetch("/api/logout", { method: "POST" });
     setUser(null);
   }, []);
 
   const exchangeCodeForSessionToken = useCallback(async () => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
+    const state = params.get("state");
     if (!code) {
       throw new Error("Missing authorization code in URL");
     }
     const res = await apiFetch("/api/sessions", {
       method: "POST",
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, state }),
     });
     if (!res.ok) {
       const errBody = await res.text().catch(() => "");

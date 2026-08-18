@@ -239,8 +239,9 @@ const STALE_URL_REDIRECTS: Record<string, string> = {
   '/check-contractor': '/trusted-radar',
   '/labor': '/labor-rates',
   '/glossary-of-terms': '/glossary',
-  '/oauth/callback': '/auth/google-callback',
-  '/auth/callback': '/auth/google-callback',
+  // NOTE: never map '/auth/callback' here — it is Google's live OAuth
+  // redirect URI (routed to the SPA), and the old '/auth/google-callback'
+  // target doesn't exist as a route.
 };
 
 app.use('*', async (c, next) => {
@@ -451,7 +452,13 @@ app.route('/api/concierge', conciergeRoutes);
 // Records the click in mcp_attributions then redirects to the intended page.
 app.get('/api/mcp/attribution', async (c) => {
   const rid = c.req.query('rid') ?? '';
-  const lp = c.req.query('lp') ?? '/join';
+  // Open-redirect guard: lp is attacker-influencable, and appending it to the
+  // origin means lp=".evil.com" resolved to https://remodeleriq.com.evil.com.
+  // Only same-site absolute paths pass; anything else falls back to /join.
+  const lpRaw = c.req.query('lp') ?? '/join';
+  const lp = lpRaw.startsWith('/') && !lpRaw.startsWith('//') && !lpRaw.includes('\\')
+    ? lpRaw
+    : '/join';
   const dest = `https://remodeleriq.com${lp}`;
 
   if (!rid) return c.redirect(dest);
@@ -934,6 +941,59 @@ app.post("/api/analyze/ai", async (c) => {
 
     if (!bidText?.trim()) {
       return c.json({ success: false, error: 'No bid text provided' }, 400);
+    }
+
+    // Server-side paywall (Aug 2026 scan): analysis is the expensive action,
+    // so the free-tier limit must be enforced HERE, not only by the upload UI
+    // — a direct POST previously got unlimited Gemini calls. Premium and beta
+    // users are exempt; each analysis records an 'analyze' action keyed by
+    // user_id (logged in) or caller IP (guest), mirroring can-upload's rules.
+    {
+      const usageDb = c.env.DB;
+      const sessionToken = getCookie(c, SESSION_COOKIE_NAME);
+      let analyzeUserId: number | null = null;
+      let analyzePremium = false;
+
+      if (sessionToken) {
+        const session = await usageDb.prepare(
+          'SELECT user_id FROM user_sessions WHERE session_token = ? AND expires_at > datetime("now")'
+        ).bind(sessionToken).first<{ user_id: number }>();
+        if (session) {
+          analyzeUserId = session.user_id;
+          const user = await usageDb.prepare(
+            'SELECT email, is_premium, premium_ends_at FROM user_profiles WHERE id = ?'
+          ).bind(analyzeUserId).first<{ email: string; is_premium: number; premium_ends_at: string | null }>();
+          analyzePremium = user?.is_premium === 1 ||
+            (!!user?.premium_ends_at && user.premium_ends_at > new Date().toISOString()) ||
+            (!!user?.email && isBetaUser(user.email));
+        }
+      }
+
+      if (!analyzePremium) {
+        const ip = getCallerIp(c);
+        const cnt = analyzeUserId !== null
+          ? await usageDb.prepare(
+              `SELECT COUNT(*) as count FROM usage_tracking WHERE user_id = ? AND action_type = 'analyze'`
+            ).bind(analyzeUserId).first<{ count: number }>()
+          : await usageDb.prepare(
+              `SELECT COUNT(*) as count FROM usage_tracking WHERE user_id IS NULL AND action_type = 'analyze' AND ip_address = ?`
+            ).bind(ip).first<{ count: number }>();
+        if ((cnt?.count || 0) >= FREE_TOTAL_ANALYSES) {
+          return c.json({
+            success: false,
+            error: 'Free analysis limit reached. Sign in or upgrade to continue.',
+            limitReached: true,
+          }, 429);
+        }
+        await usageDb.prepare(
+          `INSERT INTO usage_tracking (user_id, action_type, ip_address, user_agent, created_at, updated_at)
+           VALUES (?, 'analyze', ?, ?, datetime('now'), datetime('now'))`
+        ).bind(
+          analyzeUserId,
+          ip,
+          c.req.header('User-Agent') || 'unknown'
+        ).run();
+      }
     }
 
     // Fetch benchmark data if we have a project category
