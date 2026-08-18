@@ -566,6 +566,23 @@ app.get("/admin/issues/:id", async (c) => {
   return c.json({ issue: row });
 });
 
+// Full rendered email HTML for a preview modal — exactly what a subscriber
+// receives (branded shell + footer + unsubscribe), with a placeholder token.
+app.get("/admin/issues/:id/preview", async (c) => {
+  const row = await c.env.DB.prepare(
+    "SELECT subject, html_body FROM newsletter_issues WHERE id = ?"
+  )
+    .bind(c.req.param("id"))
+    .first<{ subject: string | null; html_body: string | null }>();
+  if (!row) return c.text("Not found", 404);
+  const html = renderIssueHtml(
+    c.env as unknown as Env,
+    { subject: row.subject || "", html_body: row.html_body || "" },
+    "preview-token"
+  );
+  return c.html(html);
+});
+
 app.post("/admin/generate", async (c) => {
   try {
     const result = await generateNewsletterIssue(c.env as unknown as Env);

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import AdminTabs from '@/react-app/components/AdminTabs';
-import { Mail, Users, Send, X, RefreshCw } from 'lucide-react';
+import { Mail, Users, Send, X, RefreshCw, Eye } from 'lucide-react';
 
 interface Issue {
   id: number;
@@ -28,6 +28,7 @@ export default function NewsletterDashboard() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string>('');
+  const [preview, setPreview] = useState<{ id: number; subject: string; html: string } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -65,6 +66,16 @@ export default function NewsletterDashboard() {
       const r = await fetch(`/api/newsletter/admin/issues/${id}/send-now`, { method: 'POST', credentials: 'include' }).then((r) => r.json());
       if (r.error) alert(r.error);
       await load();
+    } finally {
+      setBusy('');
+    }
+  };
+
+  const openPreview = async (id: number, subject: string) => {
+    setBusy(`preview-${id}`);
+    try {
+      const html = await fetch(`/api/newsletter/admin/issues/${id}/preview`, { credentials: 'include' }).then((r) => r.text());
+      setPreview({ id, subject, html });
     } finally {
       setBusy('');
     }
@@ -143,7 +154,13 @@ export default function NewsletterDashboard() {
                       </span>
                       <span className="text-xs text-slate-400">{it.issue_cycle_id}</span>
                     </div>
-                    <p className="font-semibold text-slate-900 truncate">{it.subject || '(no subject)'}</p>
+                    <button
+                      onClick={() => openPreview(it.id, it.subject || '(no subject)')}
+                      className="font-semibold text-slate-900 hover:text-emerald-700 hover:underline text-left truncate block max-w-full"
+                      title="Preview the full email"
+                    >
+                      {it.subject || '(no subject)'}
+                    </button>
                     <p className="text-sm text-slate-500 truncate">{it.preview_text}</p>
                     <p className="text-xs text-slate-400 mt-1">
                       {it.status === 'sent'
@@ -151,30 +168,84 @@ export default function NewsletterDashboard() {
                         : `${it.recipient_count ?? 0} recipients · drafted ${it.created_at?.slice(0, 16)}`}
                     </p>
                   </div>
-                  {(it.status === 'in_review' || it.status === 'approved') && (
-                    <div className="flex flex-col gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => sendNow(it.id)}
-                        disabled={busy === `send-${it.id}`}
-                        className="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-700 disabled:opacity-60"
-                      >
-                        <Send className="w-3.5 h-3.5" /> Send now
-                      </button>
-                      <button
-                        onClick={() => kill(it.id)}
-                        disabled={busy === `kill-${it.id}`}
-                        className="inline-flex items-center gap-1.5 text-rose-600 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-rose-50 disabled:opacity-60"
-                      >
-                        <X className="w-3.5 h-3.5" /> Kill
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex flex-col gap-2 flex-shrink-0">
+                    <button
+                      onClick={() => openPreview(it.id, it.subject || '(no subject)')}
+                      disabled={busy === `preview-${it.id}`}
+                      className="inline-flex items-center gap-1.5 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-slate-50 disabled:opacity-60"
+                    >
+                      <Eye className="w-3.5 h-3.5" /> {busy === `preview-${it.id}` ? 'Loading…' : 'Preview'}
+                    </button>
+                    {(it.status === 'in_review' || it.status === 'approved') && (
+                      <>
+                        <button
+                          onClick={() => sendNow(it.id)}
+                          disabled={busy === `send-${it.id}`}
+                          className="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-700 disabled:opacity-60"
+                        >
+                          <Send className="w-3.5 h-3.5" /> Send now
+                        </button>
+                        <button
+                          onClick={() => kill(it.id)}
+                          disabled={busy === `kill-${it.id}`}
+                          className="inline-flex items-center gap-1.5 text-rose-600 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-rose-50 disabled:opacity-60"
+                        >
+                          <X className="w-3.5 h-3.5" /> Kill
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Preview modal — the real rendered email in an iframe */}
+      {preview && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          onClick={() => setPreview(null)}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-wide text-slate-400 font-semibold">Email preview</p>
+                <p className="font-semibold text-slate-900 truncate">{preview.subject}</p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {(() => {
+                  const it = issues.find((i) => i.id === preview.id);
+                  if (it && (it.status === 'in_review' || it.status === 'approved')) {
+                    return (
+                      <button
+                        onClick={() => { setPreview(null); sendNow(preview.id); }}
+                        className="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-emerald-700"
+                      >
+                        <Send className="w-4 h-4" /> Send now
+                      </button>
+                    );
+                  }
+                  return null;
+                })()}
+                <button onClick={() => setPreview(null)} className="p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100" aria-label="Close">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <iframe
+              title="Newsletter preview"
+              srcDoc={preview.html}
+              className="w-full flex-1 min-h-[60vh] bg-slate-50"
+              sandbox=""
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
