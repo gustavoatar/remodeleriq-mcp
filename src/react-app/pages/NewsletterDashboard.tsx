@@ -1,6 +1,20 @@
 import { useEffect, useState, useCallback } from 'react';
 import AdminTabs from '@/react-app/components/AdminTabs';
-import { Mail, Users, Send, X, RefreshCw, Eye } from 'lucide-react';
+import { Mail, Users, Send, X, RefreshCw, Eye, Pencil, Plus, Trash2 } from 'lucide-react';
+
+// Keep in sync with ALLOWED_LINKS in routes/newsletter.ts
+const LINK_OPTIONS = [
+  { url: 'https://remodeleriq.com/?view=upload', label: 'Analyze a bid (upload)' },
+  { url: 'https://remodeleriq.com/labor-cost-index', label: 'Labor Cost Index' },
+  { url: 'https://remodeleriq.com/remodeling-cost-guides/', label: 'Cost guides' },
+  { url: 'https://remodeleriq.com/remodeling-cost-guides/permits/', label: 'Building permit fees' },
+  { url: 'https://remodeleriq.com/is-my-contractor-quote-fair', label: 'Is my quote fair?' },
+  { url: 'https://remodeleriq.com/trusted-radar', label: 'Trusted Radar' },
+  { url: 'https://remodeleriq.com/tools', label: 'All tools' },
+];
+
+interface Section { emoji?: string; header: string; body: string; link?: { label: string; url: string } }
+interface EditState { id: number; subject: string; preview_text: string; sections: Section[] }
 
 interface Issue {
   id: number;
@@ -29,6 +43,7 @@ export default function NewsletterDashboard() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string>('');
   const [preview, setPreview] = useState<{ id: number; subject: string; html: string } | null>(null);
+  const [edit, setEdit] = useState<EditState | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -79,6 +94,49 @@ export default function NewsletterDashboard() {
     } finally {
       setBusy('');
     }
+  };
+
+  const openEdit = async (id: number) => {
+    setBusy(`edit-${id}`);
+    try {
+      const r = await fetch(`/api/newsletter/admin/issues/${id}`, { credentials: 'include' }).then((r) => r.json());
+      let content: { subject?: string; preview_text?: string; sections?: Section[] } = {};
+      try { content = r.issue?.content_json ? JSON.parse(r.issue.content_json) : {}; } catch { /* fall back to row */ }
+      setEdit({
+        id,
+        subject: content.subject ?? r.issue?.subject ?? '',
+        preview_text: content.preview_text ?? r.issue?.preview_text ?? '',
+        sections: (content.sections ?? []).slice(0, 3).map((s) => ({
+          emoji: s.emoji ?? '', header: s.header ?? '', body: s.body ?? '',
+          link: { label: s.link?.label ?? '', url: s.link?.url ?? LINK_OPTIONS[0].url },
+        })),
+      });
+    } finally {
+      setBusy('');
+    }
+  };
+
+  const saveEdit = async () => {
+    if (!edit) return;
+    setBusy('save');
+    try {
+      await fetch(`/api/newsletter/admin/issues/${edit.id}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: edit.subject, preview_text: edit.preview_text, sections: edit.sections }),
+      });
+      setEdit(null);
+      await load();
+    } finally {
+      setBusy('');
+    }
+  };
+
+  const patchSection = (i: number, patch: Partial<Section>) => {
+    if (!edit) return;
+    const sections = edit.sections.map((s, idx) => (idx === i ? { ...s, ...patch } : s));
+    setEdit({ ...edit, sections });
   };
 
   const kill = async (id: number) => {
@@ -179,6 +237,13 @@ export default function NewsletterDashboard() {
                     {(it.status === 'in_review' || it.status === 'approved') && (
                       <>
                         <button
+                          onClick={() => openEdit(it.id)}
+                          disabled={busy === `edit-${it.id}`}
+                          className="inline-flex items-center gap-1.5 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-slate-50 disabled:opacity-60"
+                        >
+                          <Pencil className="w-3.5 h-3.5" /> Edit
+                        </button>
+                        <button
                           onClick={() => sendNow(it.id)}
                           disabled={busy === `send-${it.id}`}
                           className="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-700 disabled:opacity-60"
@@ -243,6 +308,58 @@ export default function NewsletterDashboard() {
               className="w-full flex-1 min-h-[60vh] bg-slate-50"
               sandbox=""
             />
+          </div>
+        </div>
+      )}
+
+      {/* Edit modal — structured content, re-renders + saves on save */}
+      {edit && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setEdit(null)}>
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 flex-shrink-0">
+              <p className="font-semibold text-slate-900">Edit newsletter</p>
+              <button onClick={() => setEdit(null)} className="p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100" aria-label="Close"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="overflow-y-auto px-5 py-4 space-y-4">
+              <label className="block">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Subject</span>
+                <input value={edit.subject} onChange={(e) => setEdit({ ...edit, subject: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              </label>
+              <label className="block">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Preview text</span>
+                <input value={edit.preview_text} onChange={(e) => setEdit({ ...edit, preview_text: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              </label>
+
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 pt-2">Sections (max 3 · each needs a link)</p>
+              {edit.sections.map((s, i) => (
+                <div key={i} className="rounded-xl border border-slate-200 p-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input value={s.emoji || ''} onChange={(e) => patchSection(i, { emoji: e.target.value })} placeholder="📊" className="w-14 text-center rounded-lg border border-slate-200 px-2 py-2 text-sm" maxLength={4} />
+                    <input value={s.header} onChange={(e) => patchSection(i, { header: e.target.value })} placeholder="Section header" className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold" />
+                    <button onClick={() => setEdit({ ...edit, sections: edit.sections.filter((_, idx) => idx !== i) })} className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg" aria-label="Remove section"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                  <textarea value={s.body} onChange={(e) => patchSection(i, { body: e.target.value })} rows={3} placeholder="Body — one paragraph" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input value={s.link?.label || ''} onChange={(e) => patchSection(i, { link: { label: e.target.value, url: s.link?.url || LINK_OPTIONS[0].url } })} placeholder="Link text (e.g. See the labor index)" className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+                    <select value={s.link?.url || LINK_OPTIONS[0].url} onChange={(e) => patchSection(i, { link: { label: s.link?.label || '', url: e.target.value } })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white">
+                      {LINK_OPTIONS.map((o) => <option key={o.url} value={o.url}>{o.label}</option>)}
+                    </select>
+                  </div>
+                </div>
+              ))}
+              {edit.sections.length < 3 && (
+                <button onClick={() => setEdit({ ...edit, sections: [...edit.sections, { emoji: '', header: '', body: '', link: { label: '', url: LINK_OPTIONS[0].url } }] })} className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 hover:underline">
+                  <Plus className="w-4 h-4" /> Add section
+                </button>
+              )}
+              <p className="text-xs text-slate-400 pt-1">The email always ends with two buttons: <strong>Analyze a bid free</strong> and <strong>View all our tools</strong> — added automatically.</p>
+            </div>
+            <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-slate-200 flex-shrink-0">
+              <button onClick={() => setEdit(null)} className="text-sm font-semibold text-slate-500 px-4 py-2 rounded-lg hover:bg-slate-100">Cancel</button>
+              <button onClick={saveEdit} disabled={busy === 'save'} className="inline-flex items-center gap-1.5 bg-slate-900 text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-slate-800 disabled:opacity-60">
+                {busy === 'save' ? 'Saving…' : 'Save changes'}
+              </button>
+            </div>
           </div>
         </div>
       )}

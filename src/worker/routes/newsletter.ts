@@ -153,28 +153,76 @@ const ALLOWED_LINKS: Record<string, string> = {
   "permits": "https://remodeleriq.com/remodeling-cost-guides/permits/",
   "quote-fair": "https://remodeleriq.com/is-my-contractor-quote-fair",
   "trusted-radar": "https://remodeleriq.com/trusted-radar",
+  "tools": "https://remodeleriq.com/tools",
 };
+const ANALYZE_URL = ALLOWED_LINKS["bid-analyzer"];
+const TOOLS_URL = ALLOWED_LINKS["tools"];
+const MAX_SECTIONS = 3;
+
 function safeLink(url: string | undefined): string | null {
   if (!url) return null;
   const ok = Object.values(ALLOWED_LINKS).includes(url) || url === "https://remodeleriq.com/";
   return ok ? url : null;
 }
 
-const ISSUE_SCHEMA = `Return ONLY JSON:
+// Strip a leading emoji (and following space) from a header so we never double
+// it up when we also prepend the section's own emoji.
+function stripLeadingEmoji(s: string): string {
+  return s.replace(/^\s*(?:[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}️‍]+)\s*/u, "").trim();
+}
+
+// Render the issue's structured content to email HTML + plain text. Shared by
+// generation and the edit-save path so a saved edit renders identically.
+// Rules: ≤3 sections, each ends with a "read more" link, and every issue signs
+// off with exactly two links — analyze a bid + view all our tools.
+function renderIssueBody(gen: GeneratedIssue): { html: string; text: string } {
+  const sections = (gen.sections || []).slice(0, MAX_SECTIONS);
+  const htmlSections = sections
+    .map((s) => {
+      const emoji = s.emoji ? `${s.emoji} ` : "";
+      const header = stripLeadingEmoji(s.header || "");
+      const linkUrl = safeLink(s.link?.url);
+      const readMore = linkUrl
+        ? `<p style="margin:4px 0 20px;font-size:14px;"><a href="${escapeAttr(linkUrl)}" style="color:#1F9C4C;font-weight:600;text-decoration:none;">${escapeHtml(s.link?.label || "Read more")} →</a></p>`
+        : "";
+      return `<h2 style="font-size:18px;font-weight:600;color:#18181b;margin:24px 0 8px;">${emoji}${escapeHtml(header)}</h2><p style="margin:0 0 6px;font-size:15px;line-height:24px;color:#3f3f46;">${escapeHtml(s.body || "")}</p>${readMore}`;
+    })
+    .join("\n");
+
+  // Fixed 2-link sign-off.
+  const signoff =
+    `<div style="margin:32px 0 8px;padding-top:20px;border-top:1px solid #e4e4e7;text-align:center;">` +
+    `<a href="${ANALYZE_URL}" style="display:inline-block;background:#1F9C4C;color:#fff;padding:13px 26px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;margin:6px;">Analyze a bid free</a>` +
+    `<a href="${TOOLS_URL}" style="display:inline-block;background:#ffffff;color:#18181b;border:1.5px solid #d4d4d8;padding:13px 26px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;margin:6px;">View all our tools</a>` +
+    `</div>`;
+
+  const html = htmlSections + signoff;
+
+  const textSections = sections
+    .map((s) => {
+      const link = safeLink(s.link?.url);
+      return `${s.emoji ? s.emoji + " " : ""}${stripLeadingEmoji(s.header || "")}\n${s.body || ""}${link ? `\n${s.link?.label || "Read more"}: ${link}` : ""}`;
+    })
+    .join("\n\n");
+  const text = `${textSections}\n\nAnalyze a bid free: ${ANALYZE_URL}\nView all our tools: ${TOOLS_URL}\n\n— Bella and the RemodelerIQ team`;
+
+  return { html, text };
+}
+
+const ISSUE_SCHEMA = `Return ONLY JSON. EXACTLY 3 sections. EVERY section MUST have a link.
 {
   "subject": "string <55 chars",
   "preview_text": "string <90 chars",
   "sections": [ {
-    "header": "string",
+    "header": "string — do NOT put an emoji in the header text; use the emoji field",
     "body": "string (2-4 sentences)",
-    "emoji": "one emoji that fits this section, e.g. 📊 💰 👷 ⚖️ 📋 🎯 🏠 🔨",
-    "link": { "label": "short link text like 'See the labor index'", "url": "one of the ALLOWED URLs, or omit if none fits" }
-  } ],
-  "cta_label": "string",
-  "cta_url": "one of the ALLOWED URLs"
+    "emoji": "ONE emoji that fits this section, e.g. 📊 💰 👷 ⚖️ 📋 🎯 🏠 🔨",
+    "link": { "label": "short link text like 'See the labor index'", "url": "one of the ALLOWED URLs — REQUIRED for every section" }
+  } ]
 }
+Rules: exactly 3 sections; each section body is one paragraph; each section MUST have a link from the ALLOWED list. Do not add a CTA — the email already ends with two fixed buttons (analyze a bid + view all tools).
 
-ALLOWED URLs (use only these; omit link if none fits the section):
+ALLOWED URLs (every section link must be one of these):
 - https://remodeleriq.com/labor-cost-index  (labor cost data, wage ranges by metro/trade)
 - https://remodeleriq.com/?view=upload  (free AI bid analysis — the main CTA)
 - https://remodeleriq.com/remodeling-cost-guides/  (city + project cost guides)
@@ -274,37 +322,9 @@ ${ISSUE_SCHEMA}`;
   }
   if (!gen) return { created: false, reason: "generation failed" };
 
-  // Render sections to email HTML + plain text. Each section: emoji + header,
-  // body, and an optional "read more" link (validated against ALLOWED_LINKS).
-  const htmlBody = gen.sections
-    .map((s) => {
-      const emoji = s.emoji ? `${s.emoji} ` : "";
-      const linkUrl = safeLink(s.link?.url);
-      const readMore = linkUrl
-        ? `<p style="margin:4px 0 18px;font-size:14px;"><a href="${escapeAttr(linkUrl)}" style="color:#1F9C4C;font-weight:600;text-decoration:none;">${escapeHtml(s.link?.label || "Read more")} →</a></p>`
-        : "";
-      return (
-        `<h2 style="font-size:18px;font-weight:600;color:#18181b;margin:24px 0 8px;">${emoji}${escapeHtml(
-          s.header
-        )}</h2><p style="margin:0 0 6px;font-size:15px;line-height:24px;color:#3f3f46;">${escapeHtml(
-          s.body
-        )}</p>${readMore}`
-      );
-    })
-    .join("\n") +
-    `<div style="text-align:center;margin:28px 0;"><a href="${escapeAttr(
-      safeLink(gen.cta_url) || "https://remodeleriq.com/?view=upload"
-    )}" style="display:inline-block;background:#1F9C4C;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:16px;">${escapeHtml(
-      gen.cta_label
-    )}</a></div>`;
-  const textBody =
-    gen.sections
-      .map((s) => {
-        const link = safeLink(s.link?.url);
-        return `${s.emoji ? s.emoji + " " : ""}${s.header}\n${s.body}${link ? `\n${s.link?.label || "Read more"}: ${link}` : ""}`;
-      })
-      .join("\n\n") +
-    `\n\n${gen.cta_label}: ${safeLink(gen.cta_url) || "https://remodeleriq.com/?view=upload"}\n\n— Bella and the RemodelerIQ team`;
+  // Cap at 3 sections per the content rules; render via the shared renderer.
+  gen.sections = (gen.sections || []).slice(0, MAX_SECTIONS);
+  const { html: htmlBody, text: textBody } = renderIssueBody(gen);
 
   const recipientCount = await env.DB.prepare(
     "SELECT COUNT(*) AS n FROM newsletter_subscribers WHERE status = 'active'"
@@ -312,8 +332,8 @@ ${ISSUE_SCHEMA}`;
 
   const res = await env.DB.prepare(
     `INSERT INTO newsletter_issues
-       (issue_cycle_id, subject, preview_text, html_body, text_body, persona, source_summary, status, recipient_count)
-     VALUES (?, ?, ?, ?, ?, 'bella', ?, 'in_review', ?)`
+       (issue_cycle_id, subject, preview_text, html_body, text_body, persona, source_summary, content_json, status, recipient_count)
+     VALUES (?, ?, ?, ?, ?, 'bella', ?, ?, 'in_review', ?)`
   )
     .bind(
       cycleId,
@@ -322,6 +342,7 @@ ${ISSUE_SCHEMA}`;
       htmlBody,
       textBody,
       JSON.stringify({ sources: sources.split("\n").length }),
+      JSON.stringify(gen), // structured content, for the edit form
       recipientCount?.n || 0
     )
     .run();
@@ -631,14 +652,46 @@ app.post("/admin/issues/:id/kill", async (c) => {
   return c.json({ success: true });
 });
 
+// Save edited structured content (subject, preview, up to 3 sections each with
+// header/body/emoji/link). Re-renders html_body/text_body so the preview and
+// send reflect the edit. Only while in_review.
 app.patch("/admin/issues/:id", async (c) => {
   const id = c.req.param("id");
-  const body = await c.req.json().catch(() => ({}));
-  // Allow editing subject / preview / html before send.
-  await c.env.DB.prepare(
-    "UPDATE newsletter_issues SET subject = COALESCE(?, subject), preview_text = COALESCE(?, preview_text), html_body = COALESCE(?, html_body), updated_at = datetime('now') WHERE id = ? AND status = 'in_review'"
+  const body = (await c.req.json().catch(() => ({}))) as Partial<GeneratedIssue>;
+
+  const cur = await c.env.DB.prepare(
+    "SELECT content_json, status FROM newsletter_issues WHERE id = ?"
   )
-    .bind(body.subject ?? null, body.preview_text ?? null, body.html_body ?? null, id)
+    .bind(id)
+    .first<{ content_json: string | null; status: string }>();
+  if (!cur) return c.json({ error: "Not found" }, 404);
+  if (cur.status !== "in_review") {
+    return c.json({ error: `Can only edit an in_review issue (this is '${cur.status}').` }, 400);
+  }
+
+  // Merge the edit over the stored content.
+  let base: GeneratedIssue;
+  try {
+    base = cur.content_json
+      ? (JSON.parse(cur.content_json) as GeneratedIssue)
+      : { subject: "", preview_text: "", sections: [], cta_label: "", cta_url: ANALYZE_URL };
+  } catch {
+    base = { subject: "", preview_text: "", sections: [], cta_label: "", cta_url: ANALYZE_URL };
+  }
+  const merged: GeneratedIssue = {
+    ...base,
+    subject: body.subject ?? base.subject,
+    preview_text: body.preview_text ?? base.preview_text,
+    sections: (body.sections ?? base.sections).slice(0, MAX_SECTIONS),
+    cta_label: base.cta_label,
+    cta_url: base.cta_url,
+  };
+
+  const { html, text } = renderIssueBody(merged);
+  await c.env.DB.prepare(
+    "UPDATE newsletter_issues SET subject = ?, preview_text = ?, html_body = ?, text_body = ?, content_json = ?, updated_at = datetime('now') WHERE id = ? AND status = 'in_review'"
+  )
+    .bind(merged.subject, merged.preview_text, html, text, JSON.stringify(merged), id)
     .run();
   return c.json({ success: true });
 });
