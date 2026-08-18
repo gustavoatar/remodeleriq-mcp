@@ -149,15 +149,22 @@ const ISSUE_SCHEMA = `Return ONLY JSON:
 
 /** Pull recent published content + live data as source material. */
 async function gatherSources(env: Env): Promise<string> {
-  const posts = await env.DB.prepare(
-    `SELECT topic, published_url FROM content_drafts
-     WHERE status = 'published' AND published_url IS NOT NULL
-       AND datetime(COALESCE(published_at, updated_at)) > datetime('now','-35 days')
-     ORDER BY COALESCE(published_at, updated_at) DESC LIMIT 6`
-  ).all<{ topic: string | null; published_url: string }>();
   const lines: string[] = [];
-  for (const p of posts.results || []) {
-    lines.push(`- Recent post: ${p.topic || "(untitled)"} — ${p.published_url}`);
+  try {
+    // content_drafts has no 'topic' column — use blog_brief / source_excerpt as
+    // the human label, published_url is always present for published rows.
+    const posts = await env.DB.prepare(
+      `SELECT COALESCE(blog_brief, source_excerpt, '') AS label, published_url FROM content_drafts
+       WHERE status = 'published' AND published_url IS NOT NULL
+         AND datetime(COALESCE(published_at, updated_at)) > datetime('now','-35 days')
+       ORDER BY COALESCE(published_at, updated_at) DESC LIMIT 6`
+    ).all<{ label: string | null; published_url: string }>();
+    for (const p of posts.results || []) {
+      const label = (p.label || "").slice(0, 120).trim() || "Recent RemodelerIQ post";
+      lines.push(`- Recent post: ${label} — ${p.published_url}`);
+    }
+  } catch (e) {
+    console.error("gatherSources: content_drafts query failed (non-fatal):", e);
   }
   // Evergreen data anchors the newsletter can always cite.
   lines.push(
@@ -498,8 +505,13 @@ app.get("/admin/issues/:id", async (c) => {
 });
 
 app.post("/admin/generate", async (c) => {
-  const result = await generateNewsletterIssue(c.env as unknown as Env);
-  return c.json(result);
+  try {
+    const result = await generateNewsletterIssue(c.env as unknown as Env);
+    return c.json(result);
+  } catch (e) {
+    console.error("Newsletter generate failed:", e);
+    return c.json({ created: false, reason: e instanceof Error ? e.message : "generation error" }, 500);
+  }
 });
 
 // Approve-now: send immediately (bypass the review window), still status-guarded.
