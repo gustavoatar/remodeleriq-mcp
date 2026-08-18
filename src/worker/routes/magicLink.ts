@@ -35,8 +35,7 @@ const emailTemplate = (content: string) => `
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px;">
     <div style="text-align: center; padding: 28px 40px 4px 40px;">
       <a href="https://remodeleriq.com" style="text-decoration: none; display: inline-block;">
-        <img src="https://remodeleriq.com/mocha-assets/remodeler-iq-2x-logo-icon2.png" alt="RemodelerIQ" width="44" height="47" style="display: inline-block; vertical-align: middle; border: 0;" />
-        <span style="vertical-align: middle; margin-left: 10px; font-size: 20px; font-weight: 700; color: #18181b; font-family: Arial, Helvetica, sans-serif;">RemodelerIQ</span>
+        <img src="https://remodeleriq.com/mocha-assets/remodeler-iq-2x-logo-icon2.png" alt="RemodelerIQ" width="52" height="55" style="display: inline-block; border: 0;" />
       </a>
     </div>
     ${content}
