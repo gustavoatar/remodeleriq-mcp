@@ -49,6 +49,12 @@ export const SEO_META: Record<string, SeoMeta> = {
     keywords:
       'contractor labor rates, electrician rates, plumber rates, carpenter rates, HVAC rates, construction labor costs',
   },
+  '/newsletter': {
+    title: 'Subscribe to the RemodelerIQ Newsletter',
+    description:
+      'Get the free monthly RemodelerIQ brief: real 2026 remodeling cost data by city and the red flags that mean you\'re overpaying. One email a month, unsubscribe anytime.',
+    keywords: 'remodeleriq newsletter, remodeling cost newsletter, home renovation email',
+  },
   '/labor-cost-index': {
     title: 'Construction Labor Cost Index 2026: BLS Wages by Metro',
     description:

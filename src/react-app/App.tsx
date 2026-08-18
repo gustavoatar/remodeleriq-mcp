@@ -6,6 +6,7 @@ import { MessageSquareHeart } from "lucide-react";
 import HomePage from "@/react-app/pages/Home";
 import LaborRatesPage from "@/react-app/pages/LaborRates";
 import LaborCostIndexPage from "@/react-app/pages/LaborCostIndex";
+import NewsletterLandingPage from "@/react-app/pages/NewsletterLanding";
 import StudioPage from "@/react-app/pages/Studio";
 import JoinPage from "@/react-app/pages/Join";
 import AuthCallbackPage from "@/react-app/pages/AuthCallback";
@@ -119,6 +120,7 @@ export default function App() {
           <Route path="/how-it-works" element={<HomePage howItWorksTour />} />
           <Route path="/labor-rates" element={<LaborRatesPage />} />
           <Route path="/labor-cost-index" element={<LaborCostIndexPage />} />
+          <Route path="/newsletter" element={<NewsletterLandingPage />} />
           <Route path="/trusted-radar" element={<TrustedRadarPage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/studio" element={<StudioPage />} />

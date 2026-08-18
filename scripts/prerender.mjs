@@ -23,6 +23,7 @@ const ROUTES = [
   "/trusted-radar",
   "/labor-rates",
   "/labor-cost-index",
+  "/newsletter",
   "/studio",
   "/how-we-score",
   "/glossary",
