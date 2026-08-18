@@ -25,8 +25,9 @@ import nextdoorAuthRoutes from './routes/nextdoorAuth';
 import redditAuthRoutes from './routes/redditAuth';
 import stripeRoutes from './routes/stripe';
 import magicLinkRoutes from './routes/magicLink';
+import newsletterRoutes, { runNewsletterCron } from './routes/newsletter';
 import contentDraftsRoutes from './routes/contentDrafts';
-import contentSwarmRoutes, { trackEngagement, sendMorningDigest, autoPublishApproved } from './routes/contentSwarm';
+import contentSwarmRoutes, { sendMorningDigest, autoPublishApproved } from './routes/contentSwarm';
 import inboxRoutes from './routes/inbox';
 import redditDraftsRoutes from './routes/redditDrafts';
 import nextdoorDraftsRoutes from './routes/nextdoorDrafts';
@@ -435,6 +436,7 @@ app.route('/api', nextdoorAuthRoutes);
 app.route('/api', redditAuthRoutes);
 app.route('/api', stripeRoutes);
 app.route('/api', magicLinkRoutes);
+app.route('/api/newsletter', newsletterRoutes);
 app.route('/api/admin/content', contentDraftsRoutes);
 app.route('/api/admin/content', contentSwarmRoutes);
 app.route('/api/admin/inbox', inboxRoutes);
@@ -7298,10 +7300,15 @@ async function scheduledHandler(
   _ctx: ExecutionContext
 ): Promise<void> {
   // Multiplex cron schedule by event.cron
-  // - "0 */6 * * *"  → Reddit Scout (every 6h)
-  // - "0 11 * * *"   → Morning digest at 7am ET (11 UTC)
-  // - "0 */12 * * *" → Engagement tracker (every 12h)
-  // - "30 13 * * *"  → Auto-publish in_review drafts at 8:30am ET (Phase 7A)
+  // - "0 13 * * *"   → Reddit RSS scout (daily 9am ET), drafts into reddit_drafts
+  // - "0 11 * * *"   → Morning digest + BLS PPI refresh (daily 7am ET)
+  // - "0 14 1 * *"   → Newsletter: generate + circuit-breaker send-check (1st of month, 9am ET)
+  // - "30 13 * * *"  → Auto-approve in_review content drafts at 8:30am ET (DB gate only)
+  // - "0 10 * * SUN" → Weekly blog draft → WP + Facebook batch (Sunday 6am ET)
+  // (Reclaimed the old "0 */12 * * *" engagement-tracker slot for the newsletter —
+  //  it depended on Reddit's closed public JSON API and the current RSS scout
+  //  writes to reddit_drafts, not the content_drafts rows it polled, so it was a
+  //  no-op. trackEngagement() is kept for the manual endpoint but no longer cron'd.)
   const cron = event.cron;
   console.log(`Scheduled handler fired for cron: ${cron}`);
 
@@ -7341,13 +7348,17 @@ async function scheduledHandler(
     }
   }
 
-  if (cron === "0 */12 * * *") {
-    // Engagement tracker — poll published Reddit URLs for upvotes/comments
+  if (cron === "0 14 1 * *") {
+    // Newsletter (owned-channel autonomy). One monthly tick does both jobs,
+    // each guarded by newsletter_issues status so they can't double-fire:
+    //  1. generate this month's issue (if none exists yet) → in_review + operator digest
+    //  2. send-check: any in_review issue past its review window sends unless a
+    //     scoped STOP override was logged. See runNewsletterCron for the gate.
     try {
-      const result = await trackEngagement(envForRoutes as never);
-      console.log(`Engagement updated for ${result.updated} drafts`);
+      const result = await runNewsletterCron(env as never);
+      console.log(`Newsletter cron: ${JSON.stringify(result)}`);
     } catch (err) {
-      console.error("Engagement cron failed:", err);
+      console.error("Newsletter cron failed:", err);
     }
   }
 

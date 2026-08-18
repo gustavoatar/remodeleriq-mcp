@@ -3,6 +3,7 @@ import Header from '@/react-app/components/Header';
 import Footer from '@/react-app/components/Footer';
 import FAQSchema, { FAQItem } from '@/react-app/components/FAQSchema';
 import { BreadcrumbSchema, BREADCRUMBS } from '@/react-app/components/StructuredData';
+import NewsletterSignup from '@/react-app/components/NewsletterSignup';
 import { Link } from 'react-router';
 import {
   DollarSign,
@@ -283,6 +284,10 @@ export default function QuoteFairnessPage() {
               <Link to="/trusted-radar" className="text-emerald-700 font-medium hover:underline">verify your contractor</Link>, or{' '}
               <Link to="/how-we-score" className="text-emerald-700 font-medium hover:underline">read our scoring methodology</Link>.
             </p>
+          </section>
+
+          <section className="mt-12">
+            <NewsletterSignup source="quote_fairness" />
           </section>
         </div>
       </main>

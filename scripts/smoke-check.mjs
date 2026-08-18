@@ -93,5 +93,17 @@ console.log("Post-deploy smoke check\n");
   else fail("Sitemap index serves", `status ${sm.status}, ${children} children`);
 }
 
+// 6. Newsletter subscribe endpoint reachable + validates (invalid email → 400 JSON)
+{
+  const r = await fetch(`${ORIGIN}/api/newsletter/subscribe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "not-an-email", source: "smoke" }),
+  });
+  const t = await r.text();
+  if (r.status === 400 && !t.trimStart().startsWith("<")) ok("Newsletter subscribe validates (400 JSON)");
+  else fail("Newsletter subscribe validates", `status ${r.status}: ${t.slice(0, 60)}`);
+}
+
 console.log(failures === 0 ? "\nAll smoke checks passed." : `\n${failures} CHECK(S) FAILED — investigate before walking away from this deploy.`);
 process.exit(failures === 0 ? 0 : 1);

@@ -34,6 +34,7 @@ import WebhookStatusPage from "@/react-app/pages/WebhookStatus";
 import AdminPage from "@/react-app/pages/Admin";
 import AdminMcpPage from "@/react-app/pages/AdminMcp";
 import ContentDashboardPage from "@/react-app/pages/ContentDashboard";
+import NewsletterDashboardPage from "@/react-app/pages/NewsletterDashboard";
 import InboxPage from "@/react-app/pages/Inbox";
 import RedditKitPage from "@/react-app/pages/RedditKit";
 import NextdoorKitPage from "@/react-app/pages/NextdoorKit";
@@ -150,6 +151,7 @@ export default function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/mcp" element={<AdminMcpPage />} />
           <Route path="/admin/content" element={<ContentDashboardPage />} />
+          <Route path="/admin/newsletter" element={<NewsletterDashboardPage />} />
           <Route path="/admin/inbox" element={<InboxPage />} />
           <Route path="/admin/reddit" element={<RedditKitPage />} />
           <Route path="/admin/nextdoor" element={<NextdoorKitPage />} />

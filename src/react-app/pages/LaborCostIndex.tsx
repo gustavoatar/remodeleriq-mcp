@@ -6,6 +6,7 @@ import Footer from '@/react-app/components/Footer';
 import PageSEO from '@/react-app/components/PageSEO';
 import FAQSchema, { type FAQItem } from '@/react-app/components/FAQSchema';
 import { Download, TrendingUp, ArrowRight } from 'lucide-react';
+import NewsletterSignup from '@/react-app/components/NewsletterSignup';
 import {
   indexRegression,
   nationalTradeTable,
@@ -308,6 +309,14 @@ export default function LaborCostIndexPage() {
               <Link to="/remodeling-cost-guides/permits/" className="text-emerald-700 font-medium hover:underline">check permit fees by city</Link>.
             </p>
           </section>
+
+          {/* Newsletter capture — highest-intent page: readers here are pricing labor */}
+          <NewsletterSignup
+            source="labor_cost_index"
+            heading="Get labor-cost updates monthly"
+            blurb="We refresh this index and publish new cost data every month. Get the highlights — plus how to check a quote — in one email. Unsubscribe anytime."
+            className="mb-10"
+          />
 
           {/* CTA */}
           <div className="bg-emerald-600 rounded-2xl p-8 text-center">

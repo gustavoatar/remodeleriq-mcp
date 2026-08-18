@@ -152,6 +152,26 @@ AI-EXTRACTABILITY (mandatory on Reddit/Nextdoor replies — boosts AI-citation c
 ${SHARED_VOICE_RULES}`;
 
 // ====================================================================
+// NEWSLETTER voice — monthly owned-channel email. Bella by default:
+// journalistic, data-first, one clear takeaway per section. Exported so
+// routes/newsletter.ts reuses the same voice + guardrail machinery.
+// ====================================================================
+export const VOICE_BRIEF_NEWSLETTER = `You are Bella, writing the monthly RemodelerIQ email newsletter for homeowners who are planning or pricing a remodel. These are opted-in subscribers, not cold contacts — talk to them like a smart friend who works in the industry, not a marketer.
+
+GOAL: one genuinely useful email a month that makes a homeowner smarter about what their project should cost and how to not get overcharged. Every issue should be worth opening even if they never click.
+
+STRUCTURE (return JSON, see schema in the prompt):
+- subject: under 55 chars, specific and curiosity-driven, NO clickbait, NO emoji. Lead with the concrete thing (a number, a city, a finding). Bad: "Your Monthly Remodeling Update". Good: "Kitchen labor is up 6% — here's where".
+- preview_text: under 90 chars, complements the subject (don't repeat it), gives a second reason to open.
+- 3 to 4 short sections. Each: a bold one-line header, then 2-4 sentences. Anchor at least one section in a hard number from the source material (a cost range, the labor index, a permit fee) and cite the source inline (BLS, our data). One section can be a practical tip.
+- Exactly ONE call to action, woven in naturally, linking to the most relevant RemodelerIQ tool for that issue's theme (the bid analyzer at https://remodeleriq.com/?view=upload, the labor cost index at https://remodeleriq.com/labor-cost-index, or a cost guide). Never more than one CTA.
+- A warm one-line sign-off from "Bella and the RemodelerIQ team".
+
+HARD RULES: no fake urgency, no "limited time", no invented statistics — only use numbers present in the provided source material. If the source material is thin, write a shorter, honest issue rather than padding. Plain text that renders well in email; no markdown headers (the renderer wraps sections).
+
+${SHARED_VOICE_RULES}`;
+
+// ====================================================================
 // BELLA voice — LONG-FORM (blog posts, ~3,000+ words).
 //
 // v2.2 (2026-06-14): now operates as a 4-AGENT TEAM internally, per Gustavo's
@@ -845,10 +865,13 @@ app.post("/send-digest", async (c) => {
 });
 
 // ====================================================================
-// AUTO-PUBLISH — Phase 7A. Called by the 8:30am ET cron (30 13 * * *).
-// If no STOP override was logged in the last 90 minutes, flip in_review drafts
-// to approved. Publishing to Reddit/Facebook happens via separate publishers
-// (Phase 7D/7G) reading the approved queue.
+// AUTO-APPROVE — called by the 8:30am ET cron (30 13 * * *).
+// This is a DB GATE ONLY: if no STOP override was logged in the last 90 min,
+// it flips in_review content drafts to 'approved'. There is NO auto-poster —
+// approved social drafts are still posted by a human from /admin/content and
+// /admin/reddit (the "separate publishers" an earlier comment referenced were
+// never built). Blog drafts are published via the human publish endpoint in
+// blogPublish.ts. The newsletter has its own autonomous send (runNewsletterCron).
 // ====================================================================
 export async function autoPublishApproved(env: AppEnv["Bindings"]): Promise<{ approved: number; held: boolean }> {
   // Look for STOP override in the last 90 minutes against any digest cycle today

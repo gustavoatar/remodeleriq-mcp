@@ -104,6 +104,12 @@ export default function NextdoorKit() {
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       <div className="max-w-[900px] mx-auto">
         <AdminTabs />
+        {/* Parked: OAuth + tables exist but nothing drafts or posts to Nextdoor
+            yet. Kept intact and reversible; not part of the active automation. */}
+        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
+          <strong>Parked.</strong> Nextdoor isn't wired to draft or post yet — this
+          dashboard is a scaffold. Owned-channel effort is on email/newsletter for now.
+        </div>
         {/* Header */}
         <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="flex items-center gap-3">

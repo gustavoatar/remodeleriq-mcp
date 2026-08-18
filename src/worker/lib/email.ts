@@ -9,6 +9,8 @@ export interface EmailParams {
   reply_to?: string;
   customer_id?: string;
   broadcast?: boolean;
+  /** Extra RFC-822 headers, e.g. List-Unsubscribe for one-click unsub. */
+  headers?: Record<string, string>;
 }
 
 export interface EmailResult {
@@ -50,6 +52,7 @@ export async function sendEmail(
   if (params.html_body) body.html = params.html_body;
   if (params.text_body) body.text = params.text_body;
   if (params.reply_to) body.reply_to = params.reply_to;
+  if (params.headers) body.headers = params.headers;
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
