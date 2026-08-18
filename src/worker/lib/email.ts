@@ -9,6 +9,10 @@ export interface EmailParams {
   reply_to?: string;
   customer_id?: string;
   broadcast?: boolean;
+  /** Per-send From override (e.g. the newsletter's news.remodeleriq.com sender).
+   *  Falls back to RESEND_FROM, then DEFAULT_FROM. Keeps transactional auth mail
+   *  on the primary domain while marketing sends from a separate subdomain. */
+  from?: string;
   /** Extra RFC-822 headers, e.g. List-Unsubscribe for one-click unsub. */
   headers?: Record<string, string>;
 }
@@ -41,7 +45,7 @@ export async function sendEmail(
     return { success: false, error: "RESEND_API_KEY not configured" };
   }
 
-  const from = env.RESEND_FROM || DEFAULT_FROM;
+  const from = params.from || env.RESEND_FROM || DEFAULT_FROM;
 
   const body: Record<string, unknown> = {
     from,

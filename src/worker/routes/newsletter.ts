@@ -51,6 +51,17 @@ function postalAddress(env: Env): string {
   );
 }
 
+// Subscriber-facing marketing mail sends from a dedicated subdomain so bounces/
+// complaints can't hurt the primary domain's transactional (magic-link) rep.
+// Set NEWSLETTER_FROM once news.remodeleriq.com is verified in Resend; until
+// then it falls back to the primary domain so nothing breaks.
+function newsletterFrom(env: Env): string {
+  return (
+    ((env as unknown as Record<string, unknown>).NEWSLETTER_FROM as string | undefined) ||
+    "RemodelerIQ <noreply@remodeleriq.com>"
+  );
+}
+
 // ============================================================
 // Shared render + send helpers
 // ============================================================
@@ -88,6 +99,7 @@ async function sendIssueToList(
     const params: EmailParams = {
       to: s.email,
       subject: issue.subject,
+      from: newsletterFrom(env),
       html_body: renderIssueHtml(env, issue, s.unsubscribe_token),
       text_body: issue.text_body || undefined,
       broadcast: true,
@@ -381,6 +393,7 @@ async function sendConfirmEmail(env: Env, email: string, confirmToken: string) {
   await sendEmail(env, {
     to: email,
     subject: "Confirm your RemodelerIQ subscription",
+    from: newsletterFrom(env),
     html_body: emailTemplate(`
       ${emailHeader("Confirm your subscription")}
       ${emailBody(
