@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { Facebook } from 'lucide-react';
+import NewsletterSignup from '@/react-app/components/NewsletterSignup';
 
 const FACEBOOK_URL = 'https://www.facebook.com/remodeleriq';
 
@@ -7,6 +8,10 @@ export default function Footer() {
   return (
     <footer className="bg-black text-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
+        {/* Newsletter capture — site-wide, so it's reachable from every page */}
+        <div className="mb-10 pb-10 border-b border-gray-800">
+          <NewsletterSignup source="footer" dark className="max-w-2xl mx-auto" />
+        </div>
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
             <img src="/mocha-assets/remodeler-iq-2x-logo-reverse.svg" alt="RemodelerIQ" className="h-12" />

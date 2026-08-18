@@ -7,15 +7,18 @@ interface NewsletterSignupProps {
   heading?: string;
   blurb?: string;
   className?: string;
+  /** dark variant for use on black backgrounds (footer) */
+  dark?: boolean;
 }
 
 /** Double-opt-in email capture. Posts to the same-origin /api/newsletter/subscribe
  *  worker route; the confirm email closes the loop. Honeypot 'company' field. */
 export default function NewsletterSignup({
   source,
-  heading = 'Get the monthly RemodelerIQ brief',
-  blurb = 'Real remodeling cost data and how to not get overcharged. One email a month, unsubscribe anytime.',
+  heading = 'Know what your remodel should cost',
+  blurb = 'Join homeowners getting the monthly RemodelerIQ brief: real 2026 cost data by city, and the red flags that mean you\'re overpaying. One email a month, free, unsubscribe anytime.',
   className = '',
+  dark = false,
 }: NewsletterSignupProps) {
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState(''); // honeypot
@@ -49,17 +52,17 @@ export default function NewsletterSignup({
 
   if (state === 'done') {
     return (
-      <div className={`rounded-2xl border border-emerald-200 bg-emerald-50 p-6 ${className}`}>
-        <p className="font-semibold text-emerald-800">Almost there.</p>
-        <p className="text-emerald-700 text-sm mt-1">{msg}</p>
+      <div className={`rounded-2xl border p-6 ${dark ? 'border-emerald-500/40 bg-emerald-500/10' : 'border-emerald-200 bg-emerald-50'} ${className}`}>
+        <p className={`font-semibold ${dark ? 'text-emerald-300' : 'text-emerald-800'}`}>Almost there.</p>
+        <p className={`text-sm mt-1 ${dark ? 'text-emerald-200/90' : 'text-emerald-700'}`}>{msg}</p>
       </div>
     );
   }
 
   return (
-    <div className={`rounded-2xl border border-slate-200 bg-white p-6 ${className}`}>
-      <h3 className="text-lg font-bold text-navy-900">{heading}</h3>
-      <p className="text-navy-600 text-sm mt-1 mb-4">{blurb}</p>
+    <div className={`rounded-2xl border p-6 ${dark ? 'border-white/15 bg-white/5' : 'border-slate-200 bg-white'} ${className}`}>
+      <h3 className={`text-lg font-bold ${dark ? 'text-white' : 'text-navy-900'}`}>{heading}</h3>
+      <p className={`text-sm mt-1 mb-4 ${dark ? 'text-gray-300' : 'text-navy-600'}`}>{blurb}</p>
       <form onSubmit={submit} className="flex flex-col sm:flex-row gap-3">
         {/* honeypot — hidden from humans */}
         <input
@@ -78,7 +81,7 @@ export default function NewsletterSignup({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+          className={`flex-1 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-400/40 ${dark ? 'border border-white/20 bg-white/10 text-white placeholder-gray-400 focus:border-emerald-400' : 'border border-slate-200 focus:border-emerald-400 focus:ring-emerald-100'}`}
         />
         <button
           type="submit"

@@ -133,19 +133,54 @@ async function sendIssueToList(
 interface GeneratedIssue {
   subject: string;
   preview_text: string;
-  sections: { header: string; body: string }[];
+  sections: {
+    header: string;
+    body: string;
+    /** one emoji that fits the section (e.g. 📊 💰 👷 ⚖️ 📋 🎯) */
+    emoji?: string;
+    /** optional "read more" link to a real RemodelerIQ page for this section */
+    link?: { label: string; url: string };
+  }[];
   cta_label: string;
   cta_url: string;
+}
+
+// Only these URLs may be linked (prevents the model from inventing 404s).
+const ALLOWED_LINKS: Record<string, string> = {
+  "labor-cost-index": "https://remodeleriq.com/labor-cost-index",
+  "bid-analyzer": "https://remodeleriq.com/?view=upload",
+  "cost-guides": "https://remodeleriq.com/remodeling-cost-guides/",
+  "permits": "https://remodeleriq.com/remodeling-cost-guides/permits/",
+  "quote-fair": "https://remodeleriq.com/is-my-contractor-quote-fair",
+  "trusted-radar": "https://remodeleriq.com/trusted-radar",
+};
+function safeLink(url: string | undefined): string | null {
+  if (!url) return null;
+  const ok = Object.values(ALLOWED_LINKS).includes(url) || url === "https://remodeleriq.com/";
+  return ok ? url : null;
 }
 
 const ISSUE_SCHEMA = `Return ONLY JSON:
 {
   "subject": "string <55 chars",
   "preview_text": "string <90 chars",
-  "sections": [ { "header": "string", "body": "string (2-4 sentences)" } ],
+  "sections": [ {
+    "header": "string",
+    "body": "string (2-4 sentences)",
+    "emoji": "one emoji that fits this section, e.g. 📊 💰 👷 ⚖️ 📋 🎯 🏠 🔨",
+    "link": { "label": "short link text like 'See the labor index'", "url": "one of the ALLOWED URLs, or omit if none fits" }
+  } ],
   "cta_label": "string",
-  "cta_url": "one of the allowed RemodelerIQ URLs"
-}`;
+  "cta_url": "one of the ALLOWED URLs"
+}
+
+ALLOWED URLs (use only these; omit link if none fits the section):
+- https://remodeleriq.com/labor-cost-index  (labor cost data, wage ranges by metro/trade)
+- https://remodeleriq.com/?view=upload  (free AI bid analysis — the main CTA)
+- https://remodeleriq.com/remodeling-cost-guides/  (city + project cost guides)
+- https://remodeleriq.com/remodeling-cost-guides/permits/  (building permit fees by city)
+- https://remodeleriq.com/is-my-contractor-quote-fair  (is-my-quote-fair checklist)
+- https://remodeleriq.com/trusted-radar  (verify a contractor's license/reviews)`;
 
 /** Pull recent published content + live data as source material. */
 async function gatherSources(env: Env): Promise<string> {
@@ -228,25 +263,37 @@ ${ISSUE_SCHEMA}`;
   }
   if (!gen) return { created: false, reason: "generation failed" };
 
-  // Render sections to email HTML + plain text.
+  // Render sections to email HTML + plain text. Each section: emoji + header,
+  // body, and an optional "read more" link (validated against ALLOWED_LINKS).
   const htmlBody = gen.sections
-    .map(
-      (s) =>
-        `<h2 style="font-size:18px;font-weight:600;color:#18181b;margin:24px 0 8px;">${escapeHtml(
+    .map((s) => {
+      const emoji = s.emoji ? `${s.emoji} ` : "";
+      const linkUrl = safeLink(s.link?.url);
+      const readMore = linkUrl
+        ? `<p style="margin:4px 0 18px;font-size:14px;"><a href="${escapeAttr(linkUrl)}" style="color:#1F9C4C;font-weight:600;text-decoration:none;">${escapeHtml(s.link?.label || "Read more")} →</a></p>`
+        : "";
+      return (
+        `<h2 style="font-size:18px;font-weight:600;color:#18181b;margin:24px 0 8px;">${emoji}${escapeHtml(
           s.header
-        )}</h2><p style="margin:0 0 16px;font-size:15px;line-height:24px;color:#3f3f46;">${escapeHtml(
+        )}</h2><p style="margin:0 0 6px;font-size:15px;line-height:24px;color:#3f3f46;">${escapeHtml(
           s.body
-        )}</p>`
-    )
+        )}</p>${readMore}`
+      );
+    })
     .join("\n") +
     `<div style="text-align:center;margin:28px 0;"><a href="${escapeAttr(
-      gen.cta_url
-    )}" style="display:inline-block;background:#1F9C4C;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;">${escapeHtml(
+      safeLink(gen.cta_url) || "https://remodeleriq.com/?view=upload"
+    )}" style="display:inline-block;background:#1F9C4C;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:16px;">${escapeHtml(
       gen.cta_label
     )}</a></div>`;
   const textBody =
-    gen.sections.map((s) => `${s.header}\n${s.body}`).join("\n\n") +
-    `\n\n${gen.cta_label}: ${gen.cta_url}\n\n— Bella and the RemodelerIQ team`;
+    gen.sections
+      .map((s) => {
+        const link = safeLink(s.link?.url);
+        return `${s.emoji ? s.emoji + " " : ""}${s.header}\n${s.body}${link ? `\n${s.link?.label || "Read more"}: ${link}` : ""}`;
+      })
+      .join("\n\n") +
+    `\n\n${gen.cta_label}: ${safeLink(gen.cta_url) || "https://remodeleriq.com/?view=upload"}\n\n— Bella and the RemodelerIQ team`;
 
   const recipientCount = await env.DB.prepare(
     "SELECT COUNT(*) AS n FROM newsletter_subscribers WHERE status = 'active'"
