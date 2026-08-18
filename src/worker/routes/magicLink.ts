@@ -7,13 +7,14 @@ import { sendEmail } from "../lib/email";
 const TOKEN_EXPIRY_MINUTES = 30;
 const SESSION_EXPIRY_DAYS = 60;
 
-// Per-email rate limiter for magic-link requests (max 5 per 10 minutes per email)
-// NOTE: This rate limiter is per-Worker-isolate. Cloudflare runs many isolates in parallel,
-// so the effective limit per user is declared_limit × number_of_isolates.
-// For production-grade rate limiting, replace with Cloudflare KV or Durable Objects.
-const magicLinkRateLimit = new Map<string, { count: number; resetAt: number }>();
+// Per-email rate limit for magic-link requests: max 5 per 10 minutes.
+// Enforced against D1 (not an in-isolate Map) so the limit is global and
+// survives isolate recycling — Cloudflare runs many isolates in parallel, and
+// a memory counter is really "limit × isolate count". We already INSERT a row
+// per request into magic_link_tokens, so the window count is just a SELECT on
+// created_at; no separate counter or new binding needed.
 const MAGIC_LINK_MAX_ATTEMPTS = 5;
-const MAGIC_LINK_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const MAGIC_LINK_WINDOW_MINUTES = 10;
 
 // Generate secure random token
 function generateToken(): string {
@@ -78,19 +79,21 @@ app.post("/auth/magic-link/request", async (c) => {
     return c.json({ error: "Invalid email format" }, 400);
   }
 
-  // Per-email rate limit: max 5 requests per 10 minutes
-  const now = Date.now();
-  let rl = magicLinkRateLimit.get(normalizedEmail);
-  if (!rl || rl.resetAt < now) {
-    rl = { count: 0, resetAt: now + MAGIC_LINK_WINDOW_MS };
-    magicLinkRateLimit.set(normalizedEmail, rl);
-  }
-  rl.count++;
-  if (rl.count > MAGIC_LINK_MAX_ATTEMPTS) {
+  const db = c.env.DB;
+
+  // Per-email rate limit (global, D1-backed): how many links did this email
+  // already request in the trailing window? datetime('now','-N minutes') keeps
+  // the comparison in SQLite so it's immune to clock differences between
+  // isolates. Checked before the INSERT below, so the Nth+1 request is blocked.
+  const recent = await db.prepare(
+    `SELECT COUNT(*) AS count FROM magic_link_tokens
+     WHERE email = ? AND created_at > datetime('now', ?)`
+  ).bind(normalizedEmail, `-${MAGIC_LINK_WINDOW_MINUTES} minutes`).first<{ count: number }>();
+
+  if ((recent?.count || 0) >= MAGIC_LINK_MAX_ATTEMPTS) {
     return c.json({ error: "Too many sign-in attempts. Please wait 10 minutes and try again." }, 429);
   }
 
-  const db = c.env.DB;
   const token = generateToken();
   const expiresAt = new Date(Date.now() + TOKEN_EXPIRY_MINUTES * 60 * 1000);
 
