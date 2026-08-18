@@ -58,7 +58,15 @@ function postalAddress(env: Env): string {
 function newsletterFrom(env: Env): string {
   return (
     ((env as unknown as Record<string, unknown>).NEWSLETTER_FROM as string | undefined) ||
-    "RemodelerIQ <noreply@remodeleriq.com>"
+    "RemodelerIQ <gustavo@remodeleriq.com>"
+  );
+}
+
+// Replies to newsletters land in the real (SiteGround) inbox for remodeleriq.com.
+function newsletterReplyTo(env: Env): string {
+  return (
+    ((env as unknown as Record<string, unknown>).NEWSLETTER_REPLY_TO as string | undefined) ||
+    "gustavo@remodeleriq.com"
   );
 }
 
@@ -100,6 +108,7 @@ async function sendIssueToList(
       to: s.email,
       subject: issue.subject,
       from: newsletterFrom(env),
+      reply_to: newsletterReplyTo(env),
       html_body: renderIssueHtml(env, issue, s.unsubscribe_token),
       text_body: issue.text_body || undefined,
       broadcast: true,
@@ -394,6 +403,7 @@ async function sendConfirmEmail(env: Env, email: string, confirmToken: string) {
     to: email,
     subject: "Confirm your RemodelerIQ subscription",
     from: newsletterFrom(env),
+    reply_to: newsletterReplyTo(env),
     html_body: emailTemplate(`
       ${emailHeader("Confirm your subscription")}
       ${emailBody(

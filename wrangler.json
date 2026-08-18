@@ -47,7 +47,9 @@
     }
   ],
   "vars": {
-    "R2_PUBLIC_URL": "https://pub-fa6ad94d47cf40afaa49a788bd9e5c01.r2.dev"
+    "R2_PUBLIC_URL": "https://pub-fa6ad94d47cf40afaa49a788bd9e5c01.r2.dev",
+    "NEWSLETTER_FROM": "RemodelerIQ <gustavo@remodeleriq.com>",
+    "NEWSLETTER_REPLY_TO": "gustavo@remodeleriq.com"
   },
   "r2_buckets": [
     {
