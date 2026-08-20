@@ -79,17 +79,37 @@ function UsageTab({ data }: { data: UsageData }) {
       {/* Calls by day sparkline */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
         <h3 className="text-sm font-medium text-gray-700 mb-3">Calls per day (last 30 days)</h3>
-        <div className="flex items-end gap-1 h-20">
-          {[...data.calls_by_day].reverse().map((d) => (
-            <div key={d.day} className="flex-1 flex flex-col items-center gap-0.5">
-              <div
-                className="w-full bg-blue-500 rounded-sm min-h-0.5"
-                style={{ height: `${Math.max(2, (d.n / maxDay) * 72)}px` }}
-                title={`${d.day}: ${d.n}`}
-              />
-            </div>
-          ))}
-        </div>
+        {(() => {
+          const days = [...data.calls_by_day].reverse();
+          const mdLabel = (iso: string) => {
+            const [, m, d] = iso.split("-");
+            return m && d ? `${Number(m)}/${Number(d)}` : iso;
+          };
+          return (
+            <>
+              <div className="flex items-end gap-1 h-20">
+                {days.map((d) => (
+                  <div key={d.day} className="flex-1 flex flex-col items-center gap-0.5">
+                    <div
+                      className="w-full bg-blue-500 rounded-sm min-h-0.5"
+                      style={{ height: `${Math.max(2, (d.n / maxDay) * 72)}px` }}
+                      title={`${d.day}: ${d.n}`}
+                    />
+                  </div>
+                ))}
+              </div>
+              {/* Date axis — labelled every 5th day plus the most recent, so 30
+                  columns don't collide */}
+              <div className="flex gap-1 mt-1">
+                {days.map((d, i) => (
+                  <div key={d.day} className="flex-1 text-center text-[9px] text-gray-400 leading-none overflow-hidden whitespace-nowrap">
+                    {i % 5 === 0 || i === days.length - 1 ? mdLabel(d.day) : ""}
+                  </div>
+                ))}
+              </div>
+            </>
+          );
+        })()}
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
