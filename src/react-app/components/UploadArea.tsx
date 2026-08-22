@@ -2,6 +2,11 @@ import { useState, useCallback, useRef } from 'react';
 import { Upload, FileText, X, AlertCircle, Loader2, CheckCircle, Edit3, ArrowRight, DollarSign, Briefcase, FileCheck, Ruler, ChevronDown, Check, Image, Sparkles, MapPin } from 'lucide-react';
 import { ContractorFingerprint, buildContractorPulse, ContractorPulse, parseLicenseNumber } from '@/shared/contractorPulse';
 import * as pdfjsLib from 'pdfjs-dist';
+// Bundle the PDF.js worker as a SAME-ORIGIN asset. The CDN .mjs worker is an
+// ES-module worker loaded cross-origin, which mobile Safari blocks — that was
+// the "PDF processing failed due to browser compatibility" bug. Vite's ?url
+// emits a hashed same-origin URL that Safari loads fine.
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { extractDetectedData } from './ProjectDataEditor';
 import { extractBidTotal } from '@/shared/analysisEngine';
 import { STATE_CODES, getStateNameFromCode, getUserSavedLocation } from '@/react-app/hooks/useGeolocation';
@@ -11,17 +16,15 @@ import { detectProjectZip } from '@/shared/zipDetection';
 import { detectUnits, UnitDetectionResult } from '@/shared/unitDetection';
 import { getUnitConfig, normalizeProjectType } from '@/shared/unitTypeEngine';
 
-// Configure PDF.js worker with multiple fallback strategies
-// This handles Safari and mobile browser compatibility issues
+// Configure PDF.js worker. Prefer the same-origin bundled worker (works on
+// mobile Safari); fall back to the CDN only if that URL is somehow unavailable.
 const initializePdfWorker = () => {
-  // Use jsdelivr CDN which mirrors npm packages directly (always has matching versions)
-  const cdnWorkerUrl = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.worker.min.mjs';
-  
   try {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = cdnWorkerUrl;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
   } catch (e) {
-    console.warn('Failed to set PDF.js worker, will use main thread:', e);
-    // If worker setup fails entirely, PDF.js will fall back to main thread processing
+    console.warn('Failed to set bundled PDF.js worker, falling back to CDN:', e);
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.worker.min.mjs';
   }
 };
 
@@ -173,7 +176,7 @@ export default function UploadArea({ onFileProcessed, onBack }: UploadAreaProps)
       // Re-throw with a more helpful message
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       if (errorMsg.includes('undefined is not a function') || errorMsg.includes('worker')) {
-        throw new Error('PDF processing failed due to browser compatibility. Please try using Chrome or refresh the page and try again.');
+        throw new Error("We couldn't read this PDF in your browser. Refresh and try again, or upload a clear photo of the bid instead — our AI reads photos too.");
       }
       throw error;
     }
@@ -226,7 +229,7 @@ export default function UploadArea({ onFileProcessed, onBack }: UploadAreaProps)
       console.error('PDF to image conversion error:', error);
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       if (errorMsg.includes('undefined is not a function') || errorMsg.includes('worker')) {
-        throw new Error('PDF processing failed due to browser compatibility. Please try using Chrome or refresh the page and try again.');
+        throw new Error("We couldn't read this PDF in your browser. Refresh and try again, or upload a clear photo of the bid instead — our AI reads photos too.");
       }
       throw error;
     }
