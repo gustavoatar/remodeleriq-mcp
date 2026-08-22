@@ -172,13 +172,29 @@ export default function UploadArea({ onFileProcessed, onBack }: UploadAreaProps)
       
       return { text: textParts.join('\n\n'), numPages: pdf.numPages };
     } catch (error) {
-      console.error('PDF text extraction error:', error);
-      // Re-throw with a more helpful message
-      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      if (errorMsg.includes('undefined is not a function') || errorMsg.includes('worker')) {
-        throw new Error("We couldn't read this PDF in your browser. Refresh and try again, or upload a clear photo of the bid instead — our AI reads photos too.");
+      console.error('PDF text extraction error (browser):', error);
+      // Browser pdf.js couldn't run (e.g. mobile Safari can't load the worker).
+      // Fall back to server-side extraction so any device still works.
+      try {
+        setProcessingStep('Reading your PDF…');
+        const buf = await file.arrayBuffer();
+        const res = await fetch('/api/pdf-extract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/pdf' },
+          body: buf,
+        });
+        if (res.ok) {
+          const data = (await res.json()) as { text?: string; totalPages?: number };
+          if (data.text && data.text.trim().length > 0) {
+            return { text: data.text, numPages: data.totalPages || 1 };
+          }
+        }
+      } catch (serverErr) {
+        console.error('PDF text extraction error (server fallback):', serverErr);
       }
-      throw error;
+      // Both browser and server failed (or the PDF has no extractable text, e.g.
+      // a scan) — guide the user to the photo path, which needs no PDF engine.
+      throw new Error("We couldn't read this PDF. Refresh and try again, or upload a clear photo of the bid instead — our AI reads photos too.");
     }
   };
 
