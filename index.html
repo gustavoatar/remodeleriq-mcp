@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Exclude internal /admin pages from analytics. Sets Google's official
+         opt-out flag BEFORE GTM/GA load so no admin page_view is ever sent.
+         The SPA keeps this in sync on client-side navigation (see App.tsx). -->
+    <script>
+      window['ga-disable-G-C5B1H28GHF'] = location.pathname.indexOf('/admin') === 0;
+    </script>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],

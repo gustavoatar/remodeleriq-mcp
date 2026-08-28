@@ -47,6 +47,18 @@ import { NetworkStatusBanner } from "@/react-app/components/AlertBanner";
 import { logErrorToServer } from "@/react-app/hooks/useErrorLogger";
 import { initWebMcp } from "@/react-app/lib/webmcp";
 
+// Keep the analytics opt-out flag in sync on SPA navigation so internal /admin
+// pages are never counted in Google Analytics (the initial page load is handled
+// by the inline script in index.html).
+function AnalyticsGuard() {
+  const location = useLocation();
+  useEffect(() => {
+    (window as unknown as Record<string, boolean>)['ga-disable-G-C5B1H28GHF'] =
+      location.pathname.startsWith('/admin');
+  }, [location.pathname]);
+  return null;
+}
+
 // Floating feedback button - hidden on home page (upload/results screens)
 function FeedbackButton({ onClick }: { onClick: () => void }) {
   const location = useLocation();
@@ -114,6 +126,7 @@ export default function App() {
         <NetworkStatusBanner />
         <Router>
         <ScrollToTop />
+        <AnalyticsGuard />
         <Routes>
           <Route path="/" element={<HomePage />} />
           {/* Same page, sample analysis preloaded with all premium modules unlocked */}
